@@ -1,0 +1,310 @@
+
+\section{Xây dựng mô hình Random Forest}
+- feature engineering: 
+Đầu tiên tôi phân tích absolute correlation
+Lý do: bỏ đi một cái 
+*_minutes và *_charge (biến số)Dùng tương quan Pearson (hoặc Spearman).
+\(H_0\): \(\rho = 0\), \(H_1\): \(\rho \neq 0\).
+Vì \(|r| \approx 1\), hai biến gần như trùng thông tin, giữ minutes, bỏ charge để tránh dư thừa.
+
+-> chắc dựa vào bảng rồi viết thôi
+
+Top absolute correlations:
+            feature_1          feature_2  correlation  abs_correlation
+    total_day_minutes   total_day_charge     1.000000         1.000000
+    total_eve_minutes   total_eve_charge     1.000000         1.000000
+  total_night_minutes total_night_charge     0.999999         0.999999
+   total_intl_minutes  total_intl_charge     0.999993         0.999993
+       account_length    total_day_calls     0.028240         0.028240
+  total_night_minutes  total_night_calls     0.026972         0.026972
+    total_night_calls total_night_charge     0.026949         0.026949
+number_vmail_messages   total_eve_charge     0.019496         0.019496
+number_vmail_messages  total_eve_minutes     0.019490         0.019490
+     total_day_charge total_intl_minutes    -0.019490         0.019490
+    total_day_minutes total_intl_minutes    -0.019486         0.019486
+     total_day_charge  total_intl_charge    -0.019419         0.019419
+
+- thứ hai tôi đi phân tích Target association
+Numeric correlation with churn=yes:
+                      feature  correlation_with_churn_yes  abs_correlation
+number_customer_service_calls                    0.212564         0.212564
+            total_day_minutes                    0.207705         0.207705
+             total_day_charge                    0.207700         0.207700
+        number_vmail_messages                   -0.097633         0.097633
+            total_eve_minutes                    0.089288         0.089288
+             total_eve_charge                    0.089282         0.089282
+           total_intl_minutes                    0.063285         0.063285
+            total_intl_charge                    0.063275         0.063275
+             total_intl_calls                   -0.046893         0.046893
+          total_night_minutes                    0.045677         0.045677
+           total_night_charge                    0.045673         0.045673
+               account_length                    0.021203         0.021203
+              total_day_calls                    0.016130         0.016130
+            total_night_calls                   -0.006986         0.006986
+              total_eve_calls                   -0.006284         0.006284
+
+Highest categorical churn-rate groups with at least 20 records:
+           feature      category  total  churn_yes  churn_rate
+         area_code area_code_510   1246        184      0.1477
+         area_code area_code_408   1259        177      0.1406
+         area_code area_code_415   2495        346      0.1387
+international_plan           yes    473        199      0.4207
+international_plan            no   4527        508      0.1122
+             state            CA     52         14      0.2692
+             state            NJ    112         28      0.2500
+             state            WA     98         24      0.2449
+             state            TX    116         26      0.2241
+             state            MT     99         21      0.2121
+             state            MD    102         21      0.2059
+             state            NV     90         17      0.1889
+             state            ME    103         19      0.1845
+             state            KS     99         18      0.1818
+             state            OK     90         16      0.1778
+
+=> international_plan là tín hiệu mạnh nhất ở nhóm categorical
+Churn của yes = 42.07% vs no = 11.22%.
+Đây là phân khúc rủi ro rất cao, nên ưu tiên retention.
+Với numeric, mạnh nhất là hành vi “không hài lòng + dùng nhiều”
+number_customer_service_calls corr = 0.2126 (cao nhất).
+total_day_minutes corr = 0.2077 (và total_day_charge tương đương, nhưng là cột dư thừa).
+Hàm ý: khách gọi CSKH nhiều và dùng ban ngày cao dễ churn hơn.
+number_vmail_messages tương quan âm (-0.0976)
+Khách dùng voicemail nhiều có xu hướng ít churn hơn (mức vừa phải).
+area_code gần như không tạo khác biệt thực tế
+0.1387–0.1477, rất sát mức nền churn (~14.14%).
+Không nên kỳ vọng area_code là feature mạnh.
+state có vài bang churn cao (CA, NJ, WA, TX...) nhưng cần thận trọng
+Một số bang có mẫu nhỏ (ví dụ CA chỉ 52), dễ nhiễu.
+Dùng để theo dõi thị trường, không nên quyết định lớn chỉ dựa vào state đơn lẻ.
+
+Giữ/ưu tiên: number_customer_service_calls, international_plan, total_day_minutes, number_vmail_messages.
+
+- Total missing cells: 0
+Duplicate rows: 0
+
+Top outlier counts:
+                      feature      q1     q3    iqr  lower_bound  upper_bound  outlier_count  outlier_percent
+number_customer_service_calls   1.000   2.00  1.000      -0.5000       3.5000            399             7.98
+             total_intl_calls   3.000   6.00  3.000      -1.5000      10.5000            118             2.36
+           total_intl_minutes   8.500  12.00  3.500       3.2500      17.2500             72             1.44
+            total_intl_charge   2.300   3.24  0.940       0.8900       4.6500             72             1.44
+        number_vmail_messages   0.000  17.00 17.000     -25.5000      42.5000             60             1.20
+            total_eve_minutes 166.375 234.10 67.725      64.7875     335.6875             43             0.86
+            total_night_calls  87.000 113.00 26.000      48.0000     152.0000             43             0.86
+             total_eve_charge  14.140  19.90  5.760       5.5000      28.5400             42             0.84
+          total_night_minutes 166.900 234.70 67.800      65.2000     336.4000             39             0.78
+           total_night_charge   7.510  10.56  3.050       2.9350      15.1350             39             0.78
+
+           Chất lượng dữ liệu tốt: Total missing cells = 0, Duplicate rows = 0.
+Bảng outlier dùng quy tắc IQR:
+q1, q3: tứ phân vị 25% và 75%
+iqr = q3 - q1
+lower_bound = q1 - 1.5*iqr, upper_bound = q3 + 1.5*iqr
+outlier_count/percent: số và tỷ lệ điểm vượt ngưỡng
+Insight chính:
+
+number_customer_service_calls có outlier cao nhất (7.98%) và trước đó cũng tương quan mạnh với churn -> nhiều khả năng là tín hiệu hành vi thật, không phải lỗi dữ liệu.
+Nhóm total_intl_* có outlier vừa phải (1–2%) -> có thể là nhóm khách dùng quốc tế nhiều.
+*_charge và *_minutes cùng xuất hiện vì hai cột này gần như trùng thông tin (đã thấy correlation ~1), nên giữ một bên là đủ.
+
+
+- Top numeric tests by Mann-Whitney p-value:
+                      feature    mean_no   mean_yes  mean_difference_yes_minus_no  cohens_d  mannwhitney_pvalue
+            total_day_minutes 175.746564 207.870580                     32.124016  0.536657            0.000000
+             total_day_charge  29.877494  35.338416                      5.460922  0.536637            0.000000
+number_customer_service_calls   1.457722   2.254597                      0.796875  0.522435            0.000000
+        number_vmail_messages   8.291870   4.496464                     -3.795407 -0.300835            0.000000
+            total_eve_minutes 198.805031 211.757850                     12.952819  0.254649            0.000000
+             total_eve_charge  16.898654  17.999562                      1.100908  0.254633            0.000000
+             total_intl_calls   4.481947   4.151344                     -0.330604 -0.132520            0.000004
+           total_intl_minutes  10.190869  10.692362                      0.501493  0.180935            0.000049
+            total_intl_charge   2.752055   2.887426                      0.135371  0.180912            0.000049
+           total_night_charge   8.975593   9.273607                      0.298014  0.132054            0.001668
+
+Categorical chi-square tests:
+           feature       chi2   pvalue  dof  cramers_v  min_expected_count
+international_plan 333.186449 0.000000    1   0.258142             66.8822
+   voice_mail_plan  60.552418 0.000000    1   0.110048            187.0722
+             state  96.899041 0.000079   50   0.139211              7.3528
+         area_code   0.562981 0.754658    2   0.010611            176.1844
+Numeric tests (Mann-Whitney)
+pvalue rất nhỏ nghĩa là nhóm churn yes và no khác nhau có ý nghĩa thống kê ở nhiều biến.
+Nhưng quan trọng hơn là cohens_d (độ lớn ảnh hưởng):
+Mạnh nhất và mức vừa: total_day_minutes (d≈0.54), number_customer_service_calls (d≈0.52).
+Vừa/nhỏ: number_vmail_messages (d≈-0.30, dấu âm = churn có voicemail ít hơn), total_eve_minutes (d≈0.25).
+Nhỏ: các biến intl/night (d ~0.13–0.18).
+Categorical tests (Chi-square)
+international_plan: rất mạnh (p<0.001, Cramer's V≈0.258) -> feature categorical quan trọng nhất.
+voice_mail_plan: có ý nghĩa nhưng yếu hơn (V≈0.11).
+state: có ý nghĩa thống kê nhưng hiệu ứng yếu-vừa (V≈0.139), dùng được nhưng không phải tín hiệu chính.
+area_code: không ý nghĩa (p=0.755, V≈0.011) -> gần như không hữu ích.
+Insight hành động
+Ưu tiên feature: international_plan, number_customer_service_calls, total_day_minutes, number_vmail_messages.
+Bỏ các cột *_charge nếu đã giữ *_minutes (vì trùng thông tin gần hoàn hảo).
+area_code có thể loại khỏi mô hình baseline.
+
+- sau khi bỏ đi 4 biến *charge thì tôi vẫn còn 16 biến. Tôi sẽ tiến hành lập model RF baseline với 16 biến.
+
+- ## 2. Với biến nhị phân thì không nên giữ cả yes và no
+
+Bạn đang có:
+
+text
+international_plan_no
+international_plan_yes
+voice_mail_plan_no
+voice_mail_plan_yes
+
+
+Thực ra chỉ cần giữ một cột là đủ, ví dụ:
+
+text
+international_plan_yes
+voice_mail_plan_yes
+
+
+Vì:
+
+text
+international_plan_no = 1 - international_plan_yes
+voice_mail_plan_no = 1 - voice_mail_plan_yes
+
+
+Giữ cả hai không sai nghiêm trọng với Random Forest, nhưng bị dư thừa.
+
+Nên dùng:
+
+text
+international_plan_yes
+voice_mail_plan_yes
+
+
+- với biến state: 
+“state does not improve predictive performance under our RF setup; removing it yields higher holdout/CV F1.”
+
+- state và area \_code: bỏ để giảm nhiễu/overfit và tăng khả năng tổng quát
+area \_code hầu như không liên hệ churn: p = 0.7547, Cramer's V = 0.0106 (rất yếu).
+state có p nhỏ nhưng hiệu ứng thực tế yếu hơn (V = 0.139) và là biến định danh nhiều mức (mỗi state chỉ khoảng 52–158 mẫu), dễ làm cây tách theo nhiễu cục bộ.
+
+=> (1) thống kê độc lập giữa area_code và churn, (2) ablation cho thấy thêm area_code/state không cải thiện F1-CI.
+
+Cách giải thích thuyết phục cho area_code:
+Kiểm định liên hệ với churn\(H_0\): area_code độc lập với churn.
+Kết quả: p = 0.7547 (> 0.05) ⇒ không bác bỏ \(H_0\), tức là chưa có bằng chứng area_code liên hệ churn.
+
+Độ lớn hiệu ứngCramer's V = 0.0106 ⇒ gần 0, mức rất yếu/không đáng kể.
+
+Mô tả trực quan
+Tỷ lệ churn theo 3 nhóm area code gần như giống nhau (~13.9%\–14.8\%), chênh lệch nhỏ.
+Kết luận viết báo cáo:
+“area_code không có ý nghĩa thống kê và hiệu ứng thực tế gần như bằng 0; giữ biến này chỉ tăng số chiều, dễ thêm nhiễu cho RF nên loại bỏ để mô hình gọn và tổng quát hơn.”
+Cho state thì giải thích tương tự nhưng thêm ý:
+Dù có thể p nhỏ, hiệu ứng thực tế yếu (Cramer's V nhỏ), số mức nhiều (50+) nên dễ overfit theo nhóm nhỏ, khó tổng quát và khó hành động nghiệp vụ.
+=> Loại state là quyết định theo nguyên tắc parsimony + generalization.
+
+international \_plan \_yes, voice \_mail \_plan \_yes mã hóa 0/1 là chuẩn
+Đây là biến nhị phân rõ nghĩa nghiệp vụ.
+Mã hóa yes=1, no=0 giúp mô hình đọc trực tiếp.
+Bỏ cột * \_no để tránh trùng thông tin hoàn toàn với * \_yes.
+
+
+=> cách chứng minh: area_code vs churn (biến phân loại)Kiểm định: Chi-square independence.
+\(H_0\): area_code độc lập với churn.
+\(H_1\): area_code có liên hệ với churn.
+Mức ý nghĩa: \(\alpha = 0.05\).
+Kết quả của bạn: p = 0.7547, Cramer's V = 0.0106.
+Kết luận: không bác bỏ \(H_0\), hiệu ứng rất nhỏ, loại area_code.
+
+state vs churn (biến phân loại nhiều mức)Kiểm định: Chi-square independence.
+\(H_0\): state độc lập với churn.
+\(H_1\): state có liên hệ với churn.
+Báo cáo thêm Cramer's V để đo độ mạnh hiệu ứng.
+Dù có thể p nhỏ, nếu V nhỏ thì ý nghĩa thực tiễn thấp; thêm vào đó state nhiều mức dễ overfit, nên loại để tăng khả năng tổng quát.
+
+- insight tổng
+5000 dòng, churn=yes là 14.14\% (mất cân bằng lớp).
+Không có missing/duplicate.
+Các cột $* \_charge$ gần như trùng thông tin với $* \_minutes$ nên được khuyến nghị bỏ.
+Tín hiệu churn nổi bật: number \_customer \_service \_calls, total \_day \_minutes, international \_plan.
+
+Giữ minutes, bỏ charge (hoặc ngược lại, nhưng phải nhất quán).
+Thường dùng danh sách drop:
+total \_day \_charge, total \_eve \_charge, total \_night \_charge, total \_intl \_charge.
+
+=> giữ lại 13 features: account_length
+number_vmail_messages
+total_day_minutes
+total_day_calls
+total_eve_minutes
+total_eve_calls
+total_night_minutes
+total_night_calls
+total_intl_minutes
+total_intl_calls
+number_customer_service_calls
+international_plan_yes
+voice_mail_plan_yes
+
+Ablation cho thấy v2 (13 features) tốt hơn v1 (64 features)
+max \_depth=5:
+v1 CV F1 mean = 0.0209 vs v2 = 0.4720
+v1 Holdout F1 = 0.0946 vs v2 = 0.4432
+max \_depth=None:
+v1 CV F1 mean = 0.7187 vs v2 = 0.8029
+v1 Holdout F1 = 0.7647 vs v2 = 0.7869
+--------------------------------------------------
+Baseline modeling complete (max_depth=3).
+Features used: 64
+Train F1: 0.000000
+Holdout F1: 0.000000
+CV F1 mean (95% CI): 0.000000 [0.000000, 0.000000]
+--------------------------------------------------
+Baseline modeling complete (max_depth=5).
+Features used: 64
+Train F1: 0.081356
+Holdout F1: 0.094595
+CV F1 mean (95% CI): 0.020870 [-0.002786, 0.044525]
+--------------------------------------------------
+Baseline modeling complete (max_depth=None).
+Features used: 64
+Train F1: 1.000000
+Holdout F1: 0.764706
+
+--------------------------------------------------
+Model v2 complete (max_depth=3).
+Features used: 13
+Train F1: 0.044828
+Holdout F1: 0.107383
+CV F1 mean (95% CI): 0.017392 [0.002253, 0.032531]
+--------------------------------------------------
+Model v2 complete (max_depth=5).
+Features used: 13
+Train F1: 0.641916
+Holdout F1: 0.515464
+CV F1 mean (95% CI): 0.479703 [0.430128, 0.529279]
+--------------------------------------------------
+Model v2 complete (max_depth=None).
+Features used: 13
+Train F1: 1.000000
+Holdout F1: 0.824000
+CV F1 mean (95% CI): 0.787214 [0.739351, 0.835078]
+
+% *_minutes và *_charge (biến số)Dùng tương quan Pearson (hoặc Spearman).
+% \(H_0\): \(\rho = 0\), \(H_1\): \(\rho \neq 0\).
+% Vì \(|r| \approx 1\), hai biến gần như trùng thông tin, giữ minutes, bỏ charge để tránh dư thừa.
+% Gợi ý dùng ngay cho mô hình:
+% Với mô hình cây như Random Forest: không cần xóa outlier vội.
+% Thử 2 phiên bản để so sánh F1:
+% Giữ nguyên outlier
+% Cap/winsorize (ví dụ chặn ở p99) cho vài cột lệch mạnh.
+% Bỏ các cột * \_charge (dư thừa với * \_minutes).
+% Giữ/ưu tiên: number \_customer \_service \_calls, international \_plan, total \_day \_minutes, number \_vmail \_messages.
+% Thử feature tương tác: international \_plan × total \_intl \_minutes, customer \_service \_calls × total \_day \_minutes.
+% Ưu tiên feature: international \_plan, number \_customer \_service \_calls, total \_day \_minutes, number \_vmail \_messages.
+% Bỏ các cột * \_charge nếu đã giữ * \_minutes (vì trùng thông tin gần hoàn hảo).
+% area \_code có thể loại khỏi mô hình baseline.
+
+
+
+
+

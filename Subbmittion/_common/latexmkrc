@@ -1,0 +1,15 @@
+# Run makeglossaries as part of each checkpoint's normal latexmk build.
+add_cus_dep('glo', 'gls', 0, 'makeglossaries');
+sub makeglossaries {
+    my ($base) = @_;
+    if (-s "$base.glo") {
+        if ($base =~ m{^(.*)/([^/]+)$}) {
+            return system('makeglossaries', '-d', $1, $2);
+        }
+        return system('makeglossaries', $base);
+    }
+    open my $empty_glossary, '>', "$base.gls" or return 1;
+    close $empty_glossary;
+    return 0;
+}
+1;

@@ -1,0 +1,22 @@
+\documentclass[a4paper]{extarticle}
+\input{../_common/preamble}
+\addbibresource{references.bib}
+\input{glossary}
+
+\begin{document}
+\pagenumbering{Roman}
+\input{cover}
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+\printglossaries
+\clearpage
+
+\pagenumbering{arabic}
+\justifying
+\input{sections/01-overview}
+
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\printbibliography
+\end{document}

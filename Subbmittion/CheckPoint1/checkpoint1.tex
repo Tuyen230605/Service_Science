@@ -1,0 +1,26 @@
+\documentclass[a4paper]{extarticle}
+\input{../_common/preamble}
+\addbibresource{references.bib}
+\input{glossary}
+
+\begin{document}
+\pagenumbering{Roman}
+\input{cover}
+\clearpage
+
+\pagenumbering{roman}
+\tableofcontents
+\printglossaries
+\clearpage
+
+\pagenumbering{arabic}
+\justifying
+\input{sections/01-topic}
+\input{sections/02-system-boundary}
+\input{sections/03-service-failures}
+\input{sections/04-resource-value-map}
+\input{sections/05-theoretical-models}
+
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\printbibliography
+\end{document}

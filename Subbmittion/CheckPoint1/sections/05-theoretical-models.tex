@@ -1,0 +1,59 @@
+\section{Mở rộng mô tả hệ thống qua các mô hình lý thuyết}
+\noindent Nhóm lựa chọn \gls{ust} và \gls{wsf} để mở rộng phân tích. UST làm rõ sự phụ thuộc của dịch vụ vào đầu vào người bệnh; WSF xem xét cách tổ chức và phối hợp các thành phần để chuyển đầu vào thành tư vấn, kết quả phân loại và lịch hẹn.
+\subsection{Unified Services Theory}
+\noindent\textbf{Lý do lựa chọn.} Theo UST, quá trình dịch vụ phụ thuộc vào đầu vào do khách hàng cung cấp. Trong hệ thống đang xét, thông tin triệu chứng, phản hồi và xác nhận của người bệnh là điều kiện để nhân viên y tế đánh giá yêu cầu và bố trí lịch phù hợp. Vì vậy, mô hình giúp giải thích vì sao việc bổ sung AI chưa đủ để bảo đảm dịch vụ hiệu quả nếu đầu vào thiếu, không rõ hoặc đến chậm.
+
+\noindent\textbf{Áp dụng vào hệ thống.} Ba nhóm đầu vào được xem xét theo phạm vi tư vấn và đặt lịch: (1) \textit{Bản thân và sự tham gia của người bệnh}: chủ động khai báo, trả lời câu hỏi bổ sung và xác nhận hướng dẫn; sự hiện diện trực tiếp chỉ trở thành yêu cầu ở bước khám sau đặt lịch; (2) \textit{Thông tin}: triệu chứng, thời điểm xuất hiện, tiền sử, thuốc đang dùng và thời gian có thể khám; (3) \textit{Vật sở hữu}: hồ sơ, đơn thuốc hoặc kết quả xét nghiệm người bệnh đang giữ. Khi được gửi dưới dạng ảnh hoặc tệp, nội dung của các tài liệu này được sử dụng như đầu vào thông tin.
+
+\noindent\textbf{Liên hệ với thất bại dịch vụ.} (1) \textit{Vắng mặt hoặc đến trễ}: đầu vào là sự hiện diện của người bệnh không đến đúng thời điểm đã cam kết ở khâu khám tiếp nối, có thể làm bỏ trống khung giờ nếu không kịp bố trí người thay thế. Trong phạm vi hiện tại, hệ thống có thể hỗ trợ nhắc lịch và tạo điều kiện xác nhận, đổi hoặc hủy sớm; (2) \textit{Chậm phản hồi tư vấn}: thông tin thiếu hoặc người bệnh trả lời bổ sung chậm khiến yêu cầu phải qua nhiều vòng trao đổi. Cần phân biệt thời gian chờ người bệnh với thời gian chờ nhân viên y tế; (3) \textit{Phân loại chưa phù hợp}: mô tả mơ hồ hoặc thiếu thông tin quan trọng có thể dẫn đến đánh giá mức độ ưu tiên chưa chính xác. AI có thể hỗ trợ hỏi bổ sung và tổng hợp, còn nhân viên y tế kiểm tra trước khi xác nhận.
+
+
+\subsection{Work System Framework}
+
+\noindent\textbf{Lý do lựa chọn.}
+WSF giúp phân tích thất bại như kết quả của sự phối hợp giữa các thành phần trong hệ thống. Khung gồm chín thành phần: quy trình và hoạt động, người tham gia, thông tin, công nghệ, sản phẩm/dịch vụ, khách hàng, môi trường, hạ tầng và chiến lược. Nhóm tập trung vào bốn thành phần vận hành trung tâm; các yếu tố còn lại được xem xét qua đầu ra, bên thụ hưởng và bối cảnh đã trình bày trong bản đồ tài nguyên - giá trị.
+
+\noindent\textbf{Áp dụng vào hệ thống.}
+Bảng~\ref{tab:work-system} chỉ ra các điểm cần kiểm tra khi phân tích ba thất bại đã xác định. Đây là các giả thuyết phân tích, chưa phải kết luận về nguyên nhân thực tế.
+
+\begin{table}[htbp]
+\centering
+\caption{Áp dụng các thành phần vận hành của WSF vào hệ thống.}
+\label{tab:work-system}
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{
+    >{\raggedright\arraybackslash}p{0.16\linewidth}
+    >{\raggedright\arraybackslash}p{0.35\linewidth}
+    >{\raggedright\arraybackslash}p{0.34\linewidth}
+}
+\toprule
+\textbf{Thành phần} &
+\textbf{Biểu hiện trong hệ thống} &
+\textbf{Điểm cần kiểm tra liên quan đến thất bại} \\
+\midrule
+
+Quy trình hoạt động &
+Thu thập triệu chứng, hỏi bổ sung, kiểm tra, phân loại, phê duyệt tư vấn và xác nhận lịch &
+Bỏ sót yêu cầu; chậm bàn giao; nhắc lịch, đổi/hủy và xử lý chỗ trống chưa kịp thời \\
+
+Người tham gia &
+Người bệnh, điều dưỡng, bác sĩ và nhân viên tiếp nhận &
+Trách nhiệm chưa rõ; quá tải theo ca; tiêu chí phân loại áp dụng chưa thống nhất \\
+
+Thông tin &
+Triệu chứng, tiền sử, bản tóm tắt ca, mức độ ưu tiên, trạng thái xử lý và lịch khả dụng &
+Thông tin thiếu hoặc không nhất quán; tóm tắt bỏ sót; trạng thái và lịch cập nhật chậm \\
+
+Công nghệ & 
+Ứng dụng, AI hỗ trợ hỏi đáp và tổng hợp, quản lý yêu cầu, lịch hẹn và thông báo &
+ Lỗi thông báo, đồng bộ lịch; khó kiểm tra thông tin gốc và điều chỉnh đề xuất AI \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Liên hệ với thất bại dịch vụ.} (1) \textit{Vắng mặt hoặc đến trễ} cần được xem xét qua sự phối hợp giữa người bệnh, quy trình xác nhận và công cụ thông báo. (2) \textit{Chậm phản hồi tư vấn}có thể phát sinh từ phân công chưa rõ, thiếu năng lực trực hoặc trạng thái bàn giao không minh bạch.(3) \textit{Phân loại chưa phù hợp} có thể liên quan đồng thời đến dữ liệu đầu vào, tiêu chí đánh giá, bản tổng hợp của AI và bước kiểm tra của nhân viên y tế. Do đó, các quy tắc về ca trực, chuyển tiếp, phê duyệt và đổi/hủy lịch cần được phân tích cùng bốn thành phần vận hành, thay vì quy toàn bộ thất bại cho công nghệ.
+
+\subsection{Định hướng phân tích tiếp theo}
+\noindent Hai mô hình cho thấy cần xem xét đồng thời chất lượng đầu vào và cách tổ chức xử lý yêu cầu. Ở bước tiếp theo, nhóm sẽ làm rõ phân công giữa điều dưỡng và bác sĩ, mô tả các điểm bàn giao, và thu thập thời điểm gửi yêu cầu, phản hồi, phê duyệt, xác nhận hoặc thay đổi lịch. Các chỉ số dự kiến gồm thời gian chờ phản hồi, số vòng hỏi bổ sung, tỷ lệ lịch hẹn bị bỏ và mức độ phù hợp của phân loại so với đánh giá chuyên môn tham chiếu. Dữ liệu này là cơ sở kiểm chứng nguyên nhân và lựa chọn cải tiến cho dự án cuối kỳ.
