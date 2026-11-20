@@ -1,0 +1,151 @@
+% !TeX root = _main.tex
+% ROLE 2 -- DU LIEU, MO HINH, KIEM CHUNG, CHAN DOAN AS-IS (muc 5--6).
+% Nguoi nhan: nhom tu dien. Muc tieu: 4--6 trang noi dung chinh.
+% DUOC SUA: file nay, figures/r2_*; nhan \label bat dau bang r2:.
+% analysis/ do role 2 dau moi quan ly; bao role 3 truoc khi sinh lai dau ra.
+% KHONG SUA: role_1.tex, role_3.tex, cac file dieu phoi.
+% DAU VAO: analysis/{run_analysis,simulate,queueing}.py va data/, tables/.
+% BAN GIAO: tham so/chi so thong nhat, kiem chung, ket qua A0 va gioi han.
+% HOAN THANH KHI: tai lap duoc ket qua, giai thich sai lech, them nguon cong thuc.
+
+\section{Dữ liệu, giả định và phương pháp phân tích}
+\label{r2:method}
+\subsection{Nguồn dữ liệu và thiết kế mô phỏng}
+\textbf{Toàn bộ số liệu định lượng trong bản nháp này là dữ liệu mô phỏng.}
+Các bảng và hình được ghép từ đầu ra đã có trong thư mục \texttt{analysis/};
+chưa có dữ liệu quan sát thực tại cơ sở khám. Mã nguồn sinh yêu cầu đến theo
+từng giờ, gán mức ưu tiên, lấy mẫu thời gian xử lý và mô phỏng hàng đợi~\cite{analysis}.
+So sánh chính dùng 20 ngày, seed \texttt{20260117}, với 2\,014 yêu cầu được
+ghi nhận trong log. Mỗi ngày bắt đầu với hàng đợi rỗng; hồ sơ còn lại sau giờ
+tiếp nhận được xử lý tiếp. Phân tích độ nhạy dùng cấu hình số ngày và seed
+riêng, được nêu ở phần đánh giá.
+
+\begin{table}[htbp]\centering\small
+\caption{Giả định đầu vào lấy từ cấu hình mô phỏng}\label{r2:assumptions}
+\begin{tabularx}{\linewidth}{@{}p{34mm}Y Y@{}}
+\toprule
+Tham số & Giá trị & Ý nghĩa và giới hạn \\
+\midrule
+Giờ tiếp nhận & 07:00--19:00; 12 khung một giờ & Không sinh yêu cầu ngoài cửa sổ này. \\
+$\lambda_t$ & $(6,10,12,11,8,5,7,10,11,9,7,4)$ yêu cầu/giờ & Tổng kỳ vọng 100 yêu cầu/ngày; giả định theo kịch bản. \\
+Cơ cấu ưu tiên & P1: 12\%; P2: 58\%; P3: 30\% & Nhãn đầu vào, chưa mô phỏng sai phân loại. \\
+$E[S]$ AS-IS & 9 phút; CV = 1.25 & Phân phối lognormal trong so sánh chính. \\
+$E[S]$ TO-BE & 6 phút; CV = 1.25 & Giả định giảm một phần ba thời gian xử lý. \\
+Nhân lực AS-IS & Hai kênh điều dưỡng mỗi giờ & Các kênh được coi là tương đương. \\
+Chi phí quy ước & 120\,000 đồng/giờ điều dưỡng & Chưa gồm công nghệ, đào tạo và làm thêm. \\
+Mục tiêu phân tích & $E[W_q]\leq10$ phút; $P(W_q>15)\leq5\%$; $E[W_q\mid P1]\leq5$ phút & Nhóm đặt cho bài toán; không phải chuẩn lâm sàng. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\source{CONFIG trong \texttt{analysis/run\_analysis.py}; bảng được Codex tổng hợp để nhóm kiểm tra}
+
+\subsection{Định nghĩa chỉ số và đơn vị}
+Với hồ sơ $i$, gọi $a_i$, $b_i$, $d_i$ lần lượt là thời điểm vào hàng đợi,
+bắt đầu phục vụ và hoàn tất tại trạm, đều tính bằng phút:
+\begin{equation}
+ w_{q,i}=b_i-a_i,\qquad s_i=d_i-b_i,\qquad w_i=d_i-a_i.
+\end{equation}
+Các chỉ số báo cáo gồm trung bình $\overline{W_q}=N^{-1}\sum_i w_{q,i}$,
+phân vị 90\% của thời gian chờ, tỷ lệ $N^{-1}\sum_i\mathbf{1}(w_{q,i}>15)$,
+thời gian chờ theo mức ưu tiên và tổng giờ điều dưỡng theo lịch.
+Tỷ lệ sử dụng trong mã bằng tổng phút bận chia công suất theo lịch; phần
+bận sau giờ đóng cửa có thể nằm trong tử số. Đây là chỉ số vận hành của mô
+hình, không phải phép đo năng suất cá nhân.
+
+\subsection{Mô hình hàng đợi M/M/c để tham chiếu}
+Mô hình tham chiếu giả định dòng đến Poisson, thời gian xử lý phân phối mũ,
+$c$ kênh giống nhau và phục vụ theo thứ tự đến (FCFS). Đặt $\lambda$ là yêu
+cầu/giờ, $\mu=60/E[S]$ là yêu cầu/giờ/kênh và $\rho=\lambda/(c\mu)$.
+Các biểu thức trạng thái ổn định chỉ áp dụng khi $\rho<1$.
+Với $a=\lambda/\mu$, công thức trong \texttt{queueing.py} là
+\begin{align}
+ P_0&=\left[\sum_{n=0}^{c-1}\frac{a^n}{n!}
+       +\frac{a^c}{c!(1-\rho)}\right]^{-1},\\
+ C(c,a)&=\frac{a^c}{c!(1-\rho)}P_0,\\
+ E[W_q]&=\frac{60C(c,a)}{c\mu-\lambda}\quad\text{(phút)},\\
+ P(W_q>t)&=C(c,a)\exp\left[-(c\mu-\lambda)\frac{t}{60}\right]
+ \quad(t\text{ tính bằng phút}).
+\end{align}
+Trong đó $C(c,a)$ là xác suất phải chờ. Theo định luật Little,
+$L_q=\lambda E[W_q]/60$. Việc tính riêng từng giờ là xấp xỉ trạng thái ổn
+định; không thể hiện đầy đủ hàng tồn chuyển từ giờ trước sang giờ sau.
+\todo{2}{Bổ sung trích dẫn bài giảng hoặc tài liệu gốc đã đọc cho Erlang C và
+Little; kiểm tra đơn vị trong mọi công thức. Chưa coi việc chép đúng mã là
+kiểm chứng độc lập lý thuyết.}
+
+\subsection{Mô phỏng sự kiện rời rạc}
+Mỗi giờ sinh số yêu cầu theo Poisson và thời điểm đến đều trong giờ. So sánh
+chính lấy mẫu thời gian xử lý lognormal với CV = 1.25; trường hợp kiểm chứng
+dùng phân phối mũ với CV = 1. Hệ thống xử lý các sự kiện đến và hoàn tất.
+Khi bật ưu tiên không chen ngang, hồ sơ P1 được chọn trước P2 và P3 trong
+hàng chờ; công việc đang phục vụ tiếp tục đến khi hoàn thành.
+
+M/M/c được dùng để chọn công suất sơ bộ; mô phỏng được dùng để đánh giá
+cấu hình có nhu cầu theo giờ, thời gian xử lý biến thiên và ưu tiên. Hai
+phương pháp không có cùng toàn bộ giả định nên cần báo cáo kết quả riêng.
+\todo{2}{Rà soát sự kiện đổi số kênh tại ranh giới giờ: vòng lặp hiện tại chỉ
+xử lý sự kiện đến/hoàn tất, chưa có sự kiện đổi ca độc lập. Kiểm tra trường
+hợp tăng kênh khi đang có hàng chờ; nếu sửa mã, sinh lại đồng bộ bảng/hình và
+bàn giao kết quả mới cho role 3.}
+
+\section{Kiểm chứng và phân tích hiện trạng}
+\label{r2:diagnosis}
+\subsection{Kiểm tra dữ liệu đầu vào}
+Log hiện có cho $E[S]=9.04$ phút, độ lệch chuẩn 11.37 phút và CV khoảng
+1.26, gần tham số sinh dữ liệu. Đây là kiểm tra tính nhất quán nội bộ của
+dữ liệu giả lập, không xác nhận tham số phản ánh thực tế.
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.92\linewidth]{figures/fig_arrivals.png}
+\caption{Nhu cầu theo giờ trong bộ dữ liệu mô phỏng có sẵn.}\label{r2:arrivals}
+\source{\texttt{analysis/run\_analysis.py}; lịch sử AI của mã tạo hình cần xác nhận}
+\end{figure}
+\resulttable{tab_lambda.tex}{Lượt đến theo giờ và tham số sinh dữ liệu mô phỏng}{r2:lambda}
+Tỷ số phương sai/trung bình chỉ là kiểm tra mô tả trên 20 ngày. Việc dữ
+liệu được sinh từ cơ chế Poisson không cho phép kết luận nhu cầu ngoài đời
+cũng tuân theo Poisson.
+\FloatBarrier
+
+\subsection{Đối chiếu công thức và mô phỏng}
+\begin{table}[htbp]\centering\small
+\caption{Đối chiếu M/M/c với mô phỏng CV = 1, FCFS; thời gian tính bằng phút}
+\label{r2:validation}
+\begin{tabular}{@{}rrrrrr@{}}\toprule
+$\lambda$ & $c$ & $\rho$ & $E[W_q]$ lý thuyết & $\overline{W_q}$ mô phỏng & Sai lệch \\
+\midrule
+6 & 2 & 0.45 & 2.29 & 2.24 & $-1.9\%$ \\
+10 & 2 & 0.75 & 11.57 & 10.84 & $-6.3\%$ \\
+12 & 2 & 0.90 & 38.37 & 24.35 & $-36.5\%$ \\
+12 & 3 & 0.60 & 2.66 & 2.92 & $+9.8\%$ \\
+\bottomrule\end{tabular}
+\source{\texttt{analysis/data/run\_log.txt}, mục [2]; Codex trích số để nhóm đối chiếu}
+\end{table}
+Mã kiểm chứng dùng 200 ngày, bỏ các lượt đến trong giờ đầu mỗi ngày.
+Sai lệch ở $\rho=0.90$ còn lớn, vì vậy chưa thể kết luận mô phỏng đã được
+kiểm chứng đầy đủ. Việc bắt đầu lại với hàng rỗng mỗi ngày và thời gian làm
+nóng ngắn là các yếu tố cần kiểm tra, chưa phải nguyên nhân đã được chứng minh.
+Trường hợp $\lambda=8$, $c=1$ có $\rho=1.20$ không có trạng thái ổn định;
+mã bỏ qua mô phỏng kiểm chứng cấu hình này. Không diễn giải ký hiệu vô cực
+trong bảng xuất tự động thành kết quả đo từ một lần chạy.
+\todo{2}{Thử thời gian chạy liên tục/làm nóng dài hơn, nhiều seed và khoảng
+tin cậy để giải thích sai lệch tải cao. Chỉ cập nhật kết luận kiểm chứng khi
+có log tương ứng; lưu đầy đủ cấu hình và phiên bản mã.}
+
+\subsection{Điểm nghẽn AS-IS}
+\resulttable{tab_asis_hourly.tex}{M/M/c tham chiếu theo giờ với hai kênh và $E[S]=9$ phút}{r2:hourly}
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.89\linewidth]{figures/fig_wq_by_hour.png}
+\caption{Thời gian chờ theo giờ từ phân tích hiện có; đối chiếu chú giải để phân biệt phương án.}
+\source{\texttt{analysis/run\_analysis.py}; dữ liệu mô phỏng/giả định của dự án}
+\end{figure}
+Theo công thức tham chiếu, khung 09:00--10:00 có $\lambda=12$ yêu cầu/giờ,
+$\rho=0.90$ và $E[W_q]\approx38.37$ phút. Trong khi đó, mô phỏng AS-IS toàn
+bộ ngày cho thời gian chờ trung bình 9.50 phút và tỷ lệ vượt 15 phút là
+23.09\%. Hai giá trị trung bình này khác phạm vi tổng hợp và giả định;
+không dùng chúng như một cặp kiểm chứng trực tiếp.
+
+Một điểm đáng chú ý là tỷ lệ sử dụng gộp cả ngày chỉ khoảng 63.2\% nhưng
+vẫn có hàng chờ dài. Mức trung bình theo ngày che khuất tải cao theo giờ
+và sự biến thiên thời gian phục vụ. Vì vậy, chẩn đoán phải xét phân bố chờ
+và giờ cao điểm, thay vì chỉ dựa vào công suất trung bình.
+\todo{2}{Chốt bảng tham số, kết quả A0 và giới hạn đo với role 3. Nếu sinh lại
+kết quả, ghi ngày chạy/commit và chỉ ra các bảng, hình, đoạn số liệu cần đổi.}

@@ -1,0 +1,150 @@
+% !TeX root = _main.tex
+% ROLE 1 -- BOI CANH, HE THONG DICH VU, QUY TRINH AS-IS (muc 1--4).
+% Nguoi nhan: nhom tu dien. Muc tieu: 4--6 trang noi dung chinh.
+% DUOC SUA: file nay, figures/r1_*; nhan \label bat dau bang r1:.
+% KHONG SUA: role_2.tex, role_3.tex, _main.tex, _content.tex, analysis/.
+% DAU VAO: rubric, PDF Checkpoint 2, CheckPoint1/sections, figures/framework_cp1.png.
+% BAN GIAO: pham vi tram do Wq, Resource Map, BPMN AS-IS, nguyen nhan -> bien do.
+% HOAN THANH KHI: co BPMN dung ky phap, nguon/nhan AI, khong con TODO role 1.
+
+\section{Bài toán và phạm vi nghiên cứu}
+\label{r1:scope}
+\subsection{Vấn đề dịch vụ và câu hỏi phân tích}
+Dự án xét dịch vụ tiếp nhận triệu chứng trực tuyến, hỗ trợ tổng hợp thông tin,
+nhân viên y tế xem xét và hướng dẫn đặt lịch khám khi phù hợp. Báo cáo
+Checkpoint 2 đã mô tả hành trình từ khai báo đến xác nhận lịch và chỉ ra điểm
+chờ khi hồ sơ được chuyển cho nhân viên y tế~\cite{checkpoint2}.
+Báo cáo cuối kỳ tập trung vào một bài toán: thời gian chờ tại trạm tiếp nhận,
+phân loại yêu cầu tư vấn và cách phân bổ nhân lực theo khung giờ.
+
+\textbf{Câu hỏi phân tích.} Trong cùng một cấu hình nhu cầu giả định, thay đổi
+số điều dưỡng theo giờ và giảm thời gian xử lý hồ sơ có thể giảm thời gian
+chờ đến mức nào, với chi phí nhân lực và rủi ro vận hành nào?
+Giá trị kỳ vọng là phản hồi kịp thời hơn cho người dùng và sử dụng nguồn lực
+phù hợp với thời điểm phát sinh nhu cầu. Kết quả được đánh giá bằng mô phỏng;
+chưa phải kết quả triển khai tại cơ sở y tế.
+
+\subsection{Ranh giới hệ thống và ranh giới phép đo}
+\begin{table}[htbp]\centering\small
+\caption{Phạm vi dịch vụ và phạm vi mô hình định lượng}\label{r1:boundary}
+\begin{tabularx}{\linewidth}{@{}p{32mm}Y@{}}
+\toprule
+Thành phần & Mô tả \\
+\midrule
+Người sử dụng & Người bệnh hoặc người nhà được ủy quyền khai báo triệu chứng. \\
+Tác nhân cung cấp & Điều dưỡng, bác sĩ, nhân viên tiếp nhận và đơn vị vận hành nền tảng. \\
+Trigger dịch vụ & Hệ thống nhận mô tả triệu chứng qua ứng dụng. \\
+Outcome dịch vụ & Hướng dẫn đã được nhân viên y tế duyệt; xác nhận lịch nếu cần khám và có chỗ. \\
+Đầu vào mô hình & Hồ sơ sẵn sàng vào hàng đợi tại trạm điều dưỡng. \\
+Đầu ra mô hình & Điều dưỡng hoàn tất xử lý tại trạm; chưa bao gồm toàn bộ thời gian tới khi có lịch khám. \\
+Ngoài mô hình & Chẩn đoán, điều trị, thanh toán, công suất bác sĩ và lịch khám phía sau; chất lượng phân loại của AI. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Ứng dụng có thể tiếp nhận thông tin ngoài giờ, nhưng mô phỏng hiện tại chỉ
+sinh yêu cầu trong khoảng 07:00--19:00. Việc quy đổi yêu cầu ngoài giờ thành
+hàng đợi đầu ngày chưa được mô hình hóa. Nhóm ưu tiên P1 là nhãn của mô hình;
+không đồng nhất nó với quy trình xử lý cấp cứu trong toàn bộ dịch vụ.
+\todo{1}{Chốt điểm bắt đầu/kết thúc của tác vụ điều dưỡng trên BPMN để khớp với
+\texttt{t\_arrival}, \texttt{t\_start}, \texttt{t\_end} ở role 2.}
+
+\section{Mô hình hệ thống dịch vụ}
+\label{r1:system}
+Báo cáo dùng mô hình hệ thống dịch vụ làm khung chủ đạo để liên kết tác nhân,
+nguồn lực, hoạt động, thông tin, quy tắc và kết quả. Góc nhìn đồng tạo giá trị
+được dùng để giải thích quan hệ giữa các bên trong cùng khung, theo yêu cầu
+một khung phân tích chính của rubric~\cite{rubric}.
+\begin{table}[htbp]\centering\small
+\caption{Các thành phần của hệ thống và liên hệ với bài toán chờ}
+\begin{tabularx}{\linewidth}{@{}p{30mm}Y Y@{}}
+\toprule
+Thành phần & Biểu hiện trong dịch vụ & Liên hệ với phân tích \\
+\midrule
+Con người & Người khai báo, điều dưỡng, bác sĩ, tiếp nhận & Số kênh điều dưỡng hoạt động $c_t$. \\
+Hoạt động & Thu thập, kiểm tra, phân loại, chuyển tiếp & Thời gian xử lý $S$ và điểm bàn giao. \\
+Thông tin & Triệu chứng, tiền sử, mức ưu tiên, trạng thái & Tính đầy đủ có thể làm thay đổi $S$; chưa đo tỷ lệ lỗi. \\
+Công nghệ & Biểu mẫu, công cụ tổng hợp, hàng đợi, thông báo & Hỗ trợ nhân viên tiếp nhận thông tin; không suy ra độ chính xác lâm sàng. \\
+Quy tắc & Thứ tự xử lý, phân quyền, ngưỡng cảnh báo & FCFS hoặc ưu tiên không chen ngang; mục tiêu thời gian chờ. \\
+Kết quả & Hồ sơ được xử lý và chuyển đúng bước & $W_q$, P90, tỷ lệ vượt ngưỡng và chi phí quy ước. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\todo{1}{Bổ sung nguồn học thuật đã đọc cho khung được chọn; dùng thuật ngữ nhất
+quán với bài giảng và sơ đồ. Gửi khóa trích dẫn cho người ghép bài.}
+
+\section{Bản đồ nguồn lực và cơ chế đồng tạo giá trị}
+\label{r1:resources}
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.94\linewidth,height=0.48\textheight,keepaspectratio]{figures/framework_cp1.png}
+\caption{Bản đồ nguồn lực kế thừa từ Checkpoint 1, cần rà soát theo phạm vi cuối kỳ.}
+\label{r1:resource-map}
+\source{hình \texttt{framework\_cp1.png} có sẵn trong dự án; lịch sử hỗ trợ AI cần nhóm xác nhận}
+\end{figure}
+Người sử dụng cung cấp thông tin và phối hợp trả lời; nhân viên y tế đóng góp
+tri thức và thời gian; cơ sở khám cung cấp năng lực tiếp nhận; đơn vị vận hành
+cung cấp hạ tầng và cơ chế phối hợp. Giá trị xuất hiện khi các nguồn lực được
+kết nối thành một yêu cầu có đủ thông tin để xử lý và chuyển tiếp.
+
+Chậm phản hồi có thể phát sinh khi thời gian điều dưỡng không khớp nhu cầu
+theo giờ. Thông tin thiếu làm tăng công việc bổ sung và có thể kéo dài xử lý.
+Hai cơ chế này tương ứng với hai biến quyết định trong mô hình: $c_t$ và
+$E[S]$. Tuy nhiên, mức giảm $E[S]$ nhờ công cụ hỗ trợ hiện là giả định;
+bản đồ nguồn lực tự nó không chứng minh hiệu quả của công cụ.
+\todo{1}{Hoàn thiện Resource Map: đánh dấu ranh giới, 3--5 nhóm nguồn lực,
+mũi tên trao đổi, chú giải và lợi ích/chi phí/rủi ro. Nếu vẽ lại, lưu
+\texttt{figures/r1\_resource\_map.pdf} và thay hình trên.}
+
+\section{Quy trình hiện tại và chẩn đoán điểm nghẽn}
+\label{r1:asis}
+\subsection{Journey và Service Blueprint AS-IS}
+Hành trình tham chiếu gồm khai báo triệu chứng, hỏi bổ sung, chờ duyệt,
+nhận hướng dẫn, chọn lịch và xác nhận lịch~\cite{checkpoint2}. Hai điểm cần
+theo dõi là thiếu thông tin khi khai báo và không biết tiến độ trong lúc chờ.
+Blueprint cần nối các hành động này với xử lý phía sau, thay vì chỉ liệt kê
+các màn hình ứng dụng.
+\begin{table}[htbp]\centering\small
+\caption{Tóm tắt các lớp của blueprint tại điểm chờ}
+\begin{tabularx}{\linewidth}{@{}p{36mm}Y@{}}
+\toprule
+Lớp & Nội dung ở bước chuyển hồ sơ cho điều dưỡng \\
+\midrule
+Evidence & Mã hồ sơ, trạng thái tiếp nhận và kết quả phản hồi. \\
+Customer actions & Gửi hồ sơ, theo dõi, cung cấp thông tin bổ sung. \\
+Frontstage & Hiển thị trạng thái; nhân viên tương tác khi cần bổ sung. \\
+Backstage & Kiểm tra hồ sơ, xếp hàng, điều dưỡng tiếp nhận và chuyển tiếp. \\
+Support processes & Lịch trực, phân quyền, lưu dấu thời gian và thông báo. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\todo{1}{Bổ sung hoặc chuyển Journey/Blueprint từ PDF mẫu; chỉ rõ line of
+interaction, line of visibility và ít nhất hai pain points. Không gọi bảng
+tóm tắt này là sơ đồ blueprint hoàn chỉnh.}
+
+\subsection{BPMN AS-IS và ngoại lệ}
+\IfFileExists{figures/r1_bpmn_asis.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{figures/r1_bpmn_asis.pdf}
+\caption{BPMN AS-IS của quy trình tiếp nhận và phân loại.}\label{r1:bpmn}
+\end{figure}
+}{\placeholder{BPMN AS-IS -- role 1}{Xuất sơ đồ thành
+\texttt{figures/r1\_bpmn\_asis.pdf}; báo cáo sẽ tự chèn khi file tồn tại.
+Cần có start/end, lane/pool, task, gateway khi có rẽ nhánh, nhánh thiếu
+thông tin và điểm bàn giao vào hàng đợi.}}
+\todo{1}{Đối chiếu \texttt{assests/diagram.bpmn} và các sơ đồ checkpoint;
+chọn đúng AS-IS. Kiểm tra sequence flow trong pool, message flow giữa pool,
+nhánh ngoại lệ và ghi nguồn/AI ngay dưới sơ đồ.}
+
+\subsection{Từ điểm nghẽn đến biến đo}
+\begin{table}[htbp]\centering\small
+\caption{Các giả thuyết chẩn đoán cần đối chiếu với dữ liệu}
+\begin{tabularx}{\linewidth}{@{}Y Y Y@{}}
+\toprule
+Điểm trên quy trình & Cơ chế giả định & Biến kiểm tra \\
+\midrule
+Chờ điều dưỡng nhận hồ sơ & Công suất cố định trong khi nhu cầu biến thiên & $\lambda_t$, $c_t$, $\rho_t$, $W_q$. \\
+Yêu cầu bổ sung thông tin & Thiếu dữ liệu làm kéo dài thao tác & $E[S]$, CV; mô hình chưa tách riêng vòng rework. \\
+Hồ sơ ưu tiên chờ cùng hàng & FCFS không phản ánh mức ưu tiên & $W_q$ theo P1/P2/P3. \\
+Chuyển tiếp sang lịch khám & Có thể có điểm nghẽn sau trạm điều dưỡng & Cần dữ liệu riêng; ngoài mô phỏng hiện tại. \\
+\bottomrule
+\end{tabularx}
+\end{table}

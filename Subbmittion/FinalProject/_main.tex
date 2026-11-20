@@ -1,0 +1,96 @@
+% !TeX root = _main.tex
+% FILE DIEU PHOI 1/2: preamble, trang bia, muc luc, cau hinh build.
+% Chi nguoi ghep bai sua file nay. Noi dung: role_1.tex, role_2.tex, role_3.tex.
+\documentclass[12pt,a4paper]{article}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[utf8]{vietnam}
+  \usepackage{mathptmx}
+\else
+  \usepackage{fontspec}
+  \setmainfont{texgyretermes}[Extension=.otf,UprightFont=*-regular,
+    BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+  \setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,
+    BoldFont=*-bold,ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+  \setmonofont{lmmono10-regular.otf}[ItalicFont=lmmono10-italic.otf]
+\fi
+\usepackage[left=30mm,right=20mm,top=20mm,bottom=20mm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,booktabs,tabularx,array,longtable}
+\usepackage[table]{xcolor}
+\usepackage{setspace,indentfirst,enumitem}
+\usepackage{float,placeins}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage[font=small,labelfont=bf,justification=centering]{caption}
+\usepackage[hidelinks,unicode]{hyperref}
+\setstretch{1.3}
+\setlength{\emergencystretch}{2em}
+\setlist{nosep,leftmargin=*}
+\renewcommand{\arraystretch}{1.18}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\refname}{Tài liệu tham khảo}
+\renewcommand{\appendixname}{Phụ lục}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\hypersetup{pdftitle={Phân tích thời gian chờ tại trạm tiếp nhận và phân loại yêu cầu tư vấn trực tuyến},pdfauthor={Nhóm 8 -- INT3501}}
+
+% De hien TODO trong ban lam viec; doi thanh \draftfalse khi cac TODO da xu ly.
+% Tat hien thi KHONG thay the viec hoan thanh cong viec.
+\newif\ifdraft
+\drafttrue
+\newcommand{\todo}[2]{\ifdraft\par\smallskip\noindent
+  \begingroup\color{red!65!black}\textbf{[TODO -- Role #1]} #2\par\endgroup\smallskip\fi}
+\newcommand{\source}[1]{\par\smallskip{\footnotesize\textit{Nguồn: #1.}\par}}
+\newcommand{\placeholder}[2]{\begin{center}\fbox{\parbox{0.91\linewidth}{%
+  \textbf{Cần bổ sung: #1}\par #2}}\end{center}}
+% Bang da sinh tu analysis/: giu so lieu goc, tu dong vua kho giay.
+\newcommand{\resulttable}[3]{\begin{table}[htbp]\centering
+  \caption{#2}\label{#3}
+  \resizebox{\linewidth}{!}{\input{analysis/tables/#1}}
+  \source{\texttt{analysis/tables/\detokenize{#1}}; dữ liệu mô phỏng có sẵn trong dự án}
+  \end{table}}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[line width=1.5pt] ($(current page.north west)+(25mm,-25mm)$)
+    rectangle ($(current page.south east)+(-12mm,25mm)$);
+\end{tikzpicture}
+\begin{center}
+\textbf{ĐẠI HỌC QUỐC GIA HÀ NỘI}\\
+\textbf{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ}\\
+\textbf{KHOA CÔNG NGHỆ THÔNG TIN}
+\vspace{14mm}
+
+\includegraphics[width=0.25\linewidth]{figures/uet.png}
+\vspace{12mm}
+
+{\large\bfseries BÁO CÁO CUỐI KỲ}\\[6mm]
+{\Large\bfseries KHOA HỌC DỊCH VỤ}\\[8mm]
+{\large\bfseries Phân tích thời gian chờ và phân bổ nhân lực\\
+tại trạm tiếp nhận, phân loại yêu cầu tư vấn trực tuyến}
+\end{center}
+\vspace{10mm}
+\noindent\begin{tabular}{@{}lll@{}}
+Mã học phần: & INT3501 1 & \\
+Nhóm: & 8 & \\
+Sinh viên thực hiện: & Phạm Tuấn Anh & MSSV: 23020010 \\
+ & Đoàn Văn Tuyền & MSSV: 23020151 \\
+ & Phạm Nam Khánh & MSSV: 23020088 \\
+Giảng viên môn học: & \multicolumn{2}{l}{TS. Nguyễn Thị Cẩm Vân} \\
+\end{tabular}
+\vfill
+\begin{center}\textbf{HÀ NỘI -- 2026}\end{center}
+\vspace*{12mm}
+\end{titlepage}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\input{_content}
+\end{document}

@@ -1,0 +1,152 @@
+% !TeX root = _main.tex
+% ROLE 3 -- TO-BE, SO SANH, DO NHAY, KET LUAN (muc 7--9).
+% Nguoi nhan: nhom tu dien. Muc tieu: 4--6 trang noi dung chinh.
+% DUOC SUA: file nay, figures/r3_*; nhan \label bat dau bang r3:.
+% KHONG SUA: role_1.tex, role_2.tex, cac file dieu phoi; thong nhat voi role 2
+% truoc khi thay du lieu analysis/. Khong sua tay bang sinh tu Python.
+% DAU VAO: analysis/tables/tab_{comparison,shift_plan,sensitivity,risk}.tex.
+% BAN GIAO: TO-BE, bang so sanh cung chi so, danh doi, ket luan co dieu kien.
+% HOAN THANH KHI: so lieu khop ban role 2 chot, gioi han va AI duoc khai bao.
+
+\section{Phương án cải tiến và phân bổ nhân lực}
+\label{r3:tobe}
+\subsection{Ba phương án đối chứng}
+\begin{table}[htbp]\centering\small
+\caption{Thiết kế các phương án trong so sánh mô phỏng}\label{r3:scenarios}
+\begin{tabularx}{\linewidth}{@{}p{28mm}Y Y Y@{}}
+\toprule
+Thành phần & A0: AS-IS & A1: tăng nhân lực & A2: TO-BE \\
+\midrule
+Số kênh & Hai kênh cả ngày & Thêm một kênh ở năm giờ cao tải & Thêm một kênh ở 09:00--10:00 \\
+$E[S]$ & 9 phút & 9 phút & 6 phút (giả định) \\
+Kỷ luật hàng đợi & FCFS & FCFS & Ưu tiên không chen ngang \\
+Giờ điều dưỡng/ngày & 24 & 29 & 25 \\
+Mục đích đối chứng & Mốc hiện trạng & Tác động của tăng công suất & Tác động kết hợp nhiều thay đổi \\
+\bottomrule
+\end{tabularx}
+\end{table}
+A2 giả định công cụ chuẩn bị bản tổng hợp giúp điều dưỡng giảm thời gian
+xử lý và áp dụng thứ tự ưu tiên trong hàng chờ. Nhân viên y tế vẫn chịu
+trách nhiệm kiểm tra và xử lý hồ sơ. So sánh A0 với A2 không tách riêng hiệu
+quả của công cụ hỗ trợ, tăng nhân lực và chính sách ưu tiên vì cả ba cùng đổi.
+\todo{3}{Nếu muốn kết luận đóng góp riêng của từng cơ chế, yêu cầu role 2 bổ
+sung các kịch bản chỉ giảm thời gian xử lý, chỉ đổi ưu tiên và chỉ đổi lịch.
+Không gọi chênh lệch A0--A2 là tác động riêng của AI.}
+
+\subsection{Bài toán lựa chọn công suất theo giờ}
+Với $k=120\,000$ đồng/giờ điều dưỡng và mỗi khung dài một giờ, bài toán
+trong mã chọn số kênh $c_t$ nhỏ nhất thỏa các ràng buộc M/M/c:
+\begin{align}
+\min_{c_1,\ldots,c_{12}}\quad & k\sum_{t=1}^{12}c_t,\\
+\text{với}\quad &c_t\in\{1,2,3,4,5\},\quad \rho_t<1,\nonumber\\
+&E[W_{q,t}]\leq10\text{ phút},\quad P(W_{q,t}>15)\leq0.05.\nonumber
+\end{align}
+Do chi phí cộng theo giờ và chưa có ràng buộc liên kết ca, có thể duyệt từ
+một đến năm kênh, chọn mức khả thi nhỏ nhất cho từng giờ. Tính tối ưu này
+chỉ áp dụng trong mô hình tách theo giờ. Đây là kế hoạch công suất, chưa
+phải lịch phân ca nhân sự cụ thể có nghỉ giữa ca, giới hạn giờ làm hoặc
+năng lực chuyên môn. Mục tiêu thời gian chờ P1 được đánh giá sau bằng mô
+phỏng; nó chưa nằm trong hàm kiểm tra khả thi của bộ tối ưu.
+\resulttable{tab_shift_plan.tex}{Kế hoạch số kênh theo giờ của ba phương án}{r3:staffing}
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.88\linewidth]{figures/fig_wq_vs_c.png}
+\caption{Phân tích thời gian chờ theo số kênh trong mô hình tham chiếu.}
+\source{\texttt{analysis/run\_analysis.py}; tham số giả định, chưa phải đo thực tế}
+\end{figure}
+
+\subsection{Thay đổi quy trình và điều kiện áp dụng}
+Ở TO-BE, hồ sơ được chuẩn bị trước để điều dưỡng kiểm tra, hàng chờ thể
+hiện mức ưu tiên, và công suất tăng ở giờ có nhu cầu lớn. Cần ghi dấu thời
+gian tiếp nhận, bắt đầu xử lý, kết thúc và chuyển tiếp để kiểm tra tác động
+của thay đổi. Các nhánh xử lý thiếu dữ liệu và trường hợp khẩn cần giữ được
+trách nhiệm rõ ràng của nhân viên y tế như phạm vi ở Mục~\ref{r1:scope}.
+\todo{3}{Hoàn thiện bảng quyết định hoặc BPMN TO-BE trong
+\path{figures/r3_bpmn_tobe.pdf}. Đối chiếu từng thay đổi với AS-IS của
+role 1, ghi ai thực hiện, tài nguyên cần thêm và điều kiện quay lại quy trình cũ.}
+\IfFileExists{figures/r3_bpmn_tobe.pdf}{%
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{figures/r3_bpmn_tobe.pdf}
+\caption{Quy trình TO-BE; nhóm cần bổ sung nguồn và khai báo hỗ trợ AI.}
+\end{figure}}{}
+\FloatBarrier
+
+\section{Đánh giá, độ nhạy và giới hạn}
+\label{r3:evaluation}
+\subsection{So sánh trên cùng bộ chỉ số}
+Ba phương án chính dùng cùng cấu hình dòng đến, số ngày và seed;
+$E[S]$, công suất và quy tắc ưu tiên thay đổi theo Bảng~\ref{r3:scenarios}.
+Các kết quả dưới đây được lấy từ đầu ra hiện có, cần được role 2 xác nhận
+sau khi xử lý các điểm kiểm chứng ở Mục~\ref{r2:diagnosis}.
+\resulttable{tab_comparison.tex}{Kết quả mô phỏng chính: 20 ngày, CV = 1.25}{r3:comparison}
+Thời gian chờ trung bình giảm từ 9.50 phút ở A0 xuống 3.57 phút ở A1 và
+1.75 phút ở A2. Tỷ lệ chờ quá 15 phút tương ứng là 23.09\%, 7.30\% và
+3.18\%. Trong lần chạy này, A2 đạt mục tiêu tỷ lệ vượt ngưỡng xét trên toàn
+bộ lượt; kết quả gộp không tự động chứng minh mục tiêu đạt ở mọi giờ.
+
+Chi phí trực quy ước của A2 là 3.00 triệu đồng/ngày, cao hơn A0
+0.12 triệu đồng và thấp hơn A1 0.48 triệu đồng. Khoản này chưa gồm chi phí
+công nghệ, kiểm tra nội dung, đào tạo hoặc làm thêm, nên chưa đủ để kết luận
+lợi ích kinh tế ròng. Dữ liệu mô phỏng không đo chất lượng chuyên môn hay
+trải nghiệm thực của người bệnh.
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.89\linewidth]{figures/fig_priority.png}
+\caption{Thời gian chờ theo nhóm ưu tiên trong mô phỏng các phương án.}
+\source{\texttt{analysis/run\_analysis.py}; nhãn ưu tiên là giả định đầu vào}
+\end{figure}
+\FloatBarrier
+
+\subsection{Độ nhạy theo nhu cầu}
+Phân tích độ nhạy sử dụng 30 ngày, seed \texttt{20260124}, giữ nguyên kế
+hoạch công suất và nhân nhu cầu với 0.8, 1.0, 1.2 hoặc 1.4. Do khác seed
+và thời lượng, dòng hệ số 1.0 không trùng số của so sánh chính; không ghép
+hai lần chạy như cùng một mẫu quan sát.
+\begin{figure}[htbp]\centering
+\includegraphics[width=0.91\linewidth]{figures/fig_sensitivity.png}
+\caption{Độ nhạy khi thay đổi nhu cầu trong bộ mô phỏng riêng.}
+\source{\texttt{analysis/run\_analysis.py}; 30 ngày mô phỏng mỗi cấu hình}
+\end{figure}
+\resulttable{tab_sensitivity.tex}{Kết quả độ nhạy theo hệ số nhu cầu}{r3:sensitivity}
+Khi nhu cầu tăng 20\%, A2 có thời gian chờ trung bình 2.93 phút nhưng tỷ
+lệ vượt 15 phút tăng lên 5.58\%, vượt mục tiêu 5\%. Khi tăng 40\%, tỷ lệ
+này là 6.40\%. Điều đó cho thấy trung bình chờ thấp vẫn có thể đi kèm vi
+phạm mục tiêu ở phần đuôi phân phối. Kế hoạch công suất cần được đánh giá
+lại khi nhu cầu đổi, thay vì giữ nguyên phương án đã chọn cho tải cơ sở.
+\FloatBarrier
+
+\subsection{Rủi ro và giới hạn của kết quả}
+\resulttable{tab_risk.tex}{Các kịch bản rủi ro từ đầu ra mô phỏng hiện có}{r3:risks}
+Kịch bản thiếu một điều dưỡng mỗi giờ cho tỷ lệ vượt 15 phút là 33.38\%.
+Kịch bản thời gian xử lý chỉ giảm 15\%, còn 7.65 phút, cho tỷ lệ 10.62\%.
+Hai kịch bản dùng 30 ngày với seed riêng; các chênh lệch là kết quả thăm dò
+trong mô hình, chưa có khoảng tin cậy từ nhiều lần lặp độc lập.
+
+Các giới hạn cần giữ trong kết luận gồm:
+\begin{itemize}
+\item Tham số nhu cầu, thời gian xử lý, cơ cấu ưu tiên và chi phí đều là giả định.
+\item Kiểm chứng mô phỏng còn sai lệch lớn ở tải cao; xử lý đổi công suất
+theo giờ cần rà soát như TODO của role 2.
+\item Mô hình chưa có bỏ hàng, rework tường minh, sai phân loại và điểm nghẽn
+sau trạm điều dưỡng; bắt đầu hàng rỗng mỗi ngày có thể ảnh hưởng kết quả.
+\item A2 gộp nhiều thay đổi; chưa có cơ sở quy riêng hiệu quả cho AI hay ưu tiên.
+\item Tối ưu theo giờ chưa tạo được lịch trực cá nhân và chưa tính đầy đủ chi phí.
+\end{itemize}
+\todo{3}{Bổ sung bảng rủi ro gồm dấu hiệu phát hiện, người chịu trách nhiệm,
+hành động dự phòng và dữ liệu cần thu thập. Giữ các giới hạn chưa được xử lý
+trong bản nộp; không xóa chỉ để làm kết luận mạnh hơn.}
+
+\section{Kết luận và hướng hoàn thiện}
+\label{r3:conclusion}
+Bản phân tích hiện có cho thấy, trong bộ giả định mô phỏng, điều chỉnh
+công suất theo giờ kết hợp giảm thời gian xử lý và ưu tiên có thể giảm
+thời gian chờ so với cấu hình hai kênh cố định. Đồng thời, mức sử dụng
+trung bình cả ngày không đủ để phát hiện tắc nghẽn và thời gian chờ trung
+bình không đủ để bảo đảm tỷ lệ đáp ứng ngưỡng.
+
+A2 là phương án đáng kiểm tra tiếp trong mô hình, với điều kiện kiểm chứng
+lại bộ mô phỏng, đo thời gian xử lý thực và đánh giá lại khi nhu cầu tăng.
+Chưa có cơ sở từ kết quả hiện tại để khẳng định hiệu quả triển khai thực
+hoặc chất lượng lâm sàng. Bước tiếp theo là hoàn thiện sơ đồ quy trình,
+kiểm tra tính tái lập, bổ sung khoảng tin cậy và thay dần giả định bằng
+dữ liệu có nguồn rõ ràng.
+\todo{3}{Viết lại kết luận sau khi role 1 chốt phạm vi và role 2 chốt kết quả;
+đối chiếu từng phát biểu với bảng/hình và hoàn thiện khai báo AI cùng người ghép bài.}

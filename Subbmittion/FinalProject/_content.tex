@@ -1,0 +1,64 @@
+% !TeX root = _main.tex
+% FILE DIEU PHOI 2/2: thu tu ghep, tai lieu tham khao, phu luc chung.
+% Nguoi ghep bai quan ly file nay. KHONG viet lai noi dung cua cac role o day.
+% Role 1: muc 1--4; Role 2: muc 5--6; Role 3: muc 7--9.
+\input{role_1}
+\FloatBarrier
+\clearpage
+\input{role_2}
+\FloatBarrier
+\clearpage
+\input{role_3}
+\FloatBarrier
+\clearpage
+
+\phantomsection
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\begin{thebibliography}{9}
+\bibitem{rubric} Học phần INT3501, \textit{Hướng dẫn dự án nhóm và rubric}.
+Tài liệu nội bộ: \path{Lecture/INT3501_Huong_dan_du_an_Rubric.pdf}.
+\bibitem{checkpoint2} Nhóm 8, \textit{Báo cáo Checkpoint 2: Smart Healthcare}, 2026.
+Tệp PDF mẫu trong thư mục \texttt{CP\_Assigment/} của dự án.
+\bibitem{analysis} Nhóm 8, \textit{Mã nguồn và kết quả phân tích hàng đợi}.
+Các tệp \texttt{run\_analysis.py}, \texttt{simulate.py}, \texttt{queueing.py},
+\path{data/run_log.txt} trong \path{Subbmittion/FinalProject/analysis/}.
+\end{thebibliography}
+% Them nguon hoc thuat SAU KHI da doc/kiem chung; khong tu dien DOI/nam/tac gia.
+
+\appendix
+\section{Phân công và cách ghép báo cáo}
+\label{app:roles}
+\begin{table}[H]\centering\small
+\caption{Phạm vi làm việc song song; mỗi người nhận một role}
+\begin{tabularx}{\linewidth}{@{}p{21mm}Y Y@{}}
+\toprule
+File & Nội dung chịu trách nhiệm & Đầu ra bàn giao \\
+\midrule
+\texttt{role\_1.tex} & Bài toán, khung hệ thống, Resource Map, Journey/Blueprint và BPMN AS-IS. & Mục 1--4, sơ đồ AS-IS, liên hệ điểm nghẽn với biến đo. \\
+\texttt{role\_2.tex} & Dữ liệu, giả định, hàng đợi, mô phỏng, kiểm chứng và chẩn đoán AS-IS. & Mục 5--6, bảng tham số, kết quả và giới hạn kiểm chứng. \\
+\texttt{role\_3.tex} & TO-BE, phân bổ nhân lực, so sánh, độ nhạy và kết luận. & Mục 7--9, đánh đổi, kế hoạch áp dụng, kết luận có điều kiện. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Tên người nhận từng role được nhóm điền trong \texttt{README.md}.
+Người ghép bài quản lý \texttt{\_main.tex}, \texttt{\_content.tex} và nguồn trích dẫn.
+Nội dung chính hướng tới 12--20 trang theo rubric; các TODO thể hiện phần còn phải hoàn thiện.
+
+\section{Khai báo sử dụng AI}
+\label{app:ai}
+Bản khởi tạo LaTeX này sử dụng Codex để tổ chức ba role, soạn nội dung nháp từ
+tài liệu dự án, ghép bảng/hình có sẵn và kiểm tra biên dịch. Việc hỗ trợ ở lượt
+này không bao gồm chạy lại hay sửa mã mô phỏng. Nhóm cần hoàn thiện lịch sử
+sử dụng AI của các tài sản có trước và tự kiểm tra nội dung trước khi nộp.
+\begin{longtable}{@{}p{30mm}p{44mm}p{76mm}@{}}
+\toprule
+Thành phần & Phạm vi AI hỗ trợ đã biết & Cách kiểm chứng / việc cần làm \\
+\midrule\endhead
+Văn bản, bố cục & Codex tạo khung và bản nháp trong ba role. & Mỗi người rà soát phần mình; đối chiếu rubric, PDF checkpoint và kết quả gốc. \\
+Ảnh và sơ đồ & Tái sử dụng logo và Resource Map có sẵn; chưa xác minh lịch sử tạo ảnh. & Role 1 ghi công cụ và mức hỗ trợ cho từng sơ đồ; kiểm tra ký pháp, nhãn và nguồn. \\
+Bảng và biểu đồ & Codex ghép đầu ra hiện có, diễn giải kết quả mô phỏng. & Role 2/3 đối chiếu CSV, log và tham số; bổ sung lịch sử tạo mã/hình trước lượt này. \\
+Công thức và mô hình & Codex viết phần diễn giải mô hình theo mã nguồn hiện có. & Role 2 đối chiếu tài liệu gốc, đơn vị, giả định và kiểm chứng tải cao. \\
+Mã nguồn mô phỏng & Không sửa trong lượt tạo khung LaTeX; lịch sử hỗ trợ trước đó chưa xác minh. & Người phụ trách mã khai báo công cụ, phạm vi và kết quả chạy kiểm tra. \\
+Trình chiếu/demo & Chưa thuộc phạm vi bản khởi tạo này. & Điền khi nhóm tạo sản phẩm tương ứng. \\
+\bottomrule
+\end{longtable}
