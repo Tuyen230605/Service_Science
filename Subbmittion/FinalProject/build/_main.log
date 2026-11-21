@@ -886,199 +886,59 @@ Package hyperref Info: Option `pageanchor' set `true' on input line 109.
 \tf@toc=\write5
 \openout5 = `_main.toc'.
 
- [2] (_content (role_1
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 Tầm
- []
+ [2] (_content (role_1 [1
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-\TU/texgyretermes(0)/m/n/10.95 quyết
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 BT1 – Lịch
- []
-
-
-Underfull \hbox (badness 1072) in paragraph at lines 50--50
-\TU/texgyretermes(0)/m/n/10.95 nhân viên bơm
- []
-
-
-Underfull \hbox (badness 2050) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 Vận hành
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 Chiến
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-\TU/texgyretermes(0)/m/n/10.95 thuật
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 BT3 – Chiến
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 Chiến
- []
-
-
-Underfull \hbox (badness 1997) in paragraph at lines 50--50
-\TU/texgyretermes(0)/m/n/10.95 lược (1–3
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|\TU/texgyretermes(0)/m/n/10.95 Chiến
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 50--50
-[]|[]\TU/texgyretermes(0)/m/n/10.95 7.2[],
- []
-
-[1
-
-] [2]
-Underfull \hbox (badness 10000) in paragraph at lines 157--157
-[]|\TU/texgyretermes(0)/m/n/10.95 Khách Gen
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 157--157
-\TU/texgyretermes(0)/m/n/10.95 Z (sinh viên,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 157--157
-[]|\TU/texgyretermes(0)/m/n/10.95 Khách Gen
- []
-
-
-Underfull \hbox (badness 3657) in paragraph at lines 157--157
+]
+Underfull \hbox (badness 3657) in paragraph at lines 144--144
 []|\TU/texgyretermes(0)/m/n/10.95 Đầu mối cung
  []
 
-[3] [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 275--275
-[]|\TU/texgyretermes(0)/m/n/10.95 KB-B,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 275--275
-[]|\TU/texgyretermes(0)/m/n/10.95 Công nghệ
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 275--275
-[]|\TU/texgyretermes(0)/m/n/10.95 Môi trường
- []
-
-) [6] [7] (role_2
-Overfull \hbox (2.71843pt too wide) in paragraph at lines 19--27
-\TU/texgyretermes(0)/m/n/12 Với khoảng 5,6 triệu xe máy và mức tiêu thụ 0,5 lít
-/xe/ngày, xe máy dùng khoảng 84000 m$[]$/tháng,
- []
-
-
-Overfull \hbox (2.99971pt too wide) in paragraph at lines 47--47
-[]|\TU/texgyretermes(0)/m/n/10.95 Loại| 
- []
-
-
-Underfull \hbox (badness 1354) in paragraph at lines 47--47
-[]|\TU/texgyretermes(0)/m/n/10.95 Lượng xăng bán / cửa
- []
-
-
-Underfull \hbox (badness 6236) in paragraph at lines 47--47
+[2] [3] [4]) [5] (role_2
+Underfull \hbox (badness 2818) in paragraph at lines 45--45
 []|\TU/texgyretermes(0)/m/n/10.95 112–225 xe/giờ, đỉnh
  []
 
 
-Underfull \hbox (badness 1515) in paragraph at lines 47--47
-[]|\TU/texgyretermes(0)/m/n/10.95 xe máy 1,5; ô tô 4,0
+Underfull \hbox (badness 10000) in paragraph at lines 45--45
+\TU/texgyretermes(0)/m/n/10.95 phút/xe (bình quân
  []
 
 
-Underfull \hbox (badness 1817) in paragraph at lines 47--47
-[]|\TU/texgyretermes(0)/m/n/10.95 giảm 20% (bình quân
- []
-
-
-Underfull \hbox (badness 6658) in paragraph at lines 47--47
+Underfull \hbox (badness 4954) in paragraph at lines 45--45
 []|$\OML/cmm/m/it/10.95 E\OT1/cmr/m/n/10.95 [\OML/cmm/m/it/10.95 W[]\OT1/cmr/m/
 n/10.95 ] \OMS/cmsy/m/n/10.95 ^^T \OT1/cmr/m/n/10.95 2$ \TU/texgyretermes(0)/m/
 n/10.95 phút;
  []
 
-[8
+[6
 
 ]
 File: figures/fig_arrivals.png Graphic file (type bmp)
 <figures/fig_arrivals.png>
- (analysis/tables/tab_lambda.tex) [9] [10]
+ (analysis/tables/tab_lambda.tex) [7] [8]
 (analysis/tables/tab_validation.tex) (analysis/tables/tab_asis_hourly.tex)
 File: figures/fig_wq_by_hour.png Graphic file (type bmp)
 <figures/fig_wq_by_hour.png>
 
-[11] [12] (analysis/tables/tab_ext_cover_matrix.tex)
-(analysis/tables/tab_ext_location.tex)
-File: figures/r2_location.png Graphic file (type bmp)
-<figures/r2_location.png>
- [13]
-(analysis/tables/tab_ext_location_sens.tex) [14]
-(analysis/tables/tab_ext_ml_acc.tex)
-File: figures/r2_forecast.png Graphic file (type bmp)
-<figures/r2_forecast.png>
-) [15] [16] (role_3
-Underfull \hbox (badness 10000) in paragraph at lines 24--24
+[9]) [10] (role_3
+Underfull \hbox (badness 10000) in paragraph at lines 22--22
 []|\TU/texgyretermes(0)/m/n/10.95 Giờ nhân
  []
 
 (analysis/tables/tab_shift_plan.tex)
 File: figures/fig_wq_vs_c.png Graphic file (type bmp)
 <figures/fig_wq_vs_c.png>
- [17
+ [11
 
-] [18]
-(analysis/tables/tab_comparison.tex)
+] (analysis/tables/tab_comparison.tex)
+[12]
 File: figures/fig_by_class.png Graphic file (type bmp)
 <figures/fig_by_class.png>
- [19] (analysis/tables/tab_sensitivity.tex)
+ [13] (analysis/tables/tab_sensitivity.tex)
 File: figures/fig_sensitivity.png Graphic file (type bmp)
 <figures/fig_sensitivity.png>
-(analysis/tables/tab_risk.tex) [20] [21] (analysis/tables/tab_ext_segments.tex)
-(analysis/tables/tab_ext_scenarios.tex) [22]
-File: figures/r3_scenarios.png Graphic file (type bmp)
-<figures/r3_scenarios.png>
-
-(analysis/tables/tab_ext_regret.tex) (analysis/tables/tab_ext_clv.tex) [23]
-[24] (analysis/tables/tab_ext_ml_staff.tex)
-Underfull \hbox (badness 2547) in paragraph at lines 247--247
-[]|\TU/texgyretermes(0)/m/n/10.95 Dự báo lượt xe
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 247--247
-[]|\TU/texgyretermes(0)/m/n/10.95 Ước lượng độ
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 247--247
-[]|\TU/texgyretermes(0)/m/n/10.95 Phát hiện bất
- []
-
-[25]) [26]
+ (analysis/tables/tab_risk.tex)
+[14] [15] [16]) [17]
 Underfull \hbox (badness 10000) in paragraph at lines 21--24
 []\TU/texgyretermes(0)/m/n/12 Nhóm 8, \TU/texgyretermes(0)/m/it/12 Mã nguồn và 
 kết quả phân tích\TU/texgyretermes(0)/m/n/12 . Các tệp \TU/lmmono10-regular.otf
@@ -1093,26 +953,26 @@ n/12 , \TU/lmmono10-regular.otf(0)/m/n/12 simulate.py\TU/texgyretermes(0)/m/n/1
 và $[] [] [] [] [][] [] [] [] [] [] [] [] []$
  []
 
-[27
+[18
 
-] [28]
-Underfull \hbox (badness 10000) in paragraph at lines 87--87
+]
+Underfull \hbox (badness 10000) in paragraph at lines 71--71
 \TU/texgyretermes(0)/m/n/12 cụ tìm kiếm web ngày
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 89--89
+Underfull \hbox (badness 10000) in paragraph at lines 73--73
 []|\TU/texgyretermes(0)/m/n/12 Claude Code viết lại
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 89--89
+Underfull \hbox (badness 10000) in paragraph at lines 73--73
 \TU/lmmono10-regular.otf(0)/m/n/12 run_analysis.py\TU/texgyretermes(0)/m/n/12 ,
 
  []
 
-[29]) [30] (_main.aux)
+[19]) [20] (_main.aux)
 Package rerunfilecheck Info: File `_main.out' has not changed.
-(rerunfilecheck)             Checksum: 8BD02AB4216F8140908AD9E7F0B4F5ED;10404.
+(rerunfilecheck)             Checksum: 93FD998C35256721976F1E288AA98186;8451.
  )
-Output written on _main.xdv (33 pages, 617136 bytes).
+Output written on _main.xdv (23 pages, 410284 bytes).

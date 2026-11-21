@@ -1,54 +1,49 @@
 % !TeX root = _main.tex
-% ROLE 1 -- BOI CANH, MUC TIEU, HE THONG DICH VU, QUY TRINH AS-IS, MOI TRUONG CHIEN LUOC (muc 1--4).
-% Nguoi nhan: nhom tu dien. Muc tieu: 5--7 trang noi dung chinh.
-% DUOC SUA: file nay, figures/r1_*; nhan \label bat dau bang r1:.
-% KHONG SUA: role_2.tex, role_3.tex, _main.tex, _content.tex, analysis/.
-% DAU VAO: so lieu cong bo trong thebibliography; run_log.txt (hieu chinh quy mo).
-% BAN GIAO: pham vi do Wq, muc tieu tung bai toan, Resource Map, BPMN AS-IS, SWOT/PESTEL.
+% ROLE 1: muc 1--4, van de, pham vi, he thong, nguon luc va AS-IS.
+% Chi sua role cua minh va figures/rX_*. Khong sua tay bang do Python sinh.
+% Nguoi ghep bai quan ly _main.tex va _content.tex.
+% Macro Role*Supplement cuoi file giu ban nhap mo rong; KHONG duoc goi trong PDF.
 
 \section{Bài toán, mục tiêu và phạm vi nghiên cứu}
 \label{r1:scope}
-\subsection{Bối cảnh dịch vụ}
-Hà Nội có 453 cửa hàng bán lẻ xăng dầu đang hoạt động, tiêu thụ bình quân
-khoảng 150\,000~m$^3$/tháng, trong đó xăng khoảng 110\,000~m$^3$~\cite{sct2026}.
-Chia đều, mỗi cửa hàng bán khoảng 8\,100~lít xăng/ngày. Phần lớn khách là xe
-máy với bình xăng 4,4--5,2~lít~\cite{tank}, nên một cửa hàng nội thành phục vụ
-hàng nghìn lượt xe mỗi ngày, mỗi lượt chỉ 1--4 phút~\cite{batui}. Ba thay đổi gần
-đây làm bài toán vận hành trở nên đáng phân tích:
-\begin{itemize}
-\item Từ 1/6/2025, cửa hàng phải xuất hóa đơn điện tử cho từng lần bán theo
-Nghị định 70/2025/NĐ-CP~\cite{nd70}, thêm một thao tác vào mỗi lượt phục vụ.
-\item Chiết khấu bán lẻ biến động mạnh (có lúc chỉ 100--500~đồng/lít), khiến
-cửa hàng ``càng bán càng lỗ'' nếu dùng nhân lực kém hiệu quả~\cite{chietkhau}.
-\item Chỉ thị 20/CT-TTg (12/7/2025) đặt lộ trình hạn chế xe máy chạy xăng trong
-Vành đai~1~\cite{ct20}; từ 1/7/2026 Hà Nội thí điểm vùng phát thải thấp theo
-khung giờ~\cite{lez2026}. Nhu cầu xăng nội thành vì thế có thể giảm, trong khi
-các đợt căng thẳng nguồn cung (ví dụ 17 cửa hàng tạm dừng bán đầu tháng
-3/2026) lại đẩy khách dồn về các cửa hàng còn bán~\cite{vtc2026}.
-\end{itemize}
+\subsection{Bối cảnh và vấn đề cần giải quyết}
+Hà Nội có 453 cửa hàng bán lẻ xăng dầu và nhu cầu tiêu thụ khoảng
+110\,000~m$^3$ xăng/tháng theo số liệu được công bố tháng 3/2026~\cite{sct2026}.
+Các số liệu này cung cấp quy mô tham chiếu, không mô tả lượng khách của một
+cửa hàng cụ thể. Nhóm xét một cửa hàng giả định có 8 vòi bơm, phục vụ trong
+khung 06:00--22:00, với lượng xe thay đổi theo giờ.
 
-\subsection{Câu hỏi trung tâm và bốn bài toán}
-\textbf{Câu hỏi trung tâm.} Với một cửa hàng xăng đại diện ở nội thành (8 vòi
-bơm, mở 06:00--22:00), \emph{bố trí bao nhiêu nhân viên bơm ở mỗi giờ và có
-nên số hóa thanh toán} để khách không phải chờ quá 5 phút, với chi phí nhân lực
-thấp nhất? Báo cáo tập trung vào một chỉ số xuyên suốt là thời gian chờ $W_q$;
-ba bài toán mở rộng chỉ được giữ khi chúng thay đổi câu trả lời cho câu hỏi
-này ở tầm dài hạn hơn. Mỗi bài toán có mục tiêu riêng (Bảng~\ref{r1:problems}),
-không gộp thành một hàm mục tiêu chung.
+\textbf{Vấn đề dịch vụ.} Khách có thể phải chờ lâu hoặc bỏ đi vào giờ cao
+điểm, trong khi một số giờ khác còn dư công suất. Báo cáo cần trả lời liệu
+việc giữ số nhân viên cố định và thời gian chiếm trụ có góp phần tạo hàng
+chờ hay không. Đây là giả thuyết được kiểm tra bằng mô phỏng; chưa phải
+kết luận về một cửa hàng đã khảo sát.
 
-\begin{table}[htbp]\centering\small
-\caption{Bốn bài toán, bốn mục tiêu khác nhau}\label{r1:problems}
-\begin{tabularx}{\linewidth}{@{}p{25mm}p{16mm}Y Y p{9mm}@{}}
+\textbf{Ảnh hưởng.} Khách mất thời gian và có thể không mua được xăng;
+nhân viên chịu áp lực không đều trong ngày; cửa hàng phải cân đối mức phục
+vụ với chi phí nhân lực. Vì vậy, chỉ nhìn thời gian chờ trung bình cả ngày
+hoặc tăng nhân viên cho mọi giờ đều chưa đủ căn cứ.
+
+\subsection{Câu hỏi phân tích và mạch lập luận}
+\textbf{Câu hỏi chính.} Có thể giảm tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi ở
+khung 17:00--19:00 bằng cách điều chỉnh số kênh phục vụ theo giờ hay không,
+và khi nào nên thử thêm cải tiến thanh toán?
+\begin{table}[H]\centering\small
+\caption{Mạch phân tích của báo cáo}\label{r1:problems}
+\begin{tabularx}{\linewidth}{@{}p{28mm}Y Y@{}}
 \toprule
-Bài toán & Tầm quyết định & Mục tiêu & Biến quyết định / chỉ số & Mục \\
+Bước & Câu hỏi cần trả lời & Bằng chứng / đầu ra \\
 \midrule
-BT1 -- Lịch nhân viên bơm theo giờ & Vận hành (ngày) & $\min$ giờ nhân viên, ràng buộc $E[W_q]\le2$ phút, $P(W_q{>}5)\le5\%$, $c_t\le8$ & $c_t$ (kênh/giờ); $W_q$, tỷ lệ bỏ đi & \ref{r3:tobe} \\
-BT2 -- Chọn 2 trong 5 điểm mở cửa hàng & Chiến thuật (năm) & (a) $\max$ nhu cầu phục vụ trong ngưỡng $R$; (b) $\max$ lợi nhuận tháng & $y_j$, $x_{ij}$; \% phục vụ, triệu đồng/tháng & \ref{r2:location} \\
-BT3 -- Chiến lược năng lực & Chiến lược (1--3 năm) & $\min$ hối tiếc tối đa của tổng chi phí qua kịch bản A/B/C & CL-A/CL-B; chi phí kỳ vọng & \ref{r3:scenarios} \\
-BT4 -- Giữ chân khách và dự báo & Chiến lược + dữ liệu & $\min$ tỷ lệ mất khách; $\min$ sai số dự báo lượt xe & $\theta_g$, MAPE; giờ nhân viên & \ref{r2:forecast}, \ref{r3:cx} \\
+Nêu vấn đề & Chờ ở đâu, lúc nào, ảnh hưởng ai? & AS-IS, mốc đo, chỉ số theo giờ và tỷ lệ bỏ đi. \\
+Phân tích nguyên nhân & Nhu cầu có vượt công suất? Trụ bị chiếm bởi thao tác nào? & $\lambda_t$, $c_t$, thời gian phục vụ; so sánh giả thuyết với mô hình. \\
+Đề xuất giải pháp & Thay đổi gì để tác động đúng nguyên nhân? & A1 điều chỉnh công suất theo giờ; A2 thử giảm thời gian thanh toán tại trụ. \\
+Đánh giá & Khách chờ ít hơn không? Chi phí và điều kiện thực hiện là gì? & Cùng dòng xe cho A0/A1/A2; độ nhạy, rủi ro và kế hoạch thử nghiệm. \\
 \bottomrule
 \end{tabularx}
 \end{table}
+Bài toán chính là hàng đợi và phân bổ công suất. Định vị cửa hàng, học máy
+và chiến lược dài hạn được giữ ở bản nháp mở rộng, chưa dùng làm căn cứ cho
+khuyến nghị của báo cáo này.
 
 \subsection{Ranh giới hệ thống và ranh giới phép đo}
 \begin{table}[htbp]\centering\small
@@ -57,7 +52,7 @@ BT4 -- Giữ chân khách và dự báo & Chiến lược + dữ liệu & $\min$
 \toprule
 Thành phần & Mô tả \\
 \midrule
-Khách hàng & Người đi xe máy (97,3\% lượt) và ô tô (2,7\% lượt) mua xăng tại cửa hàng. \\
+Khách hàng & Hai loại xe theo giả định: xe máy (97,3\% lượt) và ô tô (2,7\% lượt). \\
 Tác nhân cung cấp & Nhân viên bơm, cửa hàng trưởng, doanh nghiệp đầu mối, ngân hàng/ví điện tử, cơ quan thuế. \\
 Trigger dịch vụ & Xe vào cửa hàng và nhìn thấy hàng chờ tại các trụ bơm. \\
 Outcome dịch vụ & Xe được bơm đủ, thanh toán xong, có hóa đơn điện tử và rời trụ. \\
@@ -68,27 +63,19 @@ Ngoài mô hình & Chất lượng xăng, nhập hàng và tồn kho bể, an to
 \end{tabularx}
 \end{table}
 Cửa hàng có thể mở 24 giờ, nhưng phân tích chỉ xét 06:00--22:00, nơi tập
-trung gần như toàn bộ lượt xe. Mỗi ``kênh'' trong mô hình là một vòi bơm có
+sinh toàn bộ lượt xe của kịch bản; nhu cầu ngoài giờ chưa được xét. Mỗi ``kênh'' trong mô hình là một vòi bơm có
 nhân viên phục vụ; số kênh không vượt quá 8 vòi vật lý.
 
-\subsection{Tầm nhìn, sứ mệnh và mục tiêu chiến lược}
-\textbf{Tầm nhìn (3 năm).} Là cửa hàng xăng mà người đi đường chọn vì ``vào là
-được bơm ngay'', kể cả giờ tan tầm và những ngày thị trường biến động.
+\subsection{Mục tiêu và tiêu chí đánh giá}
+Mục tiêu là cải thiện khả năng phục vụ giờ cao điểm với chi phí nhân lực
+hợp lý. Nhóm đề xuất các ngưỡng để so sánh phương án: thời gian chờ trung
+bình không quá 2 phút, tỷ lệ chờ quá 5 phút không quá 5\%, tỷ lệ bỏ đi không
+quá 1\%. Đây là mục tiêu nghiên cứu, cần thống nhất lại với cửa hàng nếu
+triển khai. Báo cáo đánh giá riêng cả ngày và khung 17:00--19:00, đồng thời
+so sánh giờ công, chi phí và mức chịu tải khi nhu cầu tăng.
 
-\textbf{Sứ mệnh.} Cung cấp nhiên liệu nhanh, minh bạch hóa đơn và chi phí hợp
-lý, dùng nhân lực đúng giờ có nhu cầu và sẵn sàng chuyển dịch sang năng lượng
-sạch khi thị trường thay đổi.
-
-\textbf{Mục tiêu chiến lược (12 tháng, đo được).} Do nhóm đề xuất và kiểm chứng
-được bằng chỉ số của mô hình:
-\begin{enumerate}
-\item \emph{Đáp ứng}: $P(W_q{>}5\text{ phút})\le5\%$ và tỷ lệ khách bỏ đi vì hàng
-dài $\le1\%$ trong mọi tháng, kể cả giờ 17--19 và các ngày điều chỉnh giá.
-\item \emph{Giữ chân}: tỷ lệ mất khách do chờ $\le2\%$; riêng Gen Z $\le3\%$.
-\item \emph{Hiệu quả}: giảm ít nhất 15\% giờ nhân viên/ngày so với lịch cố định.
-\item \emph{Năng lực dữ liệu}: dự báo lượt xe ngày tới có MAPE $\le10\%$, dùng
-dữ liệu hóa đơn điện tử theo từng lần bán.
-\end{enumerate}
+Không đặt trước một tỷ lệ cắt giảm nhân lực phải đạt: phương án chỉ được
+đề xuất nếu giữ chất lượng phục vụ và có thể chuyển thành lịch ca thực tế.
 
 \section{Mô hình hệ thống dịch vụ}
 \label{r1:system}
@@ -143,16 +130,16 @@ gian chờ của khách. Hai cơ chế này tương ứng với hai biến quy�
 $E[S]$ của mô hình.
 
 \begin{table}[htbp]\centering\small
-\caption{Bên liên quan: lợi ích hiện tại và kỳ vọng 3 năm tới}\label{r1:stakeholders}
+\caption{Lợi ích các bên và điều kiện chấp nhận giải pháp}\label{r1:stakeholders}
 \begin{tabularx}{\linewidth}{@{}p{25mm}Y Y Y@{}}
 \toprule
-Bên liên quan & Lợi ích hiện tại & Kỳ vọng dự kiến & Hệ quả cho chiến lược \\
+Bên liên quan & Lợi ích hiện tại & Kỳ vọng dự kiến & Điều kiện cải tiến \\
 \midrule
-Khách Gen Z (sinh viên, shipper) & Đổ nhanh, trả QR & Gần như không chờ; ưu đãi trên ứng dụng & Nhạy với chờ nhất; chuyển xe điện sớm \\
-Khách Gen X/60+ & Nhân viên hỗ trợ, trả tiền mặt & Vẫn được phục vụ khi không dùng ứng dụng & Giữ kênh tiền mặt, không ép số hóa \\
+Khách dùng QR & Thanh toán thuận tiện & Chờ ít hơn, giao dịch chính xác & Đo thời gian và lỗi giao dịch khi thử A2 \\
+Khách dùng tiền mặt & Nhân viên hỗ trợ, trả tiền mặt & Vẫn được phục vụ khi không dùng ứng dụng & Giữ kênh tiền mặt, không ép số hóa \\
 Nhân viên bơm & Lương 8--12 triệu đồng/tháng~\cite{wage} & Ca ổn định, không quá tải giờ cao điểm & Lịch theo giờ cần báo trước, có ca linh hoạt có thù lao \\
-Đầu mối cung ứng & Sản lượng ổn định & Mạng lưới đổi pin/sạc tại cửa hàng~\cite{vgx} & Dùng mặt bằng cho năng lượng mới (BT2, BT3) \\
-Cơ quan quản lý & Hóa đơn minh bạch & Vùng phát thải thấp mở rộng & Nhu cầu xăng nội thành giảm dần (KB-A) \\
+Đầu mối cung ứng & Sản lượng ổn định & Cung ứng đúng kế hoạch & Phân biệt thiếu hàng với thiếu công suất phục vụ \\
+Cơ quan quản lý & Giao dịch minh bạch & Thông tin đầy đủ, có thể đối soát & Không bỏ bước kiểm tra để rút ngắn thời gian \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -223,7 +210,7 @@ Quy trình hỗ trợ & Lịch ca, nhập hàng, đối soát tiền mặt cuố
 \source{nhóm vẽ bằng TikZ theo ký pháp BPMN rút gọn (sự kiện, tác vụ, cổng XOR, làn); Claude Code hỗ trợ dựng mã hình}
 \end{figure}
 Thời gian phục vụ $S$ gồm cả bơm, thanh toán và xuất hóa đơn: trụ chỉ được giải
-phóng khi khách rời đi. Vì vậy cải tiến thanh toán (A2) rút ngắn trực tiếp
+phóng khi khách rời đi. Nếu giảm được thao tác tại trụ, A2 có thể rút ngắn
 thời gian chiếm trụ dù tốc độ bơm không đổi.
 \todo{1}{Đối chiếu sơ đồ với quan sát tại một cửa hàng thật (bấm giờ 30--50 lượt
 mỗi loại xe), sửa nhánh ngoại lệ nếu có (hết loại xăng, lỗi POS).}
@@ -238,11 +225,14 @@ mỗi loại xe), sửa nhánh ngoại lệ nếu có (hết loại xăng, lỗi
 Hàng dài giờ tan tầm & Lịch nhân viên cố định trong khi lượt xe dao động theo giờ & $\lambda_t$, $c_t$, $\rho_t$, $W_q$ theo giờ \\
 Khách bỏ đi & Thấy hàng dài nên sang cửa hàng khác & Tỷ lệ bỏ đi (balking) \\
 Chiếm trụ lâu & Tiền mặt, tiền thừa, hóa đơn từng lần bán & $E[S]$ theo loại xe; CV \\
-Ngày có sự kiện & Điều chỉnh giá thứ Năm, Tết, căng thẳng nguồn cung & Sai số dự báo $\lambda_t$ \\
+Ngày có sự kiện & Lượng xe tăng ngoài cấu hình cơ sở & $\lambda_t$, hàng chờ và tỷ lệ bỏ đi \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
+
+% Ban nhap bo tro: chua dua vao PDF chinh.
+\newcommand{\RoleOneSupplement}{%
 \subsection{Môi trường chiến lược: SWOT và PESTEL}
 \begin{table}[htbp]\centering\small
 \caption{SWOT của cửa hàng đại diện}\label{r1:swot}
@@ -279,3 +269,5 @@ Các yếu tố trên cho thấy hai bất định lớn: \emph{chiều nhu cầ
 cung, điều chỉnh giá). Đây là cơ sở để xây ba kịch bản A/B/C ở Mục~\ref{r3:scenarios}.
 \todo{1}{Mở và đọc lại từng nguồn báo chí/văn bản trong \texttt{thebibliography}
 trước khi nộp; nếu nội dung khác số liệu trích, báo người ghép bài sửa.}
+
+}

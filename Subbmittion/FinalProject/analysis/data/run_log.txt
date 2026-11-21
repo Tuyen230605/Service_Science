@@ -45,23 +45,23 @@ NHAN DU LIEU: Du lieu mo phong, quy mo hieu chinh tu so lieu cong bo
 [5] So sanh ba phuong an (mo phong 20 ngay, CV = 0,8)
     A0 – AS-IS           Wq=0.641 p90=2.368 P>5=1.68% bo=0.49% oto=0.588 xemay=0.642 rho=67.9% gio=96 | 17-19h: Wq=1.817 P>5=6.18% bo=2.26%
     A1 – Lịch theo giờ   Wq=0.453 p90=1.509 P>5=0.33% bo=0.04% oto=0.423 xemay=0.454 rho=74.4% gio=88 | 17-19h: Wq=0.558 P>5=0.50% bo=0.17%
-    A2 – Số hóa + lịch   Wq=0.433 p90=1.394 P>5=0.48% bo=0.02% oto=0.407 xemay=0.434 rho=72.8% gio=72 | 17-19h: Wq=0.364 P>5=0.08% bo=0.07%
+    A2 – Số hóa + lịch   Wq=0.433 p90=1.394 P>5=0.48% bo=0.02% oto=0.407 xemay=0.433 rho=72.8% gio=72 | 17-19h: Wq=0.364 P>5=0.08% bo=0.07%
 
 [6] Do nhay theo nhu cau (30 ngay, seed rieng)
     x0.8  A0 – AS-IS           Wq=  0.174  p90=  0.564  P>5=  0.12%  bo= 0.02%  rho_peak=0.78
-    x0.8  A1 – Lịch theo giờ   Wq=  0.139  p90=  0.478  P>5=  0.01%  bo= 0.00%  rho_peak=0.67
+    x0.8  A1 – Lịch theo giờ   Wq=  0.139  p90=  0.477  P>5=  0.01%  bo= 0.00%  rho_peak=0.67
     x0.8  A2 – Số hóa + lịch   Wq=  0.149  p90=  0.504  P>5=  0.04%  bo= 0.00%  rho_peak=0.63
     x1.0  A0 – AS-IS           Wq=  0.553  p90=  2.042  P>5=  0.93%  bo= 0.31%  rho_peak=0.98
-    x1.0  A1 – Lịch theo giờ   Wq=  0.412  p90=  1.400  P>5=  0.21%  bo= 0.01%  rho_peak=0.84
-    x1.0  A2 – Số hóa + lịch   Wq=  0.394  p90=  1.305  P>5=  0.24%  bo= 0.00%  rho_peak=0.78
+    x1.0  A1 – Lịch theo giờ   Wq=  0.411  p90=  1.399  P>5=  0.21%  bo= 0.01%  rho_peak=0.84
+    x1.0  A2 – Số hóa + lịch   Wq=  0.394  p90=  1.301  P>5=  0.24%  bo= 0.00%  rho_peak=0.78
     x1.2  A0 – AS-IS           Wq=  1.318  p90=  4.273  P>5=  4.78%  bo= 2.88%  rho_peak=1.18
-    x1.2  A1 – Lịch theo giờ   Wq=  1.289  p90=  3.586  P>5=  2.87%  bo= 0.94%  rho_peak=1.01
-    x1.2  A2 – Số hóa + lịch   Wq=  1.144  p90=  3.305  P>5=  2.61%  bo= 0.53%  rho_peak=0.94
+    x1.2  A1 – Lịch theo giờ   Wq=  1.288  p90=  3.588  P>5=  2.86%  bo= 0.95%  rho_peak=1.01
+    x1.2  A2 – Số hóa + lịch   Wq=  1.143  p90=  3.303  P>5=  2.62%  bo= 0.53%  rho_peak=0.94
     x1.4  A0 – AS-IS           Wq=  2.088  p90=  5.079  P>5= 10.83%  bo= 7.86%  rho_peak=1.37
-    x1.4  A1 – Lịch theo giờ   Wq=  2.985  p90=  5.472  P>5= 15.01%  bo= 6.41%  rho_peak=1.18
-    x1.4  A2 – Số hóa + lịch   Wq=  2.765  p90=  5.341  P>5= 12.82%  bo= 4.86%  rho_peak=1.10
+    x1.4  A1 – Lịch theo giờ   Wq=  2.985  p90=  5.453  P>5= 14.81%  bo= 6.46%  rho_peak=1.18
+    x1.4  A2 – Số hóa + lịch   Wq=  2.759  p90=  5.336  P>5= 12.77%  bo= 4.83%  rho_peak=1.10
 
-[7] Rui ro: thieu 1 nhan vien moi gio -> Wq=2.488, P>5=16.80%, bo di=1.93%
-    So hoa chi giam 10% (E[S]=1.411) -> Wq=0.856, P>5=1.45%, bo di=0.10%
+[7] Rui ro: thieu 1 nhan vien moi gio -> Wq=2.483, P>5=16.71%, bo di=1.92%
+    So hoa chi giam 10% (E[S]=1.411) -> Wq=0.855, P>5=1.45%, bo di=0.10%
 
 [8] Da xuat 5 hinh vao figures/

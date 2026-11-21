@@ -1,10 +1,8 @@
 % !TeX root = _main.tex
-% ROLE 3 -- TO-BE, DANH GIA, KICH BAN CHIEN LUOC, TRAI NGHIEM KHACH HANG, KET LUAN (muc 8--11).
-% Nguoi nhan: nhom tu dien. Muc tieu: 6--8 trang noi dung chinh.
-% DUOC SUA: file nay, figures/r3_*; nhan \label bat dau bang r3:.
-% KHONG SUA: role_1.tex, role_2.tex, cac file dieu phoi; thong nhat voi role 2
-% truoc khi thay du lieu analysis/. Khong sua tay bang sinh tu Python.
-% DAU VAO: tables/tab_{comparison,shift_plan,sensitivity,risk}.tex, tables/tab_ext_*.tex.
+% ROLE 3: muc 7--9, giai phap, danh gia, thu nghiem va ket luan.
+% Chi sua role cua minh va figures/rX_*. Khong sua tay bang do Python sinh.
+% Nguoi ghep bai quan ly _main.tex va _content.tex.
+% Macro Role*Supplement cuoi file giu ban nhap mo rong; KHONG duoc goi trong PDF.
 
 \section{Phương án cải tiến và phân bổ nhân lực}
 \label{r3:tobe}
@@ -19,12 +17,13 @@ Số kênh $c_t$ & 6 cả ngày & Tối ưu BT1 với $E[S]$ hiện tại & Tố
 $E[S]$ (phút/xe) & xe máy 1,5; ô tô 4,0 & như A0 & giảm 20\%: 1,2; 3,2 \\
 Thanh toán & Tiền mặt/QR tại trụ & như A0 & Trả trước QR/ứng dụng, chọn sẵn số tiền \\
 Giờ nhân viên/ngày & 96 & 88 & 72 \\
-Mục đích & Mốc hiện trạng & Tác động riêng của lịch & Tác động kết hợp lịch + số hóa \\
+Mục đích & Mốc giả định & Tác động riêng của lịch & Tác động kết hợp lịch + số hóa \\
 \bottomrule
 \end{tabularx}
 \end{table}
 So sánh A0--A1 tách được tác động của việc xếp lịch theo giờ; so sánh A1--A2
-tách được tác động của số hóa thanh toán (với lịch được tối ưu lại tương ứng).
+đánh giá gói giảm thời gian phục vụ và tối ưu lại lịch. Vì cả thời gian phục
+vụ lẫn lịch đều đổi, chưa tách được tác động riêng của thanh toán số.
 
 \subsection{Bài toán lập lịch theo giờ (BT1)}
 Với $k=58\,000$ đồng/giờ nhân viên và 16 khung một giờ:
@@ -55,17 +54,17 @@ A2 cần 72 giờ/ngày vì mỗi kênh phục vụ được 47,8 thay vì 38,3 
   \draw (0.8,\y) -- (0.8,\y-2.4);
   \node[rotate=90,font=\scriptsize\bfseries] at (0.4,\y-1.2) {\name};}
 \node[ev] (st) at (1.6,-1.2) {};
-\node[task] (t0) at (3.4,-1.2) {Chọn số tiền,\\trả trước QR};
-\node[task] (s0) at (3.4,-6.0) {Tạo mã đơn,\\hiển thị ETA};
+\node[task] (t0) at (3.4,-1.2) {Chọn số tiền,\\cách thanh toán};
+\node[task] (s0) at (3.4,-6.0) {Tạo đơn nháp,\\hiển thị hướng dẫn};
 \node[gw] (g1) at (6.0,-1.2) {Hàng chờ\\$\ge$ 20 xe?};
 \node[evend] (eb) at (7.7,-0.45) {};
 \node[font=\scriptsize,anchor=west] at (8.1,-0.45) {bỏ đi};
 \node[task] (t2) at (8.8,-1.6) {Xếp hàng\\chờ tới lượt};
-\node[task] (t3) at (11.2,-3.6) {Quét mã,\\bơm đúng số tiền};
+\node[task] (t3) at (11.2,-3.6) {Xác nhận trả tiền,\\bơm đúng số tiền};
 \node[task] (s1) at (13.6,-6.0) {HĐĐT tự động\\gửi về ứng dụng};
 \node[task] (t7) at (15.8,-1.2) {Rời trụ\\(không thu tiền)};
 \node[evend] (en) at (17.7,-1.2) {};
-\node[task,dashed] (pl) at (8.8,-6.0) {Lịch $c_t$ theo\\dự báo (BT1 + GLM)};
+\node[task,dashed] (pl) at (8.8,-6.0) {Lịch $c_t$ theo\\lượt xe từng giờ};
 \draw[flow] (st) -- (t0);
 \draw[msg] (t0) -- (s0);
 \draw[flow] (t0) -- (g1);
@@ -78,12 +77,16 @@ A2 cần 72 giờ/ngày vì mỗi kênh phục vụ được 47,8 thay vì 38,3 
 \draw[msg] (pl) -| (t3);
 \node[tmark] at (11.2,-4.35) {$S$ giảm 20\%: không thu tiền mặt};
 \end{tikzpicture}}
-\caption{Quy trình TO-BE: thanh toán trước khi vào trụ, hóa đơn tự động, số nhân viên theo dự báo. Khách không dùng ứng dụng vẫn đi theo luồng AS-IS ở Hình~\ref{r1:bpmn}.}
+\caption{Quy trình TO-BE đề xuất: chuẩn bị yêu cầu trước, xác nhận thanh toán trước bơm, số kênh theo giờ. Khách không dùng ứng dụng vẫn đi theo luồng AS-IS ở Hình~\ref{r1:bpmn}.}
 \label{r3:bpmn}
 \source{nhóm vẽ bằng TikZ theo ký pháp BPMN rút gọn; Claude Code hỗ trợ dựng mã hình}
 \end{figure}
-Thay đổi chính là đưa thanh toán và xuất hóa đơn ra khỏi thời gian chiếm trụ.
-Kênh tiền mặt vẫn giữ cho khách lớn tuổi (Mục~\ref{r3:cx}); nếu tỷ lệ khách
+Mục tiêu là rút ngắn thao tác thanh toán và xử lý hóa đơn tại trụ. Cần đo
+thời gian toàn hành trình, tránh chỉ chuyển phần chờ sang bước khác. Đơn
+nháp chưa thu tiền khi khách còn có thể bỏ hàng; nếu đã thu tiền nhưng không
+bơm được, phải có quy trình hủy/hoàn tiền và đối soát. Các ngoại lệ này cần
+được thiết kế trước khi thử nghiệm.
+Kênh tiền mặt vẫn giữ cho khách không dùng ứng dụng; nếu tỷ lệ khách
 dùng trả trước thấp, mức giảm $E[S]$ sẽ nhỏ hơn 20\% (rủi ro ở Bảng~\ref{r3:risks}).
 \FloatBarrier
 
@@ -92,14 +95,16 @@ dùng trả trước thấp, mức giảm $E[S]$ sẽ nhỏ hơn 20\% (rủi ro 
 \subsection{So sánh trên cùng bộ chỉ số}
 \resulttable{tab_comparison.tex}{Kết quả mô phỏng chính: 20 ngày, cùng seed, CV = 0,8}{r3:comparison}
 \begin{itemize}
-\item \textbf{Lịch theo giờ (A1) giải quyết phần lớn vấn đề mà không cần đầu tư.}
+\item \textbf{A1 cải thiện phục vụ trong kịch bản cơ sở.}
 Trong giờ 17--19, tỷ lệ chờ quá 5 phút giảm từ 6,18\% xuống 0,50\%, tỷ lệ bỏ đi
 từ 2,26\% xuống 0,17\%, đồng thời giảm 8 giờ nhân viên/ngày (464 nghìn đồng/ngày).
 \item \textbf{Số hóa (A2) chủ yếu tiết kiệm nhân lực.} Thời gian chờ chỉ giảm
 thêm ít (0,45 $\rightarrow$ 0,43 phút cả ngày; 0,56 $\rightarrow$ 0,36 phút giờ
 17--19), nhưng giảm thêm 16 giờ/ngày. Sau khi trừ 250 nghìn đồng/ngày chi phí số
-hóa, A2 rẻ hơn A1 678 nghìn đồng/ngày và rẻ hơn A0 1,14 triệu đồng/ngày
-(khoảng 34 triệu đồng/tháng).
+hóa, chênh lệch chi phí theo mô hình là 678 nghìn đồng/ngày so với A1 và
+1,14 triệu đồng/ngày so với A0 (khoảng 34 triệu đồng/30 ngày). Đây là mức
+tiềm năng với giả định giảm thời gian 20\%; chưa tính chi phí chuyển đổi,
+đào tạo, ghép ca và tác động của tỷ lệ sử dụng QR thực tế.
 \item Ô tô và xe máy dùng chung hàng nên thời gian chờ gần như nhau (A0: 0,59
 và 0,64 phút); ô tô chỉ làm tăng $E[S]$ bình quân.
 \end{itemize}
@@ -118,16 +123,16 @@ và 0,64 phút); ô tô chỉ làm tăng $E[S]$ bình quân.
 \source{\texttt{analysis/run\_analysis.py}; 30 ngày mô phỏng mỗi cấu hình}
 \end{figure}
 Khi nhu cầu tăng 20\%, cả ba lịch \emph{giữ nguyên} đều có $\rho$ giờ cao điểm
-gần hoặc vượt 1; A2 vẫn đạt $P(W_q{>}5)=2{,}61\%$ nhưng 0,53\% khách bỏ đi.
-Khi tăng 40\%, mọi lịch đều hỏng (4,9--7,9\% khách bỏ đi). Một lịch tĩnh, dù
+gần hoặc vượt 1; A2 vẫn đạt $P(W_q{>}5)=2{,}62\%$ nhưng 0,53\% khách bỏ đi.
+Khi tăng 40\%, mọi lịch đều hỏng (4,8--7,9\% khách bỏ đi). Một lịch tĩnh, dù
 tối ưu cho tải cơ sở, không bền trước biến động nhu cầu --- đây là lý do của
-BT3 và BT4 ở Mục~\ref{r3:scenarios}.
+việc đo lại nhu cầu và điều chỉnh kế hoạch công suất khi điều kiện thay đổi.
 
 \subsection{Rủi ro và giới hạn}
 \resulttable{tab_risk.tex}{Các tình huống rủi ro của A2 (30 ngày, seed riêng)}{r3:risks}
-Thiếu một nhân viên ở mọi giờ làm $P(W_q{>}5)$ tăng lên 16,80\% và 1,93\% khách
+Thiếu một nhân viên ở mọi giờ làm $P(W_q{>}5)$ tăng lên 16,71\% và 1,92\% khách
 bỏ đi: A2 tiết kiệm nhân lực nên ít dư địa. Nếu số hóa chỉ giảm 10\% thời gian
-phục vụ, A2 vẫn đạt mục tiêu (1,45\%; 0,10\% bỏ đi). Các giới hạn cần giữ:
+phục vụ, A2 vẫn đạt mục tiêu gộp cả ngày (1,45\%; 0,10\% bỏ đi); cần kiểm tra riêng từng giờ trước khi áp dụng. Các giới hạn cần giữ:
 \begin{itemize}
 \item Lượt xe theo giờ và thời gian phục vụ là mô phỏng; quy mô được hiệu chỉnh
 từ số liệu công bố nhưng chưa đo tại một cửa hàng cụ thể.
@@ -136,6 +141,46 @@ từ số liệu công bố nhưng chưa đo tại một cửa hàng cụ thể.
 \item Mỗi ngày bắt đầu với hàng rỗng; kiểm chứng ở tải rất cao còn lệch (Mục~\ref{r2:diagnosis}).
 \end{itemize}
 
+\section{Đề xuất triển khai và kết luận}
+\label{r3:conclusion}
+\subsection{Ưu tiên điều chỉnh lịch trước, thử thanh toán sau}
+Bằng chứng mô phỏng ủng hộ việc thử A1 trước: điều chỉnh số kênh theo giờ
+nhắm trực tiếp vào chênh lệch giữa nhu cầu và công suất, trong khi giữ
+nguyên quy trình thanh toán. A2 là bước tiếp theo có điều kiện, chỉ đáng
+triển khai khi đo được mức giảm thời gian chiếm trụ và hiệu quả chi phí.
+
+\begin{table}[htbp]\centering\small
+\caption{Kế hoạch kiểm tra giải pháp trước khi áp dụng rộng}\label{r3:pilot}
+\begin{tabularx}{\linewidth}{@{}p{26mm}Y Y@{}}
+\toprule
+Bước & Công việc và người phụ trách & Tiêu chí quyết định \\
+\midrule
+Đo hiện trạng & Cửa hàng trưởng tổ chức ghi lượt đến, bỏ đi và $a_i,b_i,d_i$ theo giờ; nhân viên hỗ trợ bấm giờ ban đầu 30--50 lượt mỗi loại xe. & Có dữ liệu cả giờ vắng và giờ cao điểm; phân biệt thời gian bơm, thanh toán và rời trụ. \\
+Thử lịch A1 & Ghép nhu cầu kênh thành ca có nghỉ và bàn giao; thử trên các ngày cùng thứ, mức nhu cầu tương đương. & Tỷ lệ chờ quá 5 phút và bỏ đi giảm ở giờ cao điểm; báo cáo đồng thời giờ công và chi phí thực. \\
+Thử A2 có giới hạn & Thử chuẩn bị đơn và thanh toán số ở một phạm vi nhỏ, giữ phương án thanh toán tại trụ. & Thời gian toàn hành trình giảm, không tăng lỗi giao dịch; lợi ích đo được đủ bù chi phí. \\
+Rà soát và điều chỉnh & Cửa hàng trưởng theo dõi theo giờ; ghi nhận nhu cầu tăng, nhân viên vắng và trụ ngừng hoạt động. & Nếu vi phạm mục tiêu, bổ sung công suất hoặc trở lại lịch đã kiểm tra; không cố giữ mức tiết kiệm định trước. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Hóa đơn điện tử giúp đếm lượt đã mua và thời điểm giao dịch, nhưng không
+cho biết đầy đủ lượt bỏ đi hay thời điểm bắt đầu chờ. Vì vậy cần bổ sung
+quan sát dấu thời gian; không lấy giờ xuất hóa đơn thay cho thời gian xe đến.
+
+\subsection{Kết luận}
+Trong kịch bản đang xét, hàng chờ tập trung ở giờ cao điểm dù công suất
+trung bình ngày còn dư. Điều chỉnh công suất theo giờ là giải pháp phù hợp
+để kiểm tra trước; rút ngắn thời gian thanh toán là hướng bổ sung có điều
+kiện. Kết luận này đi từ điểm chờ trên AS-IS, qua phân tích nhu cầu/công
+suất, đến đối chứng A0/A1/A2 và kế hoạch thử nghiệm.
+
+Báo cáo đề xuất một hướng cải tiến có cơ sở mô hình, không khẳng định đã
+xác nhận nguyên nhân hay đạt mức tiết kiệm tại cửa hàng thực tế. Dữ liệu
+quan sát và kết quả thử nghiệm sẽ quyết định lịch nào áp dụng được, có cần
+thêm nhân lực hay không, và có nên đầu tư thanh toán số.
+\todo{3}{Chốt lịch ca khả thi, chi phí thực và kết quả thử nghiệm với cửa hàng;
+không trình bày kết quả mô phỏng như thành tích đã triển khai.}
+
+\newcommand{\RoleThreeSupplement}{%
 \section{Kịch bản chiến lược và trải nghiệm khách hàng}
 \label{r3:scenarios}
 \subsection{Ba kịch bản tương lai và hai lựa chọn chiến lược}
@@ -247,33 +292,5 @@ Phát hiện bất thường & Lượt bán đột biến, lỗi cột bơm & Th
 \end{tabularx}
 \end{table}
 
-\section{Kết luận và đề xuất định hướng}
-\label{r3:conclusion}
-Trong bộ giả định đã hiệu chỉnh theo số liệu công bố, vấn đề của cửa hàng đại
-diện không phải thiếu nhân viên mà là \emph{nhân viên đặt sai giờ}: lịch cố định
-6 người thừa công suất ban ngày nhưng để 6,2\% xe chờ quá 5 phút và 2,3\% xe bỏ
-đi giờ tan tầm. Trung bình cả ngày (0,64 phút) che khuất điểm nghẽn này.
 
-\textbf{Đề xuất.} Nhóm đề xuất chiến lược \textbf{``số hóa có lịch thích ứng''
-(CL-B thích ứng)}, triển khai ba bước:
-\begin{enumerate}
-\item \textbf{0--3 tháng -- Đo và xếp lại lịch.} Xuất dấu thời gian từ hóa đơn
-điện tử theo giờ, bấm giờ 30--50 lượt mỗi loại xe; áp dụng ngay lịch theo giờ
-(A1): giảm 8 giờ/ngày và đưa tỷ lệ bỏ đi giờ 17--19 từ 2,26\% về 0,17\% mà
-không cần đầu tư.
-\item \textbf{3--6 tháng -- Số hóa thanh toán.} Trả trước QR/ứng dụng và hóa
-đơn tự động; khi $E[S]$ giảm 20\%, lịch còn 72 giờ/ngày, tiết kiệm khoảng 34
-triệu đồng/tháng so với hiện trạng. Giữ kênh tiền mặt cho khách lớn tuổi.
-\item \textbf{6--12 tháng -- Lịch thích ứng và mở rộng.} Dùng GLM dự báo lượt xe
-ngày tới (MAPE 7,25\% trong kiểm tra), lập nhóm nhân viên bán thời gian cho
-ngày sự kiện; khi mở cửa hàng mới, ưu tiên \textbf{J3 Hà Đông + J4 Hoàng Mai}
-(lãi 163,2 triệu đồng/tháng, bền ở 5/6 tình huống độ nhạy) và chuẩn bị mặt
-bằng cho đổi pin/sạc nếu KB-A xảy ra.
-\end{enumerate}
-Theo dõi bốn KPI theo tháng --- $P(W_q{>}5)$ giờ 17--19, tỷ lệ bỏ đi, tỷ lệ mất
-khách theo nhóm tuổi, MAPE dự báo --- và xem lại chiến lược khi một ngưỡng ở
-Bảng~\ref{r3:playbook} bị vượt. Các kết luận dựa trên mô phỏng; mức giảm $E[S]$,
-ngưỡng bỏ đi, độ kiên nhẫn theo thế hệ và chi phí cố định phải được đo lại tại
-cửa hàng thật trước khi triển khai.
-\todo{3}{Đối chiếu từng con số trong mục này với \path{analysis/data/run_log.txt}
-và \path{analysis/data/ext_run_log.txt} sau lần chạy cuối cùng.}
+}
