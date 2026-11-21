@@ -1,4 +1,4 @@
-"""Mo phong su kien roi rac (DES) cho tram xu ly yeu cau tu van - phan loai.
+"""Mo phong su kien roi rac (DES) cho cua hang xang dau: xe den, xep hang, bom, thanh toan.
 
 Muc dich trong bao cao:
   (1) SINH DU LIEU MO PHONG co nhan ro rang (khong phai du lieu thuc te) de
@@ -6,8 +6,9 @@ Muc dich trong bao cao:
   (2) KIEM DINH cong thuc M/M/s: khi thoi gian phuc vu la phan phoi mu va
       ky luat FCFS, ket qua mo phong phai trung voi Erlang C trong sai so mo phong;
   (3) DANH GIA cac tinh huong ma cong thuc M/M/s KHONG mo ta duoc: thoi gian
-      phuc vu bien thien khac phan phoi mu (CV != 1) va ky luat uu tien
-      khong chen ngang (non-preemptive priority) theo 3 muc do uu tien.
+      phuc vu bien thien khac phan phoi mu (CV != 1), thoi gian phuc vu khac
+      nhau theo loai xe (lop 1 = o to, lop 2 = xe may) va (tuy chon) ky luat
+      uu tien khong chen ngang.
 
 Moi thoi gian ben trong module tinh bang PHUT, moc 0 = thoi diem mo cua so
 tiep nhan trong ngay.
@@ -25,10 +26,11 @@ import numpy as np
 class Request:
     rid: int
     day: int
-    priority: int           # 1 = khan, 2 = thuong, 3 = thap
+    priority: int           # lop khach: 1 = o to, 2 = xe may
     t_arrival: float
     t_start: float = float("nan")
     t_end: float = float("nan")
+    balked: bool = False    # True: khach thay hang qua dai va bo di (khong vao hang)
     service: float = float("nan")
 
     @property
@@ -50,6 +52,8 @@ class SimConfig:
     priority_rule: bool = False     # True: uu tien khong chen ngang
     days: int = 20
     seed: int = 20260117
+    service_by_class: dict | None = None  # E[S] rieng theo lop (phut); None = dung chung
+    balk_queue: int | None = None   # khach bo di neu so xe dang cho >= nguong nay
 
 
 def _service_sample(rng: np.random.Generator, mean: float, cv: float) -> float:
@@ -97,7 +101,9 @@ def run_day(cfg: SimConfig, rng: np.random.Generator, day: int,
     """
     reqs = _generate_arrivals(rng, cfg, day, start_rid)
     for r in reqs:
-        r.service = _service_sample(rng, cfg.mean_service_min, cfg.cv_service)
+        mean = (cfg.service_by_class.get(r.priority, cfg.mean_service_min)
+                if cfg.service_by_class else cfg.mean_service_min)
+        r.service = _service_sample(rng, mean, cfg.cv_service)
 
     busy: list[float] = []              # heap cac thoi diem hoan tat
     waiting: list[tuple] = []           # heap theo (uu tien, thoi diem den)
@@ -123,7 +129,10 @@ def run_day(cfg: SimConfig, rng: np.random.Generator, day: int,
         t_dep = busy[0] if busy else float("inf")
         if t_arr <= t_dep:
             t = t_arr
-            push_wait(reqs[i])
+            if cfg.balk_queue is not None and len(waiting) >= cfg.balk_queue:
+                reqs[i].balked = True
+            else:
+                push_wait(reqs[i])
             i += 1
             try_start(t)
         else:
@@ -150,10 +159,15 @@ def run(cfg: SimConfig) -> tuple[list[Request], dict]:
 
 
 def summarize(reqs: list[Request], target_min: float = 15.0) -> dict:
+    n_all = len(reqs)
+    n_balk = sum(r.balked for r in reqs)
+    reqs = [r for r in reqs if not r.balked]
     wq = np.array([r.wq for r in reqs])
     w = np.array([r.w for r in reqs])
     out = {
         "n": len(reqs),
+        "n_arrivals": n_all,
+        "balk_rate": n_balk / n_all if n_all else 0.0,
         "Wq_mean": float(wq.mean()),
         "Wq_p90": float(np.percentile(wq, 90)),
         "Wq_max": float(wq.max()),

@@ -1,0 +1,78 @@
+==============================================================================
+PHAN MO RONG | DU LIEU MO PHONG, HIEU CHINH TU SO LIEU CONG BO
+==============================================================================
+
+[L1] Dinh vi: chon 2/5 diem, R = 15 phut
+     Nhu cau/vung = dan so x 0.695 xe/nguoi x 0.2 luot/xe/ngay x 2% -> tong 7,655 luot/ngay
+     Q_j = 2,889 luot/ngay (lambda cao diem 260 xe/gio, c = 8)
+     Dong gop/luot = 3.24 L x 1500 d - 2,165 d luong = 2,700 d
+     Cầu Giấy      h=  813.6  t=  7.3  12.3  26.1  31.7  36.3
+     Đống Đa       h= 1033.6  t= 21.4   8.7  24.5  17.9  25.7
+     Thanh Xuân    h=  816.4  t= 22.2  12.1  12.4  16.0  37.3
+     Hà Đông       h= 1106.6  t= 32.1  30.8  13.1  33.7  58.7
+     Nam Từ Liêm   h=  735.0  t= 13.7  23.0  21.8  38.9  52.1
+     Hai Bà Trưng  h=  844.4  t= 35.3  22.3  32.5  13.4  20.3
+     Hoàng Mai     h= 1408.3  t= 43.5  30.3  32.3  11.3  32.7
+     Long Biên     h=  897.1  t= 48.7  38.9  53.9  36.2   9.2
+     J2 + J4  phu= 4916.3 phucvu= 4916.3 ( 64.2%) t=11.43 rho=0.78 Wq=0.38 F=245 LN=  153.2tr {'J2 Đống Đa': 2664, 'J4 Hoàng Mai': 2253}
+     J3 + J4  phu= 4175.7 phucvu= 4175.7 ( 54.5%) t=12.41 rho=0.66 Wq=0.12 F=175 LN=  163.2tr {'J3 Hà Đông': 1923, 'J4 Hoàng Mai': 2253}
+     J1 + J4  phu= 3801.3 phucvu= 3801.3 ( 49.7%) t=11.38 rho=0.66 Wq=0.12 F=215 LN=   92.9tr {'J1 Cầu Giấy': 1549, 'J4 Hoàng Mai': 2253}
+     J2 + J3  phu= 3770.2 phucvu= 3770.2 ( 49.3%) t=11.51 rho=0.78 Wq=0.38 F=230 LN=   75.4tr {'J2 Đống Đa': 2664, 'J3 Hà Đông': 1107}
+     J2 + J5  phu= 3560.7 phucvu= 3560.7 ( 46.5%) t=10.45 rho=0.78 Wq=0.38 F=225 LN=   63.4tr {'J2 Đống Đa': 2664, 'J5 Long Biên': 897}
+     J1 + J3  phu= 3471.6 phucvu= 3471.6 ( 45.4%) t=11.68 rho=0.57 Wq=0.05 F=200 LN=   81.2tr {'J1 Cầu Giấy': 1549, 'J3 Hà Đông': 1923}
+     J1 + J2  phu= 3398.6 phucvu= 3398.6 ( 44.4%) t=10.28 rho=0.54 Wq=0.04 F=270 LN=    5.3tr {'J1 Cầu Giấy': 1549, 'J2 Đống Đa': 1850}
+     J4 + J5  phu= 3149.8 phucvu= 3149.8 ( 41.1%) t=11.27 rho=0.66 Wq=0.12 F=170 LN=   85.1tr {'J4 Hoàng Mai': 2253, 'J5 Long Biên': 897}
+     J3 + J5  phu= 2820.1 phucvu= 2820.1 ( 36.8%) t=11.64 rho=0.57 Wq=0.05 F=155 LN=   73.4tr {'J3 Hà Đông': 1923, 'J5 Long Biên': 897}
+     J1 + J5  phu= 2445.7 phucvu= 2445.7 ( 31.9%) t= 9.91 rho=0.46 Wq=0.01 F=195 LN=    3.1tr {'J1 Cầu Giấy': 1549, 'J5 Long Biên': 897}
+     => Chon J2 + J4; phan bo {'Cầu Giấy': 'J2 Đống Đa', 'Đống Đa': 'J2 Đống Đa', 'Thanh Xuân': 'J2 Đống Đa', 'Hai Bà Trưng': 'J4 Hoàng Mai', 'Hoàng Mai': 'J4 Hoàng Mai'}; LN cao nhat: J3 + J4
+     [do nhay] R = 12 phút                Q= 2888.9 chon=J2 + J4   31.9% (co so  31.9%) LNmax=J4 + J5 LN co so=-47.2
+     [do nhay] R = 15 phút (cơ sở)        Q= 2888.9 chon=J2 + J4   64.2% (co so  64.2%) LNmax=J3 + J4 LN co so=153.2
+     [do nhay] R = 20 phút                Q= 2888.9 chon=J2 + J4   64.2% (co so  64.2%) LNmax=J3 + J4 LN co so=153.2
+     [do nhay] KB-A: nhu cầu times0.8     Q= 2888.9 chon=J2 + J4   64.2% (co so  64.2%) LNmax=J3 + J4 LN co so=73.6
+     [do nhay] KB-B: nhu cầu times1.2     Q= 2888.9 chon=J3 + J4   54.5% (co so  53.6%) LNmax=J3 + J4 LN co so=153.8
+     [do nhay] Cửa hàng 6 vòi (c=6)       Q= 2166.7 chon=J2 + J3   49.3% (co so  42.6%) LNmax=J3 + J4 LN co so=18.9
+
+[S1] Kich ban chien luoc (30 ngay/o, cung seed trong mot kich ban)
+     Lich A1 = [4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4] (88); A2 = [3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3] (72)
+     KB-A Nhu cầu thấp  A0              Wq=  0.16 p90=  0.51 P>5=  0.12% balk= 0.02% gio= 96 mat= 0.29% NL= 5568.0k mat=   378.4k tong=  5946.4k lich=[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+     KB-A Nhu cầu thấp  CL-A            Wq=  0.13 p90=  0.45 P>5=  0.01% balk= 0.00% gio= 88 mat= 0.17% NL= 5104.0k mat=   224.9k tong=  5328.9k lich=[4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4]
+     KB-A Nhu cầu thấp  CL-B tĩnh       Wq=  0.14 p90=  0.50 P>5=  0.01% balk= 0.00% gio= 72 mat= 0.19% NL= 4176.0k mat=   258.3k tong=  4684.3k lich=[3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3]
+     KB-A Nhu cầu thấp  CL-B thích ứng  Wq=  0.51 p90=  1.66 P>5=  0.65% balk= 0.02% gio= 59 mat= 1.15% NL= 3422.0k mat=  1567.1k tong=  5239.1k lich=[3, 4, 5, 4, 3, 3, 4, 3, 3, 3, 4, 5, 5, 4, 3, 3]
+     KB-B Nhu cầu tăng  A0              Wq=  1.31 p90=  4.25 P>5=  4.88% balk= 2.64% gio= 96 mat= 6.92% NL= 5568.0k mat= 13553.8k tong= 19121.8k lich=[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+     KB-B Nhu cầu tăng  CL-A            Wq=  1.27 p90=  3.58 P>5=  2.75% balk= 0.80% gio= 88 mat= 4.44% NL= 5104.0k mat=  8763.9k tong= 13867.9k lich=[4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4]
+     KB-B Nhu cầu tăng  CL-B tĩnh       Wq=  1.12 p90=  3.21 P>5=  2.70% balk= 0.43% gio= 72 mat= 3.56% NL= 4176.0k mat=  7093.2k tong= 11519.2k lich=[3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3]
+     KB-B Nhu cầu tăng  CL-B thích ứng  Wq=  0.48 p90=  1.56 P>5=  0.25% balk= 0.05% gio= 81 mat= 0.98% NL= 4959.0k mat=  1990.2k tong=  7199.2k lich=[4, 6, 6, 5, 5, 5, 5, 4, 4, 5, 5, 6, 7, 6, 4, 4]
+     KB-C Gián đoạn     A0              Wq=  3.10 p90=  6.21 P>5= 27.00% balk=12.14% gio= 96 mat=23.87% NL= 5568.0k mat= 52224.5k tong= 57792.5k lich=[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]
+     KB-C Gián đoạn     CL-A            Wq=  4.59 p90=  7.20 P>5= 42.54% balk=13.59% gio= 88 mat=31.93% NL= 5104.0k mat= 70411.8k tong= 75515.8k lich=[4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4]
+     KB-C Gián đoạn     CL-B tĩnh       Wq=  4.39 p90=  7.23 P>5= 37.55% balk=11.82% gio= 72 mat=29.46% NL= 4176.0k mat= 64834.1k tong= 69260.1k lich=[3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3]
+     KB-C Gián đoạn     CL-B thích ứng  Wq=  0.57 p90=  1.83 P>5=  0.30% balk= 0.18% gio=101 mat= 1.33% NL= 6699.0k mat=  3062.5k tong= 10011.5k lich=[5, 7, 8, 7, 6, 6, 6, 5, 5, 6, 7, 8, 8, 7, 5, 5]
+
+[S2] Hoi tiec theo tong chi phi (nghin dong/ngay)
+     CL-A               5328.9   13867.9   75515.8  E=  26718.2  maxRegret= 65504.2  dat 2/3
+     CL-B tĩnh          4684.3   11519.2   69260.1  E=  23904.0  maxRegret= 59248.5  dat 2/3
+     CL-B thích ứng     5239.1    7199.2   10011.5  E=   7314.3  maxRegret=   554.8  dat 3/3
+
+[S3] Do nhay theo he so CLV
+     CLVx0.0 CL-A=6709.9  CL-B tĩnh=5872.6  CL-B thích ứng=5336.2 -> CL-B thích ứng
+     CLVx0.5 CL-A=16714.1  CL-B tĩnh=14888.3  CL-B thích ứng=6325.3 -> CL-B thích ứng
+     CLVx1.0 CL-A=26718.2  CL-B tĩnh=23904.0  CL-B thích ứng=7314.3 -> CL-B thích ứng
+     CLVx2.0 CL-A=46726.4  CL-B tĩnh=41935.4  CL-B thích ứng=9292.3 -> CL-B thích ứng
+
+[S4] Ty le khach bo di theo the he (KB-B, %)
+     Gen Z (18--29)   A0=8.79  CL-A=6.07  CL-B tĩnh=4.93  CL-B thích ứng=1.41
+     Gen Y (30--44)   A0=6.86  CL-A=4.35  CL-B tĩnh=3.49  CL-B thích ứng=0.95
+     Gen X (45--60)   A0=5.57  CL-A=3.34  CL-B tĩnh=2.64  CL-B thích ứng=0.68
+     60+              A0=4.77  CL-A=2.59  CL-B tĩnh=1.91  CL-B thích ứng=0.50
+
+[M1] Du bao ngay toi: train 2024-12-23..2026-01-04, test 2026-01-05..2026-03-29
+     Kế hoạch tĩnh (hồ sơ cố định)          MAPE=18.33%  MAPE ngay su kien=45.59%  MAE gio=28.69 xe/gio
+     TB 4 tuần cùng thứ (seasonal naive)    MAPE=19.63%  MAPE ngay su kien=47.74%  MAE gio=31.57 xe/gio
+     Hồi quy Poisson GLM (học máy)          MAPE= 7.25%  MAPE ngay su kien=10.44%  MAE gio=16.14 xe/gio
+     He so: truoc Tet=0.167, Tet=-0.540, chinh gia truoc 15h=0.249, sau 15h=-0.114, ngay sau=-0.056, nguon cung=0.293; so ngay su kien trong test=25
+
+[M2] Lap lich theo du bao (so hoa, c <= 8) - mo phong 84 ngay test
+     Lịch A2 tĩnh                 Wq=0.882 P>5= 3.64% | ngay su kien: Wq=1.858 P>5=10.67% | bo di=1.60% ngay vi pham= 16.7% gio=72.00 chiphi=4176k
+     Lịch A2 + đệm 20%            Wq=0.467 P>5= 1.01% | ngay su kien: Wq=1.036 P>5= 3.18% | bo di=0.77% ngay vi pham=  7.1% gio=81.00 chiphi=4698k
+     Theo TB 4 tuần               Wq=1.086 P>5= 5.60% | ngay su kien: Wq=2.127 P>5=15.22% | bo di=2.64% ngay vi pham= 27.4% gio=70.02 chiphi=4061k
+     Theo GLM (học máy)           Wq=0.679 P>5= 1.62% | ngay su kien: Wq=1.120 P>5= 4.25% | bo di=0.80% ngay vi pham=  6.0% gio=70.48 chiphi=4088k
+     Biết trước nhu cầu (oracle)  Wq=0.474 P>5= 0.41% | ngay su kien: Wq=0.491 P>5= 0.26% | bo di=0.13% ngay vi pham=  3.6% gio=71.50 chiphi=4147k

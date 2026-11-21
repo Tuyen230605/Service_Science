@@ -1,28 +1,54 @@
 % !TeX root = _main.tex
-% ROLE 1 -- BOI CANH, HE THONG DICH VU, QUY TRINH AS-IS (muc 1--4).
-% Nguoi nhan: nhom tu dien. Muc tieu: 4--6 trang noi dung chinh.
+% ROLE 1 -- BOI CANH, MUC TIEU, HE THONG DICH VU, QUY TRINH AS-IS, MOI TRUONG CHIEN LUOC (muc 1--4).
+% Nguoi nhan: nhom tu dien. Muc tieu: 5--7 trang noi dung chinh.
 % DUOC SUA: file nay, figures/r1_*; nhan \label bat dau bang r1:.
 % KHONG SUA: role_2.tex, role_3.tex, _main.tex, _content.tex, analysis/.
-% DAU VAO: rubric, PDF Checkpoint 2, CheckPoint1/sections, figures/framework_cp1.png.
-% BAN GIAO: pham vi tram do Wq, Resource Map, BPMN AS-IS, nguyen nhan -> bien do.
-% HOAN THANH KHI: co BPMN dung ky phap, nguon/nhan AI, khong con TODO role 1.
+% DAU VAO: so lieu cong bo trong thebibliography; run_log.txt (hieu chinh quy mo).
+% BAN GIAO: pham vi do Wq, muc tieu tung bai toan, Resource Map, BPMN AS-IS, SWOT/PESTEL.
 
-\section{Bài toán và phạm vi nghiên cứu}
+\section{Bài toán, mục tiêu và phạm vi nghiên cứu}
 \label{r1:scope}
-\subsection{Vấn đề dịch vụ và câu hỏi phân tích}
-Dự án xét dịch vụ tiếp nhận triệu chứng trực tuyến, hỗ trợ tổng hợp thông tin,
-nhân viên y tế xem xét và hướng dẫn đặt lịch khám khi phù hợp. Báo cáo
-Checkpoint 2 đã mô tả hành trình từ khai báo đến xác nhận lịch và chỉ ra điểm
-chờ khi hồ sơ được chuyển cho nhân viên y tế~\cite{checkpoint2}.
-Báo cáo cuối kỳ tập trung vào một bài toán: thời gian chờ tại trạm tiếp nhận,
-phân loại yêu cầu tư vấn và cách phân bổ nhân lực theo khung giờ.
+\subsection{Bối cảnh dịch vụ}
+Hà Nội có 453 cửa hàng bán lẻ xăng dầu đang hoạt động, tiêu thụ bình quân
+khoảng 150\,000~m$^3$/tháng, trong đó xăng khoảng 110\,000~m$^3$~\cite{sct2026}.
+Chia đều, mỗi cửa hàng bán khoảng 8\,100~lít xăng/ngày. Phần lớn khách là xe
+máy với bình xăng 4,4--5,2~lít~\cite{tank}, nên một cửa hàng nội thành phục vụ
+hàng nghìn lượt xe mỗi ngày, mỗi lượt chỉ 1--4 phút~\cite{batui}. Ba thay đổi gần
+đây làm bài toán vận hành trở nên đáng phân tích:
+\begin{itemize}
+\item Từ 1/6/2025, cửa hàng phải xuất hóa đơn điện tử cho từng lần bán theo
+Nghị định 70/2025/NĐ-CP~\cite{nd70}, thêm một thao tác vào mỗi lượt phục vụ.
+\item Chiết khấu bán lẻ biến động mạnh (có lúc chỉ 100--500~đồng/lít), khiến
+cửa hàng ``càng bán càng lỗ'' nếu dùng nhân lực kém hiệu quả~\cite{chietkhau}.
+\item Chỉ thị 20/CT-TTg (12/7/2025) đặt lộ trình hạn chế xe máy chạy xăng trong
+Vành đai~1~\cite{ct20}; từ 1/7/2026 Hà Nội thí điểm vùng phát thải thấp theo
+khung giờ~\cite{lez2026}. Nhu cầu xăng nội thành vì thế có thể giảm, trong khi
+các đợt căng thẳng nguồn cung (ví dụ 17 cửa hàng tạm dừng bán đầu tháng
+3/2026) lại đẩy khách dồn về các cửa hàng còn bán~\cite{vtc2026}.
+\end{itemize}
 
-\textbf{Câu hỏi phân tích.} Trong cùng một cấu hình nhu cầu giả định, thay đổi
-số điều dưỡng theo giờ và giảm thời gian xử lý hồ sơ có thể giảm thời gian
-chờ đến mức nào, với chi phí nhân lực và rủi ro vận hành nào?
-Giá trị kỳ vọng là phản hồi kịp thời hơn cho người dùng và sử dụng nguồn lực
-phù hợp với thời điểm phát sinh nhu cầu. Kết quả được đánh giá bằng mô phỏng;
-chưa phải kết quả triển khai tại cơ sở y tế.
+\subsection{Câu hỏi trung tâm và bốn bài toán}
+\textbf{Câu hỏi trung tâm.} Với một cửa hàng xăng đại diện ở nội thành (8 vòi
+bơm, mở 06:00--22:00), \emph{bố trí bao nhiêu nhân viên bơm ở mỗi giờ và có
+nên số hóa thanh toán} để khách không phải chờ quá 5 phút, với chi phí nhân lực
+thấp nhất? Báo cáo tập trung vào một chỉ số xuyên suốt là thời gian chờ $W_q$;
+ba bài toán mở rộng chỉ được giữ khi chúng thay đổi câu trả lời cho câu hỏi
+này ở tầm dài hạn hơn. Mỗi bài toán có mục tiêu riêng (Bảng~\ref{r1:problems}),
+không gộp thành một hàm mục tiêu chung.
+
+\begin{table}[htbp]\centering\small
+\caption{Bốn bài toán, bốn mục tiêu khác nhau}\label{r1:problems}
+\begin{tabularx}{\linewidth}{@{}p{25mm}p{16mm}Y Y p{9mm}@{}}
+\toprule
+Bài toán & Tầm quyết định & Mục tiêu & Biến quyết định / chỉ số & Mục \\
+\midrule
+BT1 -- Lịch nhân viên bơm theo giờ & Vận hành (ngày) & $\min$ giờ nhân viên, ràng buộc $E[W_q]\le2$ phút, $P(W_q{>}5)\le5\%$, $c_t\le8$ & $c_t$ (kênh/giờ); $W_q$, tỷ lệ bỏ đi & \ref{r3:tobe} \\
+BT2 -- Chọn 2 trong 5 điểm mở cửa hàng & Chiến thuật (năm) & (a) $\max$ nhu cầu phục vụ trong ngưỡng $R$; (b) $\max$ lợi nhuận tháng & $y_j$, $x_{ij}$; \% phục vụ, triệu đồng/tháng & \ref{r2:location} \\
+BT3 -- Chiến lược năng lực & Chiến lược (1--3 năm) & $\min$ hối tiếc tối đa của tổng chi phí qua kịch bản A/B/C & CL-A/CL-B; chi phí kỳ vọng & \ref{r3:scenarios} \\
+BT4 -- Giữ chân khách và dự báo & Chiến lược + dữ liệu & $\min$ tỷ lệ mất khách; $\min$ sai số dự báo lượt xe & $\theta_g$, MAPE; giờ nhân viên & \ref{r2:forecast}, \ref{r3:cx} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \subsection{Ranh giới hệ thống và ranh giới phép đo}
 \begin{table}[htbp]\centering\small
@@ -31,120 +57,225 @@ chưa phải kết quả triển khai tại cơ sở y tế.
 \toprule
 Thành phần & Mô tả \\
 \midrule
-Người sử dụng & Người bệnh hoặc người nhà được ủy quyền khai báo triệu chứng. \\
-Tác nhân cung cấp & Điều dưỡng, bác sĩ, nhân viên tiếp nhận và đơn vị vận hành nền tảng. \\
-Trigger dịch vụ & Hệ thống nhận mô tả triệu chứng qua ứng dụng. \\
-Outcome dịch vụ & Hướng dẫn đã được nhân viên y tế duyệt; xác nhận lịch nếu cần khám và có chỗ. \\
-Đầu vào mô hình & Hồ sơ sẵn sàng vào hàng đợi tại trạm điều dưỡng. \\
-Đầu ra mô hình & Điều dưỡng hoàn tất xử lý tại trạm; chưa bao gồm toàn bộ thời gian tới khi có lịch khám. \\
-Ngoài mô hình & Chẩn đoán, điều trị, thanh toán, công suất bác sĩ và lịch khám phía sau; chất lượng phân loại của AI. \\
+Khách hàng & Người đi xe máy (97,3\% lượt) và ô tô (2,7\% lượt) mua xăng tại cửa hàng. \\
+Tác nhân cung cấp & Nhân viên bơm, cửa hàng trưởng, doanh nghiệp đầu mối, ngân hàng/ví điện tử, cơ quan thuế. \\
+Trigger dịch vụ & Xe vào cửa hàng và nhìn thấy hàng chờ tại các trụ bơm. \\
+Outcome dịch vụ & Xe được bơm đủ, thanh toán xong, có hóa đơn điện tử và rời trụ. \\
+Đầu vào mô hình & Thời điểm xe vào hàng chờ $a_i$ (hoặc bỏ đi nếu hàng quá dài). \\
+Đầu ra mô hình & Thời điểm rời trụ $d_i$; $W_q=b_i-a_i$ với $b_i$ là lúc nhân viên bắt đầu phục vụ. \\
+Ngoài mô hình & Chất lượng xăng, nhập hàng và tồn kho bể, an toàn phòng cháy, dịch vụ phụ (rửa xe, cửa hàng tiện lợi). \\
 \bottomrule
 \end{tabularx}
 \end{table}
-Ứng dụng có thể tiếp nhận thông tin ngoài giờ, nhưng mô phỏng hiện tại chỉ
-sinh yêu cầu trong khoảng 07:00--19:00. Việc quy đổi yêu cầu ngoài giờ thành
-hàng đợi đầu ngày chưa được mô hình hóa. Nhóm ưu tiên P1 là nhãn của mô hình;
-không đồng nhất nó với quy trình xử lý cấp cứu trong toàn bộ dịch vụ.
-\todo{1}{Chốt điểm bắt đầu/kết thúc của tác vụ điều dưỡng trên BPMN để khớp với
-\texttt{t\_arrival}, \texttt{t\_start}, \texttt{t\_end} ở role 2.}
+Cửa hàng có thể mở 24 giờ, nhưng phân tích chỉ xét 06:00--22:00, nơi tập
+trung gần như toàn bộ lượt xe. Mỗi ``kênh'' trong mô hình là một vòi bơm có
+nhân viên phục vụ; số kênh không vượt quá 8 vòi vật lý.
+
+\subsection{Tầm nhìn, sứ mệnh và mục tiêu chiến lược}
+\textbf{Tầm nhìn (3 năm).} Là cửa hàng xăng mà người đi đường chọn vì ``vào là
+được bơm ngay'', kể cả giờ tan tầm và những ngày thị trường biến động.
+
+\textbf{Sứ mệnh.} Cung cấp nhiên liệu nhanh, minh bạch hóa đơn và chi phí hợp
+lý, dùng nhân lực đúng giờ có nhu cầu và sẵn sàng chuyển dịch sang năng lượng
+sạch khi thị trường thay đổi.
+
+\textbf{Mục tiêu chiến lược (12 tháng, đo được).} Do nhóm đề xuất và kiểm chứng
+được bằng chỉ số của mô hình:
+\begin{enumerate}
+\item \emph{Đáp ứng}: $P(W_q{>}5\text{ phút})\le5\%$ và tỷ lệ khách bỏ đi vì hàng
+dài $\le1\%$ trong mọi tháng, kể cả giờ 17--19 và các ngày điều chỉnh giá.
+\item \emph{Giữ chân}: tỷ lệ mất khách do chờ $\le2\%$; riêng Gen Z $\le3\%$.
+\item \emph{Hiệu quả}: giảm ít nhất 15\% giờ nhân viên/ngày so với lịch cố định.
+\item \emph{Năng lực dữ liệu}: dự báo lượt xe ngày tới có MAPE $\le10\%$, dùng
+dữ liệu hóa đơn điện tử theo từng lần bán.
+\end{enumerate}
 
 \section{Mô hình hệ thống dịch vụ}
 \label{r1:system}
 Báo cáo dùng mô hình hệ thống dịch vụ làm khung chủ đạo để liên kết tác nhân,
-nguồn lực, hoạt động, thông tin, quy tắc và kết quả. Góc nhìn đồng tạo giá trị
-được dùng để giải thích quan hệ giữa các bên trong cùng khung, theo yêu cầu
-một khung phân tích chính của rubric~\cite{rubric}.
+nguồn lực, hoạt động, thông tin, quy tắc và kết quả~\cite{rubric}.
 \begin{table}[htbp]\centering\small
-\caption{Các thành phần của hệ thống và liên hệ với bài toán chờ}
-\begin{tabularx}{\linewidth}{@{}p{30mm}Y Y@{}}
+\caption{Các thành phần của hệ thống và liên hệ với bài toán chờ}\label{r1:components}
+\begin{tabularx}{\linewidth}{@{}p{24mm}Y Y@{}}
 \toprule
-Thành phần & Biểu hiện trong dịch vụ & Liên hệ với phân tích \\
+Thành phần & Biểu hiện tại cửa hàng & Liên hệ với phân tích \\
 \midrule
-Con người & Người khai báo, điều dưỡng, bác sĩ, tiếp nhận & Số kênh điều dưỡng hoạt động $c_t$. \\
-Hoạt động & Thu thập, kiểm tra, phân loại, chuyển tiếp & Thời gian xử lý $S$ và điểm bàn giao. \\
-Thông tin & Triệu chứng, tiền sử, mức ưu tiên, trạng thái & Tính đầy đủ có thể làm thay đổi $S$; chưa đo tỷ lệ lỗi. \\
-Công nghệ & Biểu mẫu, công cụ tổng hợp, hàng đợi, thông báo & Hỗ trợ nhân viên tiếp nhận thông tin; không suy ra độ chính xác lâm sàng. \\
-Quy tắc & Thứ tự xử lý, phân quyền, ngưỡng cảnh báo & FCFS hoặc ưu tiên không chen ngang; mục tiêu thời gian chờ. \\
-Kết quả & Hồ sơ được xử lý và chuyển đúng bước & $W_q$, P90, tỷ lệ vượt ngưỡng và chi phí quy ước. \\
+Con người & Khách xe máy/ô tô, nhân viên bơm, cửa hàng trưởng & Số kênh có nhân viên $c_t$; tỷ trọng loại xe. \\
+Hoạt động & Mời xe vào trụ, bơm, thu tiền, xuất hóa đơn & Thời gian phục vụ $S$ theo loại xe. \\
+Thông tin & Giá niêm yết, số tiền/số lít, hóa đơn điện tử & Dữ liệu từng lần bán dùng để dự báo $\lambda_t$. \\
+Công nghệ & Cột bơm, máy POS, QR/ví, ứng dụng trả trước & Số hóa giảm thời gian thanh toán (A2). \\
+Quy tắc & FCFS tại mỗi trụ, hóa đơn từng lần bán, giờ mở cửa & Ràng buộc $c_t\le8$; mục tiêu thời gian chờ. \\
+Kết quả & Xe được phục vụ, khách quay lại & $W_q$, $P(W_q{>}5)$, tỷ lệ bỏ đi, chi phí. \\
 \bottomrule
 \end{tabularx}
 \end{table}
-\todo{1}{Bổ sung nguồn học thuật đã đọc cho khung được chọn; dùng thuật ngữ nhất
-quán với bài giảng và sơ đồ. Gửi khóa trích dẫn cho người ghép bài.}
 
 \section{Bản đồ nguồn lực và cơ chế đồng tạo giá trị}
 \label{r1:resources}
 \begin{figure}[htbp]\centering
-\includegraphics[width=0.94\linewidth,height=0.48\textheight,keepaspectratio]{figures/framework_cp1.png}
-\caption{Bản đồ nguồn lực kế thừa từ Checkpoint 1, cần rà soát theo phạm vi cuối kỳ.}
+\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[node distance=10mm,
+  hub/.style={rectangle,rounded corners=4pt,draw,very thick,fill=blue!6,align=center,font=\small,minimum width=34mm,minimum height=12mm},
+  act/.style={rectangle,rounded corners=3pt,draw,thick,fill=gray!8,align=center,font=\scriptsize,minimum width=27mm,minimum height=9mm},
+  res/.style={font=\scriptsize\itshape,align=center,fill=white,inner sep=1pt}]
+\node[hub] (s) at (0,0) {Cửa hàng xăng dầu\\(8 vòi, nhân viên bơm)};
+\node[act] (c) at (-6.2,2.4) {Khách xe máy / ô tô\\(theo thế hệ)};
+\node[act] (b) at (6.2,2.4) {Doanh nghiệp đầu mối\\(nguồn hàng, chiết khấu)};
+\node[act] (p) at (-6.2,-2.4) {Ngân hàng / ví điện tử\\(QR, trả trước)};
+\node[act] (t) at (6.2,-2.4) {Cơ quan thuế,\\Sở Công Thương};
+\node[act] (e) at (0,-3.6) {Đối tác trạm sạc / đổi pin};
+\draw[<->,thick] (c) -- node[res]{tiền, thời gian,\\dữ liệu mua hàng} (s);
+\draw[<->,thick] (b) -- node[res]{xăng, giá bán lẻ\\$\leftrightarrow$ sản lượng} (s);
+\draw[<->,thick] (p) -- node[res]{hạ tầng thanh toán\\$\leftrightarrow$ phí giao dịch} (s);
+\draw[<->,thick] (t) -- node[res]{quy định, hóa đơn\\từng lần bán} (s);
+\draw[<->,thick,dashed] (e) -- node[res]{mặt bằng $\leftrightarrow$ khách xe điện} (s);
+\end{tikzpicture}}
+\caption{Bản đồ nguồn lực của cửa hàng xăng (nét đứt: quan hệ tương lai khi chuyển dịch xe điện).}
 \label{r1:resource-map}
-\source{hình \texttt{framework\_cp1.png} có sẵn trong dự án; lịch sử hỗ trợ AI cần nhóm xác nhận}
+\source{nhóm vẽ bằng TikZ dựa trên các tác nhân trong Bảng~\ref{r1:components}; Claude Code hỗ trợ dựng mã hình}
 \end{figure}
-Người sử dụng cung cấp thông tin và phối hợp trả lời; nhân viên y tế đóng góp
-tri thức và thời gian; cơ sở khám cung cấp năng lực tiếp nhận; đơn vị vận hành
-cung cấp hạ tầng và cơ chế phối hợp. Giá trị xuất hiện khi các nguồn lực được
-kết nối thành một yêu cầu có đủ thông tin để xử lý và chuyển tiếp.
+Khách hàng góp thời gian chờ, tiền và dữ liệu mua hàng; nhân viên góp thao tác
+phục vụ; đầu mối cung cấp nguồn hàng và chiết khấu; ngân hàng/ví cung cấp
+thanh toán số; cơ quan thuế đặt quy tắc hóa đơn. Giá trị (``vào là được bơm
+ngay'') chỉ xuất hiện khi các nguồn lực này khớp với nhau theo giờ: thiếu nhân
+viên giờ tan tầm hoặc thao tác thanh toán chậm đều chuyển chi phí sang thời
+gian chờ của khách. Hai cơ chế này tương ứng với hai biến quyết định $c_t$ và
+$E[S]$ của mô hình.
 
-Chậm phản hồi có thể phát sinh khi thời gian điều dưỡng không khớp nhu cầu
-theo giờ. Thông tin thiếu làm tăng công việc bổ sung và có thể kéo dài xử lý.
-Hai cơ chế này tương ứng với hai biến quyết định trong mô hình: $c_t$ và
-$E[S]$. Tuy nhiên, mức giảm $E[S]$ nhờ công cụ hỗ trợ hiện là giả định;
-bản đồ nguồn lực tự nó không chứng minh hiệu quả của công cụ.
-\todo{1}{Hoàn thiện Resource Map: đánh dấu ranh giới, 3--5 nhóm nguồn lực,
-mũi tên trao đổi, chú giải và lợi ích/chi phí/rủi ro. Nếu vẽ lại, lưu
-\texttt{figures/r1\_resource\_map.pdf} và thay hình trên.}
-
-\section{Quy trình hiện tại và chẩn đoán điểm nghẽn}
-\label{r1:asis}
-\subsection{Journey và Service Blueprint AS-IS}
-Hành trình tham chiếu gồm khai báo triệu chứng, hỏi bổ sung, chờ duyệt,
-nhận hướng dẫn, chọn lịch và xác nhận lịch~\cite{checkpoint2}. Hai điểm cần
-theo dõi là thiếu thông tin khi khai báo và không biết tiến độ trong lúc chờ.
-Blueprint cần nối các hành động này với xử lý phía sau, thay vì chỉ liệt kê
-các màn hình ứng dụng.
 \begin{table}[htbp]\centering\small
-\caption{Tóm tắt các lớp của blueprint tại điểm chờ}
-\begin{tabularx}{\linewidth}{@{}p{36mm}Y@{}}
+\caption{Bên liên quan: lợi ích hiện tại và kỳ vọng 3 năm tới}\label{r1:stakeholders}
+\begin{tabularx}{\linewidth}{@{}p{25mm}Y Y Y@{}}
 \toprule
-Lớp & Nội dung ở bước chuyển hồ sơ cho điều dưỡng \\
+Bên liên quan & Lợi ích hiện tại & Kỳ vọng dự kiến & Hệ quả cho chiến lược \\
 \midrule
-Evidence & Mã hồ sơ, trạng thái tiếp nhận và kết quả phản hồi. \\
-Customer actions & Gửi hồ sơ, theo dõi, cung cấp thông tin bổ sung. \\
-Frontstage & Hiển thị trạng thái; nhân viên tương tác khi cần bổ sung. \\
-Backstage & Kiểm tra hồ sơ, xếp hàng, điều dưỡng tiếp nhận và chuyển tiếp. \\
-Support processes & Lịch trực, phân quyền, lưu dấu thời gian và thông báo. \\
+Khách Gen Z (sinh viên, shipper) & Đổ nhanh, trả QR & Gần như không chờ; ưu đãi trên ứng dụng & Nhạy với chờ nhất; chuyển xe điện sớm \\
+Khách Gen X/60+ & Nhân viên hỗ trợ, trả tiền mặt & Vẫn được phục vụ khi không dùng ứng dụng & Giữ kênh tiền mặt, không ép số hóa \\
+Nhân viên bơm & Lương 8--12 triệu đồng/tháng~\cite{wage} & Ca ổn định, không quá tải giờ cao điểm & Lịch theo giờ cần báo trước, có ca linh hoạt có thù lao \\
+Đầu mối cung ứng & Sản lượng ổn định & Mạng lưới đổi pin/sạc tại cửa hàng~\cite{vgx} & Dùng mặt bằng cho năng lượng mới (BT2, BT3) \\
+Cơ quan quản lý & Hóa đơn minh bạch & Vùng phát thải thấp mở rộng & Nhu cầu xăng nội thành giảm dần (KB-A) \\
 \bottomrule
 \end{tabularx}
 \end{table}
-\todo{1}{Bổ sung hoặc chuyển Journey/Blueprint từ PDF mẫu; chỉ rõ line of
-interaction, line of visibility và ít nhất hai pain points. Không gọi bảng
-tóm tắt này là sơ đồ blueprint hoàn chỉnh.}
 
-\subsection{BPMN AS-IS và ngoại lệ}
-\IfFileExists{figures/r1_bpmn_asis.pdf}{%
+\section{Quy trình hiện tại và chẩn đoán điểm nghẽn}
+\label{r1:asis}
+\subsection{Hành trình khách hàng và blueprint AS-IS}
+Hành trình gồm: thấy cửa hàng $\rightarrow$ quyết định vào hay đi tiếp (nhìn độ
+dài hàng) $\rightarrow$ chờ $\rightarrow$ mở nắp bình, báo số tiền $\rightarrow$
+bơm $\rightarrow$ thanh toán, nhận hóa đơn $\rightarrow$ rời trụ.
+Hai điểm đau chính là \emph{không đoán được phải chờ bao lâu} khi nhìn hàng
+và \emph{thao tác thanh toán bằng tiền mặt, trả lại tiền thừa, xuất hóa đơn}
+kéo dài thời gian chiếm trụ.
+\begin{table}[htbp]\centering\small
+\caption{Các lớp của blueprint tại điểm chờ}\label{r1:blueprint}
+\begin{tabularx}{\linewidth}{@{}p{34mm}Y@{}}
+\toprule
+Lớp & Nội dung \\
+\midrule
+Bằng chứng hữu hình & Biển giá, đồng hồ cột bơm, hàng xe đang chờ, hóa đơn điện tử. \\
+Hành động khách & Chọn trụ, xếp hàng, mở nắp bình, báo số tiền, thanh toán. \\
+\multicolumn{2}{@{}c@{}}{\footnotesize\textit{--- đường tương tác ---}} \\
+Tuyến trước & Nhân viên mời xe, bơm, thu tiền, trả tiền thừa. \\
+\multicolumn{2}{@{}c@{}}{\footnotesize\textit{--- đường nhìn thấy ---}} \\
+Tuyến sau & Máy POS ghi giao dịch, xuất hóa đơn điện tử từng lần bán. \\
+Quy trình hỗ trợ & Lịch ca, nhập hàng, đối soát tiền mặt cuối ca, kết nối cơ quan thuế. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Sơ đồ quy trình AS-IS (BPMN rút gọn)}
 \begin{figure}[htbp]\centering
-\includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{figures/r1_bpmn_asis.pdf}
-\caption{BPMN AS-IS của quy trình tiếp nhận và phân loại.}\label{r1:bpmn}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+\def\W{18.4}
+\foreach \y/\name in {0/Khách hàng,-2.4/Nhân viên bơm,-4.8/Hệ thống POS / HĐĐT}{
+  \draw (0,\y) rectangle (\W,\y-2.4);
+  \draw (0.8,\y) -- (0.8,\y-2.4);
+  \node[rotate=90,font=\scriptsize\bfseries] at (0.4,\y-1.2) {\name};}
+\node[ev] (st) at (1.6,-1.2) {};
+\node[task] (t1) at (3.4,-1.2) {Xe vào\\cửa hàng};
+\node[gw] (g1) at (5.6,-1.2) {Hàng chờ\\$\ge$ 20 xe?};
+\node[evend] (eb) at (7.3,-0.45) {};
+\node[font=\scriptsize,anchor=west] at (7.7,-0.45) {bỏ đi (balk)};
+\node[task] (t2) at (8.4,-1.6) {Xếp hàng\\chờ tới lượt};
+\node[task] (t3) at (10.6,-3.6) {Mời xe vào trụ,\\hỏi số tiền/số lít};
+\node[task] (t4) at (13.0,-3.6) {Bơm xăng};
+\node[task] (t5) at (13.0,-1.2) {Thanh toán\\tiền mặt / QR};
+\node[task] (t6) at (15.6,-6.0) {Xuất hóa đơn\\điện tử từng lần};
+\node[task] (t7) at (15.6,-1.2) {Nhận hóa đơn,\\rời trụ};
+\node[evend] (en) at (17.7,-1.2) {};
+\draw[flow] (st) -- (t1);
+\draw[flow] (t1) -- (g1);
+\draw[flow] (g1.north) |- node[pos=0.25,left,font=\scriptsize]{có} (eb);
+\draw[flow] (g1.east) -- node[above,font=\scriptsize]{không} ++(0.6,0) |- (t2);
+\draw[flow] (t2) |- (t3);
+\draw[flow] (t3) -- (t4);
+\draw[flow] (t4) -- (t5);
+\draw[flow] (t5.east) -- ++(0.35,0) |- (t6.west);
+\draw[flow] (t6.north) -- (t7.south);
+\draw[flow] (t7) -- (en);
+\node[tmark,anchor=west] at (9.5,-1.6) {$a_i$: vào hàng};
+\node[tmark] at (10.6,-4.35) {$b_i$: bắt đầu phục vụ};
+\node[tmark] at (15.6,-0.35) {$d_i$: rời trụ};
+\end{tikzpicture}}
+\caption{Quy trình AS-IS tại một vòi bơm; nhãn đỏ là các mốc thời gian dùng để đo $W_q=b_i-a_i$ và $S=d_i-b_i$.}
+\label{r1:bpmn}
+\source{nhóm vẽ bằng TikZ theo ký pháp BPMN rút gọn (sự kiện, tác vụ, cổng XOR, làn); Claude Code hỗ trợ dựng mã hình}
 \end{figure}
-}{\placeholder{BPMN AS-IS -- role 1}{Xuất sơ đồ thành
-\texttt{figures/r1\_bpmn\_asis.pdf}; báo cáo sẽ tự chèn khi file tồn tại.
-Cần có start/end, lane/pool, task, gateway khi có rẽ nhánh, nhánh thiếu
-thông tin và điểm bàn giao vào hàng đợi.}}
-\todo{1}{Đối chiếu \texttt{assests/diagram.bpmn} và các sơ đồ checkpoint;
-chọn đúng AS-IS. Kiểm tra sequence flow trong pool, message flow giữa pool,
-nhánh ngoại lệ và ghi nguồn/AI ngay dưới sơ đồ.}
+Thời gian phục vụ $S$ gồm cả bơm, thanh toán và xuất hóa đơn: trụ chỉ được giải
+phóng khi khách rời đi. Vì vậy cải tiến thanh toán (A2) rút ngắn trực tiếp
+thời gian chiếm trụ dù tốc độ bơm không đổi.
+\todo{1}{Đối chiếu sơ đồ với quan sát tại một cửa hàng thật (bấm giờ 30--50 lượt
+mỗi loại xe), sửa nhánh ngoại lệ nếu có (hết loại xăng, lỗi POS).}
 
 \subsection{Từ điểm nghẽn đến biến đo}
 \begin{table}[htbp]\centering\small
-\caption{Các giả thuyết chẩn đoán cần đối chiếu với dữ liệu}
+\caption{Giả thuyết chẩn đoán và biến kiểm tra}\label{r1:diagnosis}
 \begin{tabularx}{\linewidth}{@{}Y Y Y@{}}
 \toprule
 Điểm trên quy trình & Cơ chế giả định & Biến kiểm tra \\
 \midrule
-Chờ điều dưỡng nhận hồ sơ & Công suất cố định trong khi nhu cầu biến thiên & $\lambda_t$, $c_t$, $\rho_t$, $W_q$. \\
-Yêu cầu bổ sung thông tin & Thiếu dữ liệu làm kéo dài thao tác & $E[S]$, CV; mô hình chưa tách riêng vòng rework. \\
-Hồ sơ ưu tiên chờ cùng hàng & FCFS không phản ánh mức ưu tiên & $W_q$ theo P1/P2/P3. \\
-Chuyển tiếp sang lịch khám & Có thể có điểm nghẽn sau trạm điều dưỡng & Cần dữ liệu riêng; ngoài mô phỏng hiện tại. \\
+Hàng dài giờ tan tầm & Lịch nhân viên cố định trong khi lượt xe dao động theo giờ & $\lambda_t$, $c_t$, $\rho_t$, $W_q$ theo giờ \\
+Khách bỏ đi & Thấy hàng dài nên sang cửa hàng khác & Tỷ lệ bỏ đi (balking) \\
+Chiếm trụ lâu & Tiền mặt, tiền thừa, hóa đơn từng lần bán & $E[S]$ theo loại xe; CV \\
+Ngày có sự kiện & Điều chỉnh giá thứ Năm, Tết, căng thẳng nguồn cung & Sai số dự báo $\lambda_t$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\subsection{Môi trường chiến lược: SWOT và PESTEL}
+\begin{table}[htbp]\centering\small
+\caption{SWOT của cửa hàng đại diện}\label{r1:swot}
+\begin{tabularx}{\linewidth}{@{}Y Y@{}}
+\toprule
+\textbf{Điểm mạnh (S)} & \textbf{Điểm yếu (W)} \\
+Vị trí nội thành, lượng khách lớn; có dữ liệu hóa đơn từng lần bán để đo và dự báo nhu cầu. &
+Lịch nhân viên cố định; thanh toán tiền mặt kéo dài thời gian chiếm trụ; tối đa 8 vòi. \\
+\midrule
+\textbf{Cơ hội (O)} & \textbf{Thách thức (T)} \\
+Thanh toán QR/ứng dụng trả trước; dùng mặt bằng cho trạm sạc, đổi pin~\cite{vgx}; đối thủ đóng cửa khi chiết khấu thấp. &
+Chuyển dịch sang xe điện và vùng phát thải thấp~\cite{ct20,lez2026}; đứt gãy nguồn cung~\cite{vtc2026}; biên lợi nhuận mỏng~\cite{chietkhau}. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]\centering\small
+\caption{PESTEL: yếu tố dẫn dắt và kịch bản tương ứng ở Mục~\ref{r3:scenarios}}\label{r1:pestel}
+\begin{tabularx}{\linewidth}{@{}p{21mm}Y p{17mm}@{}}
+\toprule
+Yếu tố & Biểu hiện có nguồn & Kịch bản \\
+\midrule
+Chính trị (P) & Chỉ thị 20/CT-TTg; Đề án vùng phát thải thấp trong Vành đai~1 từ 1/7/2026, cấm theo khung giờ tại khu vực thí điểm~\cite{ct20,lez2026} & KB-A \\
+Kinh tế (E) & Giá điều chỉnh hằng tuần (kỳ 5/11/2026 giảm 2\,075 đồng/lít, kỳ 12/11 giảm 1\,310 đồng/lít~\cite{moit2026}); chiết khấu bán lẻ thấp~\cite{chietkhau} & KB-B, KB-C \\
+Xã hội (S) & Hà Nội đăng ký mới hơn 255\,000 xe máy năm 2025~\cite{reg2025}; xe máy xăng vẫn chiếm 97\% trong Vành đai~1~\cite{xe97} & KB-B \\
+Công nghệ (T) & Thanh toán QR, hóa đơn điện tử; mạng lưới đổi pin tại cửa hàng xăng~\cite{vgx} & KB-A \\
+Môi trường (E) & Mục tiêu giảm phát thải giao thông đô thị & KB-A \\
+Pháp lý (L) & Hóa đơn điện tử từng lần bán (NĐ 70/2025)~\cite{nd70}; lộ trình cấm có thể lùi tới 2028~\cite{tt2028} & Mọi KB \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Các yếu tố trên cho thấy hai bất định lớn: \emph{chiều nhu cầu} (giảm do xe
+điện hay tăng do đối thủ đóng cửa) và \emph{cú sốc ngắn hạn} (đứt gãy nguồn
+cung, điều chỉnh giá). Đây là cơ sở để xây ba kịch bản A/B/C ở Mục~\ref{r3:scenarios}.
+\todo{1}{Mở và đọc lại từng nguồn báo chí/văn bản trong \texttt{thebibliography}
+trước khi nộp; nếu nội dung khác số liệu trích, báo người ghép bài sửa.}

@@ -1,104 +1,55 @@
-# FinalProject — viết báo cáo song song cho 3 người
+# FinalProject — Cửa hàng xăng dầu nội thành Hà Nội (Nhóm 8, INT3501)
 
-Bản khởi tạo theo hình thức báo cáo Checkpoint 2: A4, chữ serif, bìa UET có
-khung, thông tin nhóm 8, mục lục, các mục đánh số và chú thích bảng/hình.
-Nội dung được tổ chức theo rubric dự án cuối kỳ, hướng tới 12–20 trang chính
-sau khi hoàn thiện. Đây là bản làm việc có TODO, chưa phải bản nộp hoàn chỉnh.
+Đề tài: hàng đợi, phân bổ nhân viên bơm và chiến lược dịch vụ tại một cửa hàng
+xăng đại diện ở nội thành Hà Nội (8 vòi, mở 06:00–22:00). Báo cáo A4, bìa UET,
+viết song song bởi 3 người. Đây là bản làm việc có TODO, chưa phải bản nộp.
 
 ## Hai file điều phối
 
-- `_main.tex`: file mở để biên dịch; quản lý package, định dạng, bìa và mục lục.
-- `_content.tex`: ghép ba role, tài liệu tham khảo và các phụ lục chung.
-
-Người dùng đã chỉ định tên `_main.tex`; file điều phối thứ hai được đặt là
-`_content.tex` để tách cấu hình khỏi thứ tự nội dung. Mỗi role được `\input`
-đúng một lần. Không đặt `\documentclass` hay `\begin{document}` trong role.
+- `_main.tex`: preamble, bìa, mục lục, macro `\resulttable`, `\exttable` và kiểu TikZ dùng chung.
+- `_content.tex`: ghép ba role, tài liệu tham khảo (có URL nguồn) và phụ lục.
 
 ## Phân công
 
-| File | Người nhận | Phạm vi | Đầu ra phải có |
+| File | Người nhận | Phạm vi | Đầu ra chính |
 |---|---|---|---|
-| `role_1.tex` | Nhóm điền | Mục 1–4: bài toán, hệ thống, nguồn lực, AS-IS | Resource Map, Journey/Blueprint, BPMN AS-IS, điểm nghẽn gắn với biến đo |
-| `role_2.tex` | Nhóm điền | Mục 5–6: dữ liệu, giả định, hàng đợi, mô phỏng, AS-IS | Tham số, công thức có nguồn, kiểm chứng, kết quả A0, giới hạn |
-| `role_3.tex` | Nhóm điền | Mục 7–9: TO-BE, đối chứng, độ nhạy, kết luận | Quy tắc cải tiến, bảng so sánh, đánh đổi, rủi ro và kết luận có điều kiện |
+| `role_1.tex` | Nhóm điền | Mục 1–4: bối cảnh, 4 bài toán/4 mục tiêu, tầm nhìn–sứ mệnh, hệ thống dịch vụ, Resource Map, bên liên quan, Blueprint, BPMN AS-IS, SWOT, PESTEL | Mục tiêu đo được, sơ đồ AS-IS có mốc đo $a_i,b_i,d_i$ |
+| `role_2.tex` | Nhóm điền | Mục 5–7: hiệu chỉnh từ số liệu công bố, M/M/c, mô phỏng, kiểm chứng, AS-IS, định vị 2/5 điểm, dự báo học máy | Bảng tham số có đơn vị và loại căn cứ (R/E/G) |
+| `role_3.tex` | Nhóm điền | Mục 8–11: A0/A1/A2, lịch tối ưu, TO-BE, độ nhạy, rủi ro, kịch bản A/B/C, trải nghiệm khách hàng, kết luận | Quyết định có số liệu và đề xuất định hướng |
 
-Mỗi role có hướng dẫn đầu file, bản nháp nội dung, nguồn đầu vào, đầu ra bàn
-giao và TODO cụ thể. Mục tiêu khoảng 4–6 trang/người; điều chỉnh theo độ sâu
-phân tích và dung lượng rubric, không thêm trang chỉ để đủ số lượng.
+Quy tắc làm song song giữ nguyên: mỗi người chỉ sửa role của mình, hình mới đặt
+`figures/rx_*`, label dùng tiền tố `r1:`, `r2:`, `r3:`; không sửa tay bảng sinh
+từ Python; mọi số trong đoạn văn phải khớp log của lần chạy cuối.
 
-## Quy tắc để làm song song
-
-1. Mỗi người chỉ sửa `role_x.tex` của mình; hình mới đặt `figures/rx_*`.
-   Label dùng tiền tố `r1:`, `r2:`, `r3:`. Dùng `\ref{...}` thay vì tự gõ số.
-2. Chọn một người ghép bài quản lý hai file điều phối, nguồn trích dẫn và
-   phụ lục AI. Không tự thay package, font hoặc thứ tự mục ở từng role.
-3. Role 2 là đầu mối `analysis/`. Role 3 có thể viết ngay từ các bảng hiện có;
-   khi cần đổi kịch bản, thống nhất với role 2 trước khi chạy lại. Không sửa
-   tay bảng do Python sinh. Mọi số trong đoạn văn phải cập nhật theo cùng lần chạy.
-4. Giao diện chung: Wq là thời gian từ vào hàng đợi điều dưỡng đến bắt đầu
-   xử lý, đơn vị phút; lambda là yêu cầu/giờ; c là số kênh; A0/A1/A2 giữ nguyên
-   tên và định nghĩa trong `role_3.tex`.
-5. Thêm nguồn mới: đọc và kiểm chứng tài liệu, gửi khóa/tên nguồn cho người
-   ghép bài để thêm vào `thebibliography` trong `_content.tex`. Các nguồn hiện
-   tại là tài liệu và mã nội bộ; còn TODO bổ sung nguồn học thuật cho lý thuyết.
-6. Điền lịch sử AI theo thành phần. Chưa biết lịch sử của tài sản cũ thì ghi
-   chưa xác nhận; không tự nhận đã kiểm chứng hoặc đã tự vẽ.
-
-## Prompt giao cho từng người / phiên làm việc
-
-**Role 1:** “Đọc README và comment đầu role_1.tex. Hoàn thiện mục 1–4 theo
-rubric và PDF Checkpoint 2. Chỉ sửa role_1.tex và figures/r1_*. Ưu tiên BPMN
-AS-IS đúng ký pháp, Resource Map và ranh giới đo Wq. Không bịa dữ liệu quan sát.
-Biên dịch qua _main.tex và bàn giao nguồn cùng các TODO chưa xử lý.”
-
-**Role 2:** “Đọc README và comment đầu role_2.tex. Hoàn thiện dữ liệu, phương
-pháp và kiểm chứng. Rà soát sai lệch tải cao, sự kiện đổi công suất tại ranh
-giới giờ và tái lập đầu ra. Chỉ sửa role_2.tex, figures/r2_* và analysis/ khi
-cần; báo role 3 mọi thay đổi số liệu. Phân biệt mô phỏng với quan sát thực.”
-
-**Role 3:** “Đọc README và comment đầu role_3.tex. Hoàn thiện TO-BE, so sánh,
-độ nhạy và kết luận từ bảng có nguồn. Chỉ sửa role_3.tex và figures/r3_*.
-Không quy tác động A2 riêng cho AI; nêu chi phí chưa tính, mục tiêu phần đuôi
-và giới hạn kiểm chứng. Chốt số liệu với role 2 trước khi kết luận.”
-
-## Biên dịch
-
-Từ thư mục `Subbmittion/FinalProject`:
+## Chạy lại phân tích
 
 ```bash
-mkdir -p build
-latexmk -pdf -interaction=nonstopmode -file-line-error -outdir=build _main.tex
+cd analysis
+python3 run_analysis.py        # BT1: AS-IS, A0/A1/A2, độ nhạy, rủi ro -> data/run_log.txt
+python3 extension_analysis.py  # BT2–BT4: định vị, kịch bản, khách hàng, học máy -> data/ext_run_log.txt
 ```
 
-Hoặc dùng Tectonic (đã hỗ trợ nhánh Unicode trong preamble):
+Chỉ cần `numpy` và `matplotlib`. Hai script chạy khoảng 15 giây mỗi script.
+
+## Biên dịch
 
 ```bash
 tectonic --keep-logs --outdir build _main.tex
 ```
 
-PDF: `build/_main.pdf`. Trong VS Code/LaTeX Workshop, mở `_main.tex` và Build;
-đầu mỗi role có magic comment trỏ tới file này. pdfLaTeX cần gói tiếng Việt
-`vietnam`; Tectonic/XeLaTeX dùng TeX Gyre Termes, TeX Gyre Heros và Latin Modern
-Mono trong TeX Live. Không cần biber vì bản này dùng `thebibliography`.
+## Trạng thái dữ liệu
 
-Bản khởi tạo đã biên dịch bằng Tectonic: 20 trang tổng cộng, trong đó 16 trang
-nội dung chính. Đã xem bìa và các trang đại diện, kiểm tra tham chiếu và font
-tiếng Việt. Nhánh pdfLaTeX được cung cấp cho cấu hình repository, chưa chạy
-trên máy này vì không có trình biên dịch đó.
-
-## Trạng thái số liệu và việc còn lại
-
-- Đã ghép hình/bảng có sẵn, không chạy lại hoặc sửa mô phỏng khi tạo khung.
-- Thiếu BPMN AS-IS hoàn chỉnh: role 1 xuất `figures/r1_bpmn_asis.pdf`, được
-  tự chèn vào báo cáo. Journey/Blueprint và Resource Map cũng cần rà soát.
-- Kiểm chứng tải cao hiện lệch khoảng −36.5%; cần làm rõ trước khi gọi mô
-  phỏng là đã được kiểm chứng. Code chưa có sự kiện đổi ca độc lập.
-- Bảng `tab_validation.tex` có cách in NaN thành vô cực. Bản nháp trình bày
-  bốn cấu hình đã chạy và diễn giải riêng trường hợp không ổn định.
-- Bảng `tab_assumptions.tex` ghi khoảng lambda 6–12 dù cấu hình thực là 4–12.
-  Bản nháp dùng bảng giả định lấy trực tiếp từ CONFIG; bảng gốc chưa sửa.
-- Kết quả độ nhạy dùng 30 ngày và seed khác so sánh chính 20 ngày; không
-  diễn giải dòng nhu cầu ×1.0 như cùng một lần chạy.
-- Trước khi nộp: xử lý TODO, kiểm tra nguồn/AI, đồng bộ số liệu, kiểm tra sơ
-  đồ và dung lượng. Chỉ chuyển `\drafttrue` sang `\draftfalse` sau khi đã
-  xử lý công việc; tắt hiển thị TODO không có nghĩa nội dung đã hoàn thành.
+- **Số liệu công bố (R)**: 453 cửa hàng và 110.000 m³ xăng/tháng ở Hà Nội; dân số
+  quận 2019; lương nhân viên bán xăng; chiết khấu bán lẻ; giá điều chỉnh 11/2026;
+  Tết 2025/2026; đợt 17 cửa hàng tạm dừng bán 3/2026; Chỉ thị 20 và vùng phát thải thấp.
+  Nguồn ghi trong `thebibliography`; được tìm ngày 21/11/2026, **nhóm cần mở lại
+  từng URL để kiểm chứng**.
+- **Ước tính (E)** từ số liệu công bố: lượt xe/ngày, tỷ trọng xe máy, chi phí giờ
+  nhân viên, CLV.
+- **Giả định (G)**: phân bố theo giờ, thời gian phục vụ, ngưỡng bỏ đi 20 xe, mức
+  giảm 20% khi số hóa, tọa độ/chi phí 5 điểm ứng viên, độ kiên nhẫn theo thế hệ.
+- Lượt xe đến và lịch sử nhu cầu cho học máy là **mô phỏng**. Khi có dữ liệu hóa
+  đơn điện tử theo giờ của một cửa hàng thật, thay `HOURLY_SHARE`, `SERVICE_ASIS`
+  và lịch sử trong `extension_analysis.py` rồi chạy lại.
+- Nội dung chính hiện khoảng 26 trang, vượt khung 12–20 trang của rubric; có thể
+  chuyển SWOT/PESTEL, ma trận phủ, bảng ứng dụng học máy và hình độ nhạy sang phụ lục.

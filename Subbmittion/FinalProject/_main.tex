@@ -22,9 +22,10 @@
 \usepackage{setspace,indentfirst,enumitem}
 \usepackage{float,placeins}
 \usepackage{tikz}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc,positioning,arrows.meta,shapes.geometric,fit,backgrounds}
 \usepackage[font=small,labelfont=bf,justification=centering]{caption}
 \usepackage[hidelinks,unicode]{hyperref}
+\usepackage{xurl}
 \setstretch{1.3}
 \setlength{\emergencystretch}{2em}
 \setlist{nosep,leftmargin=*}
@@ -35,7 +36,7 @@
 \renewcommand{\refname}{Tài liệu tham khảo}
 \renewcommand{\appendixname}{Phụ lục}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\hypersetup{pdftitle={Phân tích thời gian chờ tại trạm tiếp nhận và phân loại yêu cầu tư vấn trực tuyến},pdfauthor={Nhóm 8 -- INT3501}}
+\hypersetup{pdftitle={Phân tích hàng đợi và chiến lược dịch vụ tại cửa hàng xăng dầu nội thành Hà Nội},pdfauthor={Nhóm 8 -- INT3501}}
 
 % De hien TODO trong ban lam viec; doi thanh \draftfalse khi cac TODO da xu ly.
 % Tat hien thi KHONG thay the viec hoan thanh cong viec.
@@ -52,6 +53,23 @@
   \resizebox{\linewidth}{!}{\input{analysis/tables/#1}}
   \source{\texttt{analysis/tables/\detokenize{#1}}; dữ liệu mô phỏng có sẵn trong dự án}
   \end{table}}
+% Bang sinh tu Python giu kich thuoc tu nhien, chi thu nho khi rong hon le.
+\newcommand{\exttable}[3]{\begin{table}[htbp]\centering\small
+  \caption{#2}\label{#3}
+  \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{analysis/tables/#1}}
+  \source{\texttt{analysis/tables/\detokenize{#1}}; dữ liệu mô phỏng, quy mô hiệu chỉnh từ số liệu công bố}
+  \end{table}}
+% Ky phap so do quy trinh (BPMN rut gon) dung chung cho role 1 va role 3.
+\tikzset{
+  task/.style={rectangle,rounded corners=3pt,draw,thick,align=center,font=\scriptsize,
+    minimum width=21mm,minimum height=9mm,fill=white},
+  gw/.style={diamond,draw,thick,aspect=1.4,align=center,font=\scriptsize,inner sep=1pt,fill=white},
+  ev/.style={circle,draw,thick,minimum size=6mm,fill=white},
+  evend/.style={circle,draw,line width=2pt,minimum size=6mm,fill=white},
+  flow/.style={-{Stealth[length=2mm]},thick},
+  msg/.style={-{Stealth[length=2mm,open]},dashed},
+  lane/.style={draw,thin,minimum height=17mm,anchor=north west},
+  tmark/.style={font=\scriptsize\itshape,text=red!60!black}}
 
 \begin{document}
 \hypersetup{pageanchor=false}
@@ -71,8 +89,8 @@
 
 {\large\bfseries BÁO CÁO CUỐI KỲ}\\[6mm]
 {\Large\bfseries KHOA HỌC DỊCH VỤ}\\[8mm]
-{\large\bfseries Phân tích thời gian chờ và phân bổ nhân lực\\
-tại trạm tiếp nhận, phân loại yêu cầu tư vấn trực tuyến}
+{\large\bfseries Hàng đợi, phân bổ nhân lực và chiến lược dịch vụ\\
+tại cửa hàng xăng dầu nội thành Hà Nội}
 \end{center}
 \vspace{10mm}
 \noindent\begin{tabular}{@{}lll@{}}

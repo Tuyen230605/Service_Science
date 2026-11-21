@@ -1,14 +1,15 @@
 """Chuong trinh phan tich chinh cho du an INT3501 - Nhom 8.
+De tai: hang doi va phan bo nhan vien tai mot cua hang xang dau noi thanh Ha Noi.
 
 Chay:  python3 run_analysis.py
 Dau ra: data/*.csv, tables/*.tex, ../figures/*.png
 
-CANH BAO VE DU LIEU: toan bo du lieu su dung trong bao cao la DU LIEU MO PHONG
-duoc sinh bang `simulate.py` voi cac gia dinh ghi trong CONFIG duoi day. Du lieu
-nay KHONG phai du lieu quan sat thuc te tai mot co so y te. Cac tham so dau vao
-(cuong do den theo gio, thoi gian xu ly, ty le muc uu tien) duoc dat theo thu
-nguyen hop ly cua mot phong kham ngoai tru quy mo vua va duoc khai bao minh bach
-de nguoi doc co the thay the bang du lieu thuc khi co.
+DU LIEU: luot den theo gio la DU LIEU MO PHONG, nhung QUY MO nhu cau duoc hieu
+chinh tu so lieu cong bo (Ha Noi tieu thu ~110.000 m3 xang/thang, 453 cua hang
+ban le - So Cong Thuong Ha Noi; dung tich binh xang xe may 4,4-5,2 L; luong
+nhan vien ban xang 8-12 trieu dong/thang theo tin tuyen dung). Cac tham so con
+lai (phan bo theo gio, thoi gian phuc vu) la GIA DINH co can cu, ghi trong
+CONFIG va trong bang tab_assumptions.tex de thay bang so do thuc khi co.
 """
 
 from __future__ import annotations
@@ -30,35 +31,65 @@ for d in (DATA, TABLES, FIGS):
     os.makedirs(d, exist_ok=True)
 
 # ---------------------------------------------------------------- CONFIG ----
-OPEN_HOUR = 7                       # cua so tiep nhan 07:00-19:00
-HOURS = 12
-DAYS = 20                           # 20 ngay lam viec mo phong
+OPEN_HOUR = 6                       # cua so phan tich 06:00-22:00
+HOURS = 16
+DAYS = 20                           # 20 ngay mo phong
 
-# Gia dinh G1: cuong do den theo gio (yeu cau/gio), tong ~100 yeu cau/ngay
-HOURLY_LAMBDA = [6, 10, 12, 11, 8, 5, 7, 10, 11, 9, 7, 4]
+# --- Hieu chinh quy mo tu so lieu cong bo (R = real/cong bo, E = uoc tinh) ---
+HN_PETROL_M3_MONTH = 110_000        # R: m3 xang/thang toan Ha Noi (So Cong Thuong)
+HN_STORES = 453                     # R: so cua hang ban le xang dau dang hoat dong
+DAYS_PER_MONTH = 30
+LITRES_PER_STORE_DAY = HN_PETROL_M3_MONTH * 1000 / HN_STORES / DAYS_PER_MONTH  # ~8.094 L
+MOTO_VOLUME_SHARE = 0.75            # E: 5,6 trieu xe may x ~0,5 L/ngay ~ 84.000 m3/thang
+LITRES_PER_VISIT = {1: 30.0, 2: 2.5}  # E: o to (binh 40-50 L); xe may (binh 4,4-5,2 L)
 
-# Gia dinh G2: co cau muc uu tien sau phan loai
-CLASS_MIX = {1: 0.12, 2: 0.58, 3: 0.30}
-CLASS_NAME = {1: "P1 – Khẩn", 2: "P2 – Thường", 3: "P3 – Thấp"}
+VISITS_CAR = LITRES_PER_STORE_DAY * (1 - MOTO_VOLUME_SHARE) / LITRES_PER_VISIT[1]
+VISITS_MOTO = LITRES_PER_STORE_DAY * MOTO_VOLUME_SHARE / LITRES_PER_VISIT[2]
+VISITS_DAY = VISITS_CAR + VISITS_MOTO
 
-# Gia dinh G3: thoi gian xu ly mot yeu cau tai tram dieu duong
-MEAN_SERVICE_ASIS = 9.0             # phut, chua co ban tom tat tu dong
-MEAN_SERVICE_TOBE = 6.0             # phut, co ban tom tat do AI chuan bi
-CV_SERVICE = 1.25                   # he so bien thien quan sat tu du lieu mo phong
+# Gia dinh G1: ty trong luot den theo gio 06-22 (hai dinh di lam / tan tam)
+HOURLY_SHARE = [0.045, 0.075, 0.085, 0.065, 0.055, 0.055, 0.060, 0.050,
+                0.050, 0.055, 0.065, 0.085, 0.090, 0.070, 0.050, 0.045]
+HOURLY_LAMBDA = [int(round(VISITS_DAY * w)) for w in HOURLY_SHARE]  # xe/gio
 
-# Gia dinh G4: lich truc hien tai va chi phi
-SERVERS_ASIS = [2] * HOURS
-COST_PER_SERVER_HOUR = 120_000      # VND/gio/dieu duong
+# Gia dinh G2: co cau loai xe (theo so luot) suy tu hieu chinh tren
+CLASS_MIX = {1: VISITS_CAR / VISITS_DAY, 2: VISITS_MOTO / VISITS_DAY}
+CLASS_NAME = {1: "Ô tô", 2: "Xe máy"}
 
-# Muc dich vu cam ket (service level targets)
-TARGET_WQ_MEAN = 10.0               # phut
-TARGET_T = 15.0                     # nguong "cho qua lau" (phut)
-TARGET_TAIL = 0.05                  # P(Wq > 15 phut) <= 5%
-TARGET_WQ_P1 = 5.0                  # phut, rieng nhom uu tien P1
-C_MAX = 5
+# Gia dinh G3: thoi gian phuc vu tai vi tri bom (phut/xe): mo nap, bom, thanh toan,
+# xuat hoa don dien tu tung lan ban (ND 70/2025). Tai lieu: 1-4 phut/xe may.
+SERVICE_ASIS = {1: 4.0, 2: 1.5}
+DIGITAL_GAIN = 0.20                 # TO-BE: tra truoc QR/ung dung giam 20% thoi gian
+SERVICE_TOBE = {k: v * (1 - DIGITAL_GAIN) for k, v in SERVICE_ASIS.items()}
+CV_SERVICE = 0.8
 
+
+def mix_mean(svc):
+    return sum(CLASS_MIX[k] * svc[k] for k in svc)
+
+
+MEAN_SERVICE_ASIS = mix_mean(SERVICE_ASIS)   # ~1,57 phut
+MEAN_SERVICE_TOBE = mix_mean(SERVICE_TOBE)   # ~1,25 phut
+
+# Gia dinh G4: lich hien tai, gioi han vat ly va chi phi
+SERVERS_ASIS = [6] * HOURS          # 6 nhan vien bom moi gio
+C_MAX = 8                           # 8 voi bom -> toi da 8 kenh
+WAGE_MONTH = 10_000_000             # R: 8-12 trieu dong/thang (tin tuyen dung)
+COST_PER_SERVER_HOUR = 58_000       # dong/gio = 10 trieu x 1,215 (BHXH) / 208 gio
+TECH_COST_DAY = 250_000             # E: dong/ngay cho ung dung tra truoc + QR (TO-BE)
+MARGIN_PER_LITRE = 1_500            # E: dong/L lai gop ban le; chiet khau thuc te 2025 dao dong 500-2.600 d/L
+
+# Gia dinh G5: khach bo di (balking) khi thay qua nhieu xe dang cho
+BALK_QUEUE = 20                     # xe dang cho (~2,5-3 xe moi voi o gio cao diem)
+
+# Muc dich vu nhom dat ra
+TARGET_WQ_MEAN = 2.0                # phut
+TARGET_T = 5.0                      # nguong "cho qua lau" (phut)
+TARGET_TAIL = 0.05                  # P(Wq > 5 phut) <= 5%
+
+PEAK = (11, 13)                     # chi so khung 17:00-19:00 (cao diem tan tam)
 SEED = 20260117
-LABEL = "Du lieu mo phong (simulated), khong phai du lieu thuc te"
+LABEL = "Du lieu mo phong, quy mo hieu chinh tu so lieu cong bo"
 
 # Mau ve (palette da kiem dinh, che do sang)
 C_BLUE, C_ORANGE, C_AQUA = "#2a78d6", "#eb6834", "#1baf7a"
@@ -69,196 +100,159 @@ def hour_label(h: int) -> str:
     return f"{OPEN_HOUR + h:02d}-{OPEN_HOUR + h + 1:02d}"
 
 
+def sim_config(servers, service, lam=None, days=DAYS, seed=SEED, cv=CV_SERVICE,
+               balk=BALK_QUEUE):
+    return SimConfig(hourly_lambda=lam or HOURLY_LAMBDA, class_mix=CLASS_MIX,
+                     mean_service_min=mix_mean(service), cv_service=cv,
+                     servers_by_hour=servers, priority_rule=False, days=days,
+                     seed=seed, service_by_class=service, balk_queue=balk)
+
+
 # ------------------------------------------------- 1. SINH DU LIEU & ETL ----
 def generate_dataset():
-    cfg = SimConfig(
-        hourly_lambda=HOURLY_LAMBDA, class_mix=CLASS_MIX,
-        mean_service_min=MEAN_SERVICE_ASIS, cv_service=CV_SERVICE,
-        servers_by_hour=SERVERS_ASIS, priority_rule=False,
-        days=DAYS, seed=SEED,
-    )
-    reqs, util = run(cfg)
+    reqs, util = run(sim_config(SERVERS_ASIS, SERVICE_ASIS))
     path = os.path.join(DATA, "requests_asis_simulated.csv")
     with open(path, "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["data_label", "day", "request_id", "priority", "hour_slot",
+        w.writerow(["data_label", "day", "vehicle_id", "vehicle_class", "hour_slot",
                     "t_arrival_min", "t_service_start_min", "t_service_end_min",
-                    "service_min", "wait_min"])
+                    "service_min", "wait_min", "balked"])
         for r in reqs:
-            w.writerow(["SIMULATED", r.day, r.rid, r.priority,
+            w.writerow(["SIMULATED", r.day, r.rid, CLASS_NAME[r.priority],
                         hour_label(min(int(r.t_arrival // 60), HOURS - 1)),
                         round(r.t_arrival, 3), round(r.t_start, 3),
-                        round(r.t_end, 3), round(r.service, 3), round(r.wq, 3)])
+                        round(r.t_end, 3), round(r.service, 3), round(r.wq, 3), int(r.balked)])
     return reqs, util, path
 
 
 def estimate_parameters(reqs):
-    """Uoc luong lambda theo gio, E[S], CV va kiem tra gia dinh Poisson."""
     rows = []
     for h in range(HOURS):
         n = sum(1 for r in reqs if int(r.t_arrival // 60) == h)
-        lam_hat = n / DAYS
-        # kiem tra Poisson tho: ty so phuong sai/trung binh cua so luot den
-        per_day = [sum(1 for r in reqs if r.day == d and int(r.t_arrival // 60) == h)
-                   for d in range(1, DAYS + 1)]
-        arr = np.array(per_day, dtype=float)
-        vmr = float(arr.var(ddof=1) / arr.mean()) if arr.mean() > 0 else float("nan")
-        rows.append({"hour": hour_label(h), "n_total": n, "lambda_hat": lam_hat,
-                     "lambda_assumed": HOURLY_LAMBDA[h], "var_mean_ratio": vmr})
-    svc = np.array([r.service for r in reqs])
-    svc_stats = {"n": len(svc), "mean": float(svc.mean()), "sd": float(svc.std(ddof=1)),
-                 "cv": float(svc.std(ddof=1) / svc.mean()),
-                 "p50": float(np.percentile(svc, 50)),
-                 "p90": float(np.percentile(svc, 90)),
-                 "mu_per_hour": 60.0 / float(svc.mean())}
-    return rows, svc_stats
+        per_day = np.array([sum(1 for r in reqs if r.day == d and int(r.t_arrival // 60) == h)
+                            for d in range(1, DAYS + 1)], dtype=float)
+        rows.append({"hour": hour_label(h), "n_total": n, "lambda_hat": n / DAYS,
+                     "lambda_assumed": HOURLY_LAMBDA[h],
+                     "var_mean_ratio": float(per_day.var(ddof=1) / per_day.mean())})
+    svc = np.array([r.service for r in reqs if not r.balked])
+    stats = {"n": len(svc), "mean": float(svc.mean()), "sd": float(svc.std(ddof=1)),
+             "cv": float(svc.std(ddof=1) / svc.mean()),
+             "mu_per_hour": 60.0 / float(svc.mean())}
+    return rows, stats
 
 
 # -------------------------------------- 2. KIEM DINH CONG THUC M/M/s --------
 def validate_formulas():
-    """So sanh Erlang C voi DES khi thoi gian phuc vu la phan phoi mu (CV = 1)."""
+    """Erlang C so voi DES khi thoi gian phuc vu phan phoi mu (CV = 1), mot lop xe."""
     rows = []
-    for lam, c in [(6, 2), (10, 2), (12, 2), (12, 3), (8, 1)]:
-        mu = 60.0 / MEAN_SERVICE_ASIS
+    mu = 60.0 / MEAN_SERVICE_ASIS
+    for lam, c in [(112, 4), (187, 6), (225, 6), (225, 7), (212, 5)]:
         if q.utilization(lam, mu, c) >= 1:
             rows.append({"lambda": lam, "c": c, "rho": q.utilization(lam, mu, c),
                          "Wq_analytic": float("inf"), "Wq_sim": float("nan"),
                          "gap_pct": float("nan")})
             continue
         ana = q.metrics(lam, mu, c, TARGET_T)
-        cfg = SimConfig(hourly_lambda=[lam] * 12, class_mix={2: 1.0},
+        cfg = SimConfig(hourly_lambda=[lam] * HOURS, class_mix={2: 1.0},
                         mean_service_min=MEAN_SERVICE_ASIS, cv_service=1.0,
-                        servers_by_hour=[c] * 12, priority_rule=False,
-                        days=200, seed=SEED + c + lam)
+                        servers_by_hour=[c] * HOURS, days=40, seed=SEED + c + lam)
         reqs, _ = run(cfg)
-        # bo 1 gio dau moi ngay de giam anh huong giai doan chuyen tiep
-        reqs = [r for r in reqs if r.t_arrival >= 60]
+        reqs = [r for r in reqs if r.t_arrival >= 60]   # bo gio dau (lam nong)
         s = summarize(reqs, TARGET_T)
-        rows.append({"lambda": lam, "c": c, "rho": ana["rho"],
-                     "Wq_analytic": ana["Wq"], "Wq_sim": s["Wq_mean"],
+        rows.append({"lambda": lam, "c": c, "rho": ana["rho"], "Wq_analytic": ana["Wq"],
+                     "Wq_sim": s["Wq_mean"],
                      "gap_pct": 100 * (s["Wq_mean"] - ana["Wq"]) / ana["Wq"]})
     return rows
 
 
-# ------------------------------------------- 3. DANH GIA CAU HINH AS-IS -----
-def per_hour_table(servers, mean_service):
-    mu = 60.0 / mean_service
-    rows = []
-    for h in range(HOURS):
-        lam = HOURLY_LAMBDA[h]
-        c = servers[h]
-        m = q.metrics(lam, mu, c, TARGET_T)
-        rows.append({"hour": hour_label(h), "lambda": lam, "c": c, "rho": m["rho"],
-                     "Lq": m["Lq"], "Wq": m["Wq"], "Wq_p90": m["Wq_p90"],
-                     "P_gt_15": m["P_gt_target"], "feasible": feasible(m)})
-    return rows
-
-
+# ------------------------------------------- 3. DANH GIA THEO GIO -----------
 def feasible(m) -> bool:
     return (m["stable"] and m["Wq"] <= TARGET_WQ_MEAN + 1e-9
             and m["P_gt_target"] <= TARGET_TAIL + 1e-12)
 
 
-# ----------------------------------------------- 4. BAI TOAN TOI UU HOA -----
-def optimize_staffing(mean_service):
-    """min sum_t c_t * cost  s.t. rho_t < 1, Wq_t <= 10 phut, P(Wq_t > 15) <= 5%.
-
-    Bai toan tach duoc theo tung gio nen nghiem toi uu tim bang cach do dan
-    c_t = 1..C_MAX va chon gia tri nho nhat con kha thi (chung minh trong bao cao).
-    """
+def per_hour_table(servers, mean_service, lam=None):
+    lam = lam or HOURLY_LAMBDA
     mu = 60.0 / mean_service
     rows = []
     for h in range(HOURS):
-        lam = HOURLY_LAMBDA[h]
-        chosen, chosen_m = None, None
-        for c in range(1, C_MAX + 1):
-            m = q.metrics(lam, mu, c, TARGET_T)
+        m = q.metrics(lam[h], mu, servers[h], TARGET_T)
+        rows.append({"hour": hour_label(h), "lambda": lam[h], "c": servers[h],
+                     "rho": m["rho"], "Lq": m["Lq"], "Wq": m["Wq"], "Wq_p90": m["Wq_p90"],
+                     "P_gt": m["P_gt_target"], "feasible": feasible(m)})
+    return rows
+
+
+# ----------------------------------------------- 4. BAI TOAN TOI UU HOA -----
+def optimize_staffing(mean_service, lam=None, cmax=C_MAX):
+    """min sum_t c_t  s.t. rho_t < 1, Wq_t <= 2 phut, P(Wq_t > 5) <= 5%, c_t <= 8.
+    Tach duoc theo gio -> chon c nho nhat kha thi cho tung gio."""
+    lam = lam or HOURLY_LAMBDA
+    mu = 60.0 / mean_service
+    rows = []
+    for h in range(HOURS):
+        chosen = None
+        for c in range(1, cmax + 1):
+            m = q.metrics(lam[h], mu, c, TARGET_T)
             if feasible(m):
-                chosen, chosen_m = c, m
+                chosen = c
                 break
-        if chosen is None:          # khong cau hinh nao kha thi -> "kenh ao"
-            chosen = C_MAX
-            chosen_m = q.metrics(lam, mu, C_MAX, TARGET_T)
-        rows.append({"hour": hour_label(h), "lambda": lam, "c_star": chosen,
-                     "rho": chosen_m["rho"], "Wq": chosen_m["Wq"],
-                     "Wq_p90": chosen_m["Wq_p90"],
-                     "P_gt_15": chosen_m["P_gt_target"],
-                     "feasible": feasible(chosen_m)})
+        ok = chosen is not None
+        chosen = chosen or cmax
+        m = q.metrics(lam[h], mu, chosen, TARGET_T)
+        rows.append({"hour": hour_label(h), "lambda": lam[h], "c_star": chosen,
+                     "rho": m["rho"], "Wq": m["Wq"], "Wq_p90": m["Wq_p90"],
+                     "P_gt": m["P_gt_target"], "feasible": ok})
     return rows
 
 
 def staffing_cost(servers):
-    nurse_hours = sum(servers)
-    return nurse_hours, nurse_hours * COST_PER_SERVER_HOUR
+    hours = sum(servers)
+    return hours, hours * COST_PER_SERVER_HOUR
 
 
 # --------------------------------------------- 5. SO SANH BA PHUONG AN ------
-def scenario(name, servers, mean_service, priority_rule, days=DAYS, seed=SEED,
-             lambda_scale=1.0):
-    lam_profile = [l * lambda_scale for l in HOURLY_LAMBDA]
-    cfg = SimConfig(hourly_lambda=lam_profile, class_mix=CLASS_MIX,
-                    mean_service_min=mean_service, cv_service=CV_SERVICE,
-                    servers_by_hour=servers, priority_rule=priority_rule,
-                    days=days, seed=seed)
-    reqs, util = run(cfg)
+def scenario(name, servers, service, days=DAYS, seed=SEED, lambda_scale=1.0):
+    lam = [l * lambda_scale for l in HOURLY_LAMBDA]
+    reqs, util = run(sim_config(servers, service, lam=lam, days=days, seed=seed))
     s = summarize(reqs, TARGET_T)
-    nurse_hours, cost = staffing_cost(servers)
+    pk = summarize([r for r in reqs if PEAK[0] * 60 <= r.t_arrival < PEAK[1] * 60], TARGET_T)
+    s.update({"peak_Wq": pk["Wq_mean"], "peak_P": pk["P_wait_gt_target"], "peak_balk": pk["balk_rate"]})
+    hours, cost = staffing_cost(servers)
     s.update({"name": name, "utilization": util["utilization"],
-              "nurse_hours_per_day": nurse_hours,
-              "cost_per_day": cost, "mean_service": mean_service,
-              "priority": priority_rule, "lambda_scale": lambda_scale})
+              "staff_hours": hours, "cost_per_day": cost, "lambda_scale": lambda_scale})
     return s, reqs
 
 
-# ------------------------------------------------- 6. PHAN TICH DO NHAY -----
-def sensitivity(scenarios):
+def sensitivity(plans):
     rows = []
     for scale in (0.8, 1.0, 1.2, 1.4):
-        for name, servers, ms, pri in scenarios:
-            s, _ = scenario(name, servers, ms, pri, days=30, seed=SEED + 7,
-                            lambda_scale=scale)
-            peak_h = int(np.argmax(HOURLY_LAMBDA))
-            mu = 60.0 / ms
-            m_peak = q.metrics(HOURLY_LAMBDA[peak_h] * scale, mu, servers[peak_h],
-                               TARGET_T)
-            rows.append({"scale": scale, "name": name,
-                         "Wq_mean": s["Wq_mean"], "Wq_p90": s["Wq_p90"],
-                         "P_gt_15": s["P_wait_gt_target"],
-                         "rho_peak": m_peak["rho"],
-                         "Wq_peak_analytic": m_peak["Wq"]})
+        for name, servers, svc in plans:
+            s, _ = scenario(name, servers, svc, days=30, seed=SEED + 7, lambda_scale=scale)
+            peak = int(np.argmax(HOURLY_LAMBDA))
+            m = q.metrics(HOURLY_LAMBDA[peak] * scale, 60.0 / mix_mean(svc),
+                          servers[peak], TARGET_T)
+            rows.append({"scale": scale, "name": name, "Wq_mean": s["Wq_mean"],
+                         "Wq_p90": s["Wq_p90"], "P_gt": s["P_wait_gt_target"],
+                         "balk": s["balk_rate"], "rho_peak": m["rho"]})
     return rows
-
-
-def robustness_absence(servers_tobe):
-    """Mot dieu duong vang mat: kiem tra tinh kha thi cua lich truc TO-BE."""
-    reduced = [max(1, c - 1) for c in servers_tobe]
-    s, _ = scenario("TO-BE thieu 1 dieu duong", reduced, MEAN_SERVICE_TOBE,
-                    True, days=30, seed=SEED + 11)
-    return reduced, s
-
-
-def partial_ai_benefit(servers_tobe):
-    """AI chi giam 15% thoi gian xu ly thay vi 33%."""
-    ms = MEAN_SERVICE_ASIS * 0.85
-    s, _ = scenario("TO-BE voi loi ich AI thap", servers_tobe, ms, True,
-                    days=30, seed=SEED + 13)
-    return ms, s
 
 
 # ----------------------------------------------------------- XUAT BANG ------
 def fmt(x, nd=2):
     if isinstance(x, bool):
         return "Đạt" if x else "Không đạt"
-    if isinstance(x, float):
+    if isinstance(x, (float, np.floating)):
         if not isfinite(x):
-            return "$\\infty$"
-        return f"{x:,.{nd}f}".replace(",", " ")
+            return "--"
+        return f"{x:,.{nd}f}".replace(",", "\\,")
+    if isinstance(x, (int, np.integer)):
+        return f"{int(x):,}".replace(",", "\\,")
     return str(x)
 
 
 def write_tex_table(path, header, rows, nd=2, align=None):
-    ncol = len(header)
-    align = align or ("l" + "r" * (ncol - 1))
+    align = align or ("l" + "r" * (len(header) - 1))
     with open(path, "w") as f:
         f.write("\\begin{tabular}{" + align + "}\n\\toprule\n")
         f.write(" & ".join("\\textbf{" + h + "}" for h in header) + " \\\\\n\\midrule\n")
@@ -292,125 +286,106 @@ def setup_mpl():
     return plt
 
 
+def _finish(ax, plt, fname, rotate=False):
+    ax.grid(axis="x", visible=False)
+    ax.set_axisbelow(True)
+    if rotate:
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
+    ax.figure.savefig(os.path.join(FIGS, fname))
+    plt.close(ax.figure)
+
+
 def chart_arrivals(plt, est_rows):
     fig, ax = plt.subplots(figsize=(6.2, 2.6))
     labels = [r["hour"] for r in est_rows]
     vals = [r["lambda_hat"] for r in est_rows]
     ax.bar(labels, vals, color=C_BLUE, width=0.62)
     for x, v in zip(labels, vals):
-        if v >= max(vals) - 0.3:
-            ax.annotate(f"{v:.1f}", (x, v), textcoords="offset points",
-                        xytext=(0, 3), ha="center", fontsize=8, color=C_INK)
-    ax.set_ylabel("Yêu cầu/giờ ($\\hat{\\lambda}$)")
+        if v >= max(vals) - 3:
+            ax.annotate(f"{v:.0f}", (x, v), textcoords="offset points", xytext=(0, 3),
+                        ha="center", fontsize=8, color=C_INK)
+    ax.set_ylabel("Xe/giờ ($\\hat{\\lambda}$)")
     ax.set_xlabel("Khung giờ")
-    ax.set_title("Cường độ đến ước lượng theo khung giờ (dữ liệu mô phỏng, 20 ngày)")
-    ax.set_axisbelow(True)
-    ax.grid(axis="x", visible=False)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-    fig.savefig(os.path.join(FIGS, "fig_arrivals.png"))
-    plt.close(fig)
+    ax.set_title("Lượt xe đến theo khung giờ (mô phỏng 20 ngày)")
+    _finish(ax, plt, "fig_arrivals.png", rotate=True)
 
 
-def chart_wq_by_hour(plt, rows_a0, rows_a1, rows_tobe):
+def chart_wq_by_hour(plt, rows_a0, rows_a1, rows_a2):
     fig, ax = plt.subplots(figsize=(6.2, 2.9))
     labels = [r["hour"] for r in rows_a0]
-    cap = 60.0
+    cap = 20.0
 
     def clip(v):
         return min(v, cap) if isfinite(v) else cap
 
-    ax.plot(labels, [clip(r["Wq"]) for r in rows_a0], color=C_BLUE,
-            marker="o", markersize=4, label="A0 – AS-IS (2 điều dưỡng, 9 phút/yc)")
-    ax.plot(labels, [clip(r["Wq"]) for r in rows_a1], color=C_ORANGE,
-            marker="s", markersize=4, label="A1 – Chỉ tăng nhân lực giờ cao điểm")
-    ax.plot(labels, [clip(r["Wq"]) for r in rows_tobe], color=C_AQUA,
-            marker="^", markersize=4, label="A2 – TO-BE (AI + lịch trực tối ưu)")
+    for rows, col, mk, lab in [
+            (rows_a0, C_BLUE, "o", "A0 – AS-IS (6 nhân viên cố định)"),
+            (rows_a1, C_ORANGE, "s", "A1 – Lịch theo giờ, quy trình hiện tại"),
+            (rows_a2, C_AQUA, "^", "A2 – Thanh toán số + lịch theo giờ")]:
+        ax.plot(labels, [clip(r["Wq"]) for r in rows], color=col, marker=mk,
+                markersize=4, label=lab)
     ax.axhline(TARGET_WQ_MEAN, color=C_MUTED, linestyle="--", linewidth=1.2)
-    ax.annotate("Mức cam kết $W_q \\leq 10$ phút", (0.02, TARGET_WQ_MEAN + 1.5),
+    ax.annotate("Mục tiêu $W_q \\leq 2$ phút", (0.02, TARGET_WQ_MEAN + 0.6),
                 xycoords=("axes fraction", "data"), fontsize=8, color=C_MUTED)
-    ax.set_ylabel("$W_q$ (phút, cắt tại 60)")
+    ax.set_ylabel("$W_q$ (phút, cắt tại 20)")
     ax.set_xlabel("Khung giờ")
-    ax.set_title("Thời gian chờ trung bình theo khung giờ – ba phương án")
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
-    ax.legend(loc="upper right", fontsize=8)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
-    fig.savefig(os.path.join(FIGS, "fig_wq_by_hour.png"))
-    plt.close(fig)
+    ax.set_title("Thời gian chờ theo khung giờ (M/M/c) – ba phương án")
+    ax.legend(loc="upper left", fontsize=8)
+    _finish(ax, plt, "fig_wq_by_hour.png", rotate=True)
 
 
 def chart_wq_vs_c(plt):
     fig, ax = plt.subplots(figsize=(5.4, 2.8))
     lam = max(HOURLY_LAMBDA)
-    cs = list(range(1, C_MAX + 1))
-    for mean_s, color, lab, mk in [
-        (MEAN_SERVICE_ASIS, C_BLUE, f"E[S] = {MEAN_SERVICE_ASIS:.0f} phút (AS-IS)", "o"),
-        (MEAN_SERVICE_TOBE, C_AQUA, f"E[S] = {MEAN_SERVICE_TOBE:.0f} phút (TO-BE)", "^"),
-    ]:
-        mu = 60.0 / mean_s
-        ys = [min(q.wq_min(lam, mu, c), 120) if q.utilization(lam, mu, c) < 1 else 120
+    cs = list(range(4, C_MAX + 1))
+    for ms, col, lab, mk in [(MEAN_SERVICE_ASIS, C_BLUE, f"E[S] = {MEAN_SERVICE_ASIS:.2f} phút (AS-IS)", "o"),
+                             (MEAN_SERVICE_TOBE, C_AQUA, f"E[S] = {MEAN_SERVICE_TOBE:.2f} phút (TO-BE)", "^")]:
+        mu = 60.0 / ms
+        ys = [min(q.wq_min(lam, mu, c), 100) if q.utilization(lam, mu, c) < 1 else 100
               for c in cs]
-        ax.plot(cs, ys, color=color, marker=mk, markersize=5, label=lab)
+        ax.plot(cs, ys, color=col, marker=mk, markersize=5, label=lab)
     ax.axhline(TARGET_WQ_MEAN, color=C_MUTED, linestyle="--", linewidth=1.2)
     ax.set_yscale("log")
     ax.set_xticks(cs)
-    ax.set_xlabel("Số điều dưỡng trực đồng thời $c$")
+    ax.set_xlabel("Số vị trí bơm có nhân viên $c$")
     ax.set_ylabel("$W_q$ (phút, trục log)")
-    ax.set_title(f"Đánh đổi năng lực – thời gian chờ tại giờ cao điểm ($\\lambda$ = {lam} yc/giờ)")
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
+    ax.set_title(f"Năng lực và thời gian chờ giờ cao điểm ($\\lambda$ = {lam} xe/giờ)")
     ax.legend(fontsize=8)
-    fig.savefig(os.path.join(FIGS, "fig_wq_vs_c.png"))
-    plt.close(fig)
+    _finish(ax, plt, "fig_wq_vs_c.png")
 
 
-def chart_sensitivity(plt, sens_rows):
+def chart_sensitivity(plt, rows):
     fig, ax = plt.subplots(figsize=(5.6, 2.8))
-    names = []
-    for r in sens_rows:
-        if r["name"] not in names:
-            names.append(r["name"])
-    colors = {names[0]: C_BLUE, names[1]: C_ORANGE, names[2]: C_AQUA}
-    marks = {names[0]: "o", names[1]: "s", names[2]: "^"}
-    for nm in names:
-        xs = [r["scale"] for r in sens_rows if r["name"] == nm]
-        ys = [min(r["Wq_mean"], 90) for r in sens_rows if r["name"] == nm]
-        ax.plot(xs, ys, color=colors[nm], marker=marks[nm], markersize=5, label=nm)
+    names = list(dict.fromkeys(r["name"] for r in rows))
+    for nm, col, mk in zip(names, (C_BLUE, C_ORANGE, C_AQUA), ("o", "s", "^")):
+        xs = [r["scale"] for r in rows if r["name"] == nm]
+        ys = [min(r["Wq_mean"], 30) for r in rows if r["name"] == nm]
+        ax.plot(xs, ys, color=col, marker=mk, markersize=5, label=nm)
     ax.axhline(TARGET_WQ_MEAN, color=C_MUTED, linestyle="--", linewidth=1.2)
     ax.set_xticks([0.8, 1.0, 1.2, 1.4])
     ax.set_xlabel("Hệ số nhu cầu so với hiện tại")
-    ax.set_ylabel("$W_q$ trung bình ngày (phút)")
+    ax.set_ylabel("$W_q$ trung bình (phút, cắt tại 30)")
     ax.set_title("Độ nhạy theo mức nhu cầu (mô phỏng 30 ngày/kịch bản)")
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
     ax.legend(fontsize=8)
-    fig.savefig(os.path.join(FIGS, "fig_sensitivity.png"))
-    plt.close(fig)
+    _finish(ax, plt, "fig_sensitivity.png")
 
 
-def chart_priority(plt, s_a0, s_a2):
+def chart_by_class(plt, sims):
     fig, ax = plt.subplots(figsize=(5.4, 2.7))
-    groups = [CLASS_NAME[1], CLASS_NAME[2], CLASS_NAME[3]]
-    a0 = [s_a0[f"Wq_mean_P{p}"] for p in (1, 2, 3)]
-    a2 = [s_a2[f"Wq_mean_P{p}"] for p in (1, 2, 3)]
-    x = np.arange(len(groups))
-    wd = 0.34
-    ax.bar(x - wd / 2 - 0.01, a0, wd, color=C_BLUE, label="A0 – AS-IS (FCFS)")
-    ax.bar(x + wd / 2 + 0.01, a2, wd, color=C_AQUA, label="A2 – TO-BE (ưu tiên)")
-    for xi, v in zip(x - wd / 2 - 0.01, a0):
-        ax.annotate(f"{v:.1f}", (xi, v), xytext=(0, 3), textcoords="offset points",
-                    ha="center", fontsize=8, color=C_INK)
-    for xi, v in zip(x + wd / 2 + 0.01, a2):
-        ax.annotate(f"{v:.1f}", (xi, v), xytext=(0, 3), textcoords="offset points",
-                    ha="center", fontsize=8, color=C_INK)
-    ax.set_xticks(x, groups)
+    x = np.arange(2)
+    wd = 0.26
+    for i, (s, col) in enumerate(zip(sims, (C_BLUE, C_ORANGE, C_AQUA))):
+        vals = [s["Wq_mean_P1"], s["Wq_mean_P2"]]
+        xs = x + (i - 1) * (wd + 0.02)
+        ax.bar(xs, vals, wd, color=col, label=s["name"])
+        for xi, v in zip(xs, vals):
+            ax.annotate(f"{v:.2f}", (xi, v), xytext=(0, 3), textcoords="offset points",
+                        ha="center", fontsize=7.5, color=C_INK)
+    ax.set_xticks(x, [CLASS_NAME[1], CLASS_NAME[2]])
     ax.set_ylabel("$W_q$ trung bình (phút)")
-    ax.set_title("Thời gian chờ theo mức ưu tiên")
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
+    ax.set_title("Thời gian chờ theo loại xe (mô phỏng 20 ngày)")
     ax.legend(fontsize=8)
-    fig.savefig(os.path.join(FIGS, "fig_priority.png"))
-    plt.close(fig)
+    _finish(ax, plt, "fig_by_class.png")
 
 
 # ------------------------------------------------------------------ MAIN ----
@@ -422,206 +397,162 @@ def main():
         log.append(msg)
 
     say("=" * 78)
-    say("DU AN INT3501 - NHOM 8 | Phan tich hang doi tram tu van - phan loai")
+    say("DU AN INT3501 - NHOM 8 | Hang doi tai cua hang xang dau noi thanh Ha Noi")
     say(f"NHAN DU LIEU: {LABEL}")
     say("=" * 78)
+    say("\n[0] Hieu chinh quy mo nhu cau")
+    say(f"    {HN_PETROL_M3_MONTH:,} m3 xang/thang / {HN_STORES} cua hang / 30 ngay "
+        f"= {LITRES_PER_STORE_DAY:,.0f} L/ngay/cua hang")
+    say(f"    Xe may {MOTO_VOLUME_SHARE:.0%} san luong, {LITRES_PER_VISIT[2]} L/luot -> "
+        f"{VISITS_MOTO:,.0f} luot/ngay; o to {LITRES_PER_VISIT[1]} L/luot -> "
+        f"{VISITS_CAR:,.0f} luot/ngay; tong {VISITS_DAY:,.0f}")
+    say(f"    Ty le o to theo luot = {CLASS_MIX[1]:.2%}; lambda theo gio = {HOURLY_LAMBDA} "
+        f"(tong {sum(HOURLY_LAMBDA)})")
+    say(f"    E[S] AS-IS = {MEAN_SERVICE_ASIS:.3f} phut; TO-BE = {MEAN_SERVICE_TOBE:.3f} phut")
 
-    # 1. Du lieu
     reqs, util, path = generate_dataset()
     est_rows, svc = estimate_parameters(reqs)
-    say(f"\n[1] Du lieu mo phong: {len(reqs)} yeu cau / {DAYS} ngay -> {path}")
-    say(f"    E[S] = {svc['mean']:.2f} phut; SD = {svc['sd']:.2f}; CV = {svc['cv']:.2f}; "
-        f"mu = {svc['mu_per_hour']:.2f} yc/gio/kenh")
-    say(f"    Muc su dung dieu duong (AS-IS): {util['utilization']*100:.1f}%")
-
+    say(f"\n[1] Du lieu mo phong AS-IS: {len(reqs)} luot / {DAYS} ngay -> {os.path.basename(path)}")
+    say(f"    E[S] = {svc['mean']:.3f} phut; SD = {svc['sd']:.3f}; CV = {svc['cv']:.2f}; "
+        f"mu = {svc['mu_per_hour']:.1f} xe/gio/kenh; muc su dung = {util['utilization']*100:.1f}%")
     write_csv(os.path.join(DATA, "lambda_by_hour.csv"),
               ["hour", "n_total", "lambda_hat", "lambda_assumed", "var_mean_ratio"],
-              [[r["hour"], r["n_total"], round(r["lambda_hat"], 3),
-                r["lambda_assumed"], round(r["var_mean_ratio"], 3)] for r in est_rows])
-    write_tex_table(
-        os.path.join(TABLES, "tab_lambda.tex"),
-        ["Khung giờ", "Số lượt (20 ngày)", "$\\hat{\\lambda}$ (yc/gio)",
-         "$\\lambda$ giả định", "Var/Mean"],
-        [[r["hour"], r["n_total"], r["lambda_hat"], r["lambda_assumed"],
-          r["var_mean_ratio"]] for r in est_rows])
+              [[r["hour"], r["n_total"], round(r["lambda_hat"], 2), r["lambda_assumed"],
+                round(r["var_mean_ratio"], 3)] for r in est_rows])
+    write_tex_table(os.path.join(TABLES, "tab_lambda.tex"),
+                    ["Khung giờ", "Số lượt (20 ngày)", "$\\hat{\\lambda}$ (xe/giờ)",
+                     "$\\lambda$ giả định (xe/giờ)", "Var/Mean"],
+                    [[r["hour"], r["n_total"], r["lambda_hat"], r["lambda_assumed"],
+                      r["var_mean_ratio"]] for r in est_rows])
 
-    # 2. Kiem dinh cong thuc
     val_rows = validate_formulas()
-    say("\n[2] Kiem dinh Erlang C bang mo phong (CV = 1, FCFS, 200 ngay/cau hinh)")
+    say("\n[2] Kiem dinh Erlang C (CV = 1, mot lop xe, 40 ngay/cau hinh)")
     for r in val_rows:
-        say(f"    lambda={r['lambda']:>3} c={r['c']}  rho={r['rho']:.3f}  "
-            f"Wq_lythuyet={r['Wq_analytic']:.2f}  Wq_mophong={r['Wq_sim']:.2f}  "
-            f"lech={r['gap_pct']:.1f}%")
-    write_tex_table(
-        os.path.join(TABLES, "tab_validation.tex"),
-        ["$\\lambda$ (yc/gio)", "$c$", "$\\rho$", "$W_q$ công thức (phút)",
-         "$W_q$ mô phỏng (phút)", "Chênh lệch (\\%)"],
-        [[r["lambda"], r["c"], r["rho"], r["Wq_analytic"], r["Wq_sim"],
-          r["gap_pct"]] for r in val_rows])
+        say(f"    lambda={r['lambda']:>4} c={r['c']}  rho={r['rho']:.3f}  "
+            f"Wq_ct={r['Wq_analytic']:.3f}  Wq_mp={r['Wq_sim']:.3f}  lech={r['gap_pct']:.1f}%")
+    write_tex_table(os.path.join(TABLES, "tab_validation.tex"),
+                    ["$\\lambda$ (xe/giờ)", "$c$", "$\\rho$", "$W_q$ công thức (phút)",
+                     "$W_q$ mô phỏng (phút)", "Chênh lệch (\\%)"],
+                    [[r["lambda"], r["c"], r["rho"], r["Wq_analytic"], r["Wq_sim"],
+                      r["gap_pct"]] for r in val_rows], nd=3)
 
-    # 3. AS-IS theo gio
     rows_a0 = per_hour_table(SERVERS_ASIS, MEAN_SERVICE_ASIS)
-    say("\n[3] Cau hinh AS-IS (c = 2 ca ngay, E[S] = 9 phut)")
+    say("\n[3] AS-IS theo gio (c = 6, M/M/c)")
     for r in rows_a0:
-        say(f"    {r['hour']}  lambda={r['lambda']:>3}  rho={r['rho']:.2f}  "
-            f"Wq={fmt(r['Wq'])}  P(Wq>15)={fmt(r['P_gt_15']*100 if isfinite(r['P_gt_15']) else r['P_gt_15'])}%  "
-            f"{'DAT' if r['feasible'] else 'KHONG DAT'}")
-    write_tex_table(
-        os.path.join(TABLES, "tab_asis_hourly.tex"),
-        ["Khung giờ", "$\\lambda$", "$c$", "$\\rho$", "$L_q$", "$W_q$ (phút)",
-         "$W_q^{90}$ (phút)", "$P(W_q>15)$", "Mức cam kết"],
-        [[r["hour"], r["lambda"], r["c"], r["rho"], r["Lq"], r["Wq"],
-          r["Wq_p90"], r["P_gt_15"], r["feasible"]] for r in rows_a0])
+        say(f"    {r['hour']}  lambda={r['lambda']:>4}  rho={r['rho']:.2f}  Wq={fmt(r['Wq'])}  "
+            f"P(Wq>5)={r['P_gt']*100:.2f}%  {'DAT' if r['feasible'] else 'KHONG DAT'}")
+    write_tex_table(os.path.join(TABLES, "tab_asis_hourly.tex"),
+                    ["Khung giờ", "$\\lambda$ (xe/giờ)", "$c$", "$\\rho$", "$L_q$ (xe)",
+                     "$W_q$ (phút)", "$W_q^{90}$ (phút)", "$P(W_q{>}5)$", "Mục tiêu"],
+                    [[r["hour"], r["lambda"], r["c"], r["rho"], r["Lq"], r["Wq"],
+                      r["Wq_p90"], r["P_gt"], r["feasible"]] for r in rows_a0])
 
-    # 3b. Phuong an A1: chi tang nhan luc
-    servers_a1 = [3 if HOURLY_LAMBDA[h] >= 10 else 2 for h in range(HOURS)]
+    opt_a1 = optimize_staffing(MEAN_SERVICE_ASIS)
+    opt_a2 = optimize_staffing(MEAN_SERVICE_TOBE)
+    servers_a1 = [r["c_star"] for r in opt_a1]
+    servers_a2 = [r["c_star"] for r in opt_a2]
     rows_a1 = per_hour_table(servers_a1, MEAN_SERVICE_ASIS)
-
-    # 4. Toi uu hoa lich truc TO-BE
-    opt_rows = optimize_staffing(MEAN_SERVICE_TOBE)
-    servers_tobe = [r["c_star"] for r in opt_rows]
-    rows_tobe = per_hour_table(servers_tobe, MEAN_SERVICE_TOBE)
-    nh0, cost0 = staffing_cost(SERVERS_ASIS)
-    nh1, cost1 = staffing_cost(servers_a1)
-    nh2, cost2 = staffing_cost(servers_tobe)
-    say("\n[4] Nghiem bai toan toi uu lich truc TO-BE (E[S] = 6 phut)")
-    for r in opt_rows:
-        say(f"    {r['hour']}  lambda={r['lambda']:>3}  c*={r['c_star']}  "
-            f"rho={r['rho']:.2f}  Wq={r['Wq']:.2f}  P(Wq>15)={r['P_gt_15']*100:.2f}%")
-    say(f"    Gio-dieu duong/ngay: AS-IS {nh0} | A1 {nh1} | TO-BE {nh2}")
-    say(f"    Chi phi truc/ngay (VND): AS-IS {cost0:,} | A1 {cost1:,} | TO-BE {cost2:,}")
-    write_tex_table(
-        os.path.join(TABLES, "tab_optimization.tex"),
-        ["Khung giờ", "$\\lambda$", "$c^*$", "$\\rho$", "$W_q$ (phút)",
-         "$W_q^{90}$ (phút)", "$P(W_q>15)$", "Mức cam kết"],
-        [[r["hour"], r["lambda"], r["c_star"], r["rho"], r["Wq"], r["Wq_p90"],
-          r["P_gt_15"], r["feasible"]] for r in opt_rows])
-    write_tex_table(
-        os.path.join(TABLES, "tab_shift_plan.tex"),
-        ["Khung giờ"] + [r["hour"] for r in opt_rows][:0] or ["Khung giờ"],
-        [], 2)
-    # bang lich truc dang ngang
+    rows_a2 = per_hour_table(servers_a2, MEAN_SERVICE_TOBE)
+    (h0, c0), (h1, c1), (h2, c2) = map(staffing_cost, (SERVERS_ASIS, servers_a1, servers_a2))
+    say("\n[4] Toi uu lich theo gio")
+    say(f"    A1 (E[S] AS-IS)  c* = {servers_a1}  -> {h1} gio-nhan vien/ngay")
+    say(f"    A2 (E[S] TO-BE)  c* = {servers_a2}  -> {h2} gio-nhan vien/ngay")
+    say(f"    Chi phi nhan luc/ngay: A0 {c0:,} | A1 {c1:,} | A2 {c2:,} (+ cong nghe {TECH_COST_DAY:,})")
+    write_tex_table(os.path.join(TABLES, "tab_optimization.tex"),
+                    ["Khung giờ", "$\\lambda$ (xe/giờ)", "$c^*$", "$\\rho$", "$W_q$ (phút)",
+                     "$W_q^{90}$ (phút)", "$P(W_q{>}5)$", "Mục tiêu"],
+                    [[r["hour"], r["lambda"], r["c_star"], r["rho"], r["Wq"], r["Wq_p90"],
+                      r["P_gt"], r["feasible"]] for r in opt_a2])
     with open(os.path.join(TABLES, "tab_shift_plan.tex"), "w") as f:
-        hours = [r["hour"] for r in opt_rows]
-        f.write("\\begin{tabular}{l" + "c" * len(hours) + "}\n\\toprule\n")
-        f.write("\\textbf{Khung giờ} & " + " & ".join(h.replace("-", "--") for h in hours) + " \\\\\n\\midrule\n")
-        f.write("$\\lambda$ (yc/giờ) & " + " & ".join(str(l) for l in HOURLY_LAMBDA) + " \\\\\n")
-        f.write("AS-IS $c$ & " + " & ".join(str(c) for c in SERVERS_ASIS) + " \\\\\n")
-        f.write("A1 $c$ & " + " & ".join(str(c) for c in servers_a1) + " \\\\\n")
-        f.write("TO-BE $c^*$ & " + " & ".join(str(c) for c in servers_tobe) + " \\\\\n")
+        hrs = [hour_label(h)[:2] for h in range(HOURS)]
+        f.write("\\begin{tabular}{l" + "c" * HOURS + "r}\n\\toprule\n")
+        f.write("\\textbf{Giờ bắt đầu} & " + " & ".join(hrs) + " & \\textbf{Tổng} \\\\\n\\midrule\n")
+        f.write("$\\lambda$ (xe/giờ) & " + " & ".join(str(l) for l in HOURLY_LAMBDA)
+                + f" & {sum(HOURLY_LAMBDA)} \\\\\n")
+        for nm, sv in [("A0 $c$", SERVERS_ASIS), ("A1 $c^*$", servers_a1), ("A2 $c^*$", servers_a2)]:
+            f.write(nm + " & " + " & ".join(str(c) for c in sv) + f" & {sum(sv)} \\\\\n")
         f.write("\\bottomrule\n\\end{tabular}\n")
 
-    # 5. So sanh ba phuong an bang mo phong (cung dieu kien nhu cau)
-    s_a0, _ = scenario("A0 – AS-IS", SERVERS_ASIS, MEAN_SERVICE_ASIS, False)
-    s_a1, _ = scenario("A1 – Tăng nhân lực", servers_a1, MEAN_SERVICE_ASIS, False)
-    s_a2, _ = scenario("A2 – TO-BE", servers_tobe, MEAN_SERVICE_TOBE, True)
-    for s, (nh, cost) in zip((s_a0, s_a1, s_a2), ((nh0, cost0), (nh1, cost1), (nh2, cost2))):
-        s["nurse_hours_per_day"], s["cost_per_day"] = nh, cost
-    say("\n[5] So sanh ba phuong an tren cung bo chi so (mo phong 20 ngay, CV = 1,25)")
-    hdr = f"    {'Phuong an':<22}{'Wq':>7}{'Wq_p90':>9}{'P>15':>8}{'P1_Wq':>8}{'rho':>8}{'Gio-DD':>8}"
-    say(hdr)
+    s_a0, _ = scenario("A0 – AS-IS", SERVERS_ASIS, SERVICE_ASIS)
+    s_a1, _ = scenario("A1 – Lịch theo giờ", servers_a1, SERVICE_ASIS)
+    s_a2, _ = scenario("A2 – Số hóa + lịch", servers_a2, SERVICE_TOBE)
+    say("\n[5] So sanh ba phuong an (mo phong 20 ngay, CV = 0,8)")
     for s in (s_a0, s_a1, s_a2):
-        say(f"    {s['name']:<22}{s['Wq_mean']:>7.2f}{s['Wq_p90']:>9.2f}"
-            f"{s['P_wait_gt_target']*100:>7.1f}%{s['Wq_mean_P1']:>8.2f}"
-            f"{s['utilization']*100:>7.1f}%{s['nurse_hours_per_day']:>8}")
-    comp_header = ["Chỉ số (đơn vị)", "A0 -- AS-IS", "A1 -- Tăng nhân lực", "A2 -- TO-BE"]
+        say(f"    {s['name']:<20} Wq={s['Wq_mean']:.3f} p90={s['Wq_p90']:.3f} "
+            f"P>5={s['P_wait_gt_target']*100:.2f}% bo={s['balk_rate']*100:.2f}% oto={s['Wq_mean_P1']:.3f} "
+            f"xemay={s['Wq_mean_P2']:.3f} rho={s['utilization']*100:.1f}% gio={s['staff_hours']} | "
+            f"17-19h: Wq={s['peak_Wq']:.3f} P>5={s['peak_P']*100:.2f}% bo={s['peak_balk']*100:.2f}%")
+    tech = [0, 0, TECH_COST_DAY]
+    sims = (s_a0, s_a1, s_a2)
+    comp_header = ["Chỉ số (đơn vị)", "A0 -- AS-IS", "A1 -- Lịch theo giờ", "A2 -- Số hóa + lịch"]
     comp_rows = [
-        ["Số yêu cầu mô phỏng (lượt)", s_a0["n"], s_a1["n"], s_a2["n"]],
-        ["$W_q$ trung bình (phút)", s_a0["Wq_mean"], s_a1["Wq_mean"], s_a2["Wq_mean"]],
-        ["$W_q^{90}$ (phút)", s_a0["Wq_p90"], s_a1["Wq_p90"], s_a2["Wq_p90"]],
-        ["$W$ trung bình (phút)", s_a0["W_mean"], s_a1["W_mean"], s_a2["W_mean"]],
-        ["Tỷ lệ phải chờ (\\%)", s_a0["P_wait_gt_0"] * 100, s_a1["P_wait_gt_0"] * 100,
-         s_a2["P_wait_gt_0"] * 100],
-        ["$P(W_q>15)$ (\\%)", s_a0["P_wait_gt_target"] * 100,
-         s_a1["P_wait_gt_target"] * 100, s_a2["P_wait_gt_target"] * 100],
-        ["$W_q$ nhóm P1 (phút)", s_a0["Wq_mean_P1"], s_a1["Wq_mean_P1"], s_a2["Wq_mean_P1"]],
-        ["$W_q^{90}$ nhóm P1 (phút)", s_a0["Wq_p90_P1"], s_a1["Wq_p90_P1"], s_a2["Wq_p90_P1"]],
-        ["$W_q$ nhóm P3 (phút)", s_a0["Wq_mean_P3"], s_a1["Wq_mean_P3"], s_a2["Wq_mean_P3"]],
-        ["Mức sử dụng điều dưỡng (\\%)", s_a0["utilization"] * 100,
-         s_a1["utilization"] * 100, s_a2["utilization"] * 100],
-        ["Giờ--điều dưỡng/ngày (giờ)", s_a0["nurse_hours_per_day"],
-         s_a1["nurse_hours_per_day"], s_a2["nurse_hours_per_day"]],
-        ["Chi phí trực/ngày (nghìn VND)", s_a0["cost_per_day"] / 1000,
-         s_a1["cost_per_day"] / 1000, s_a2["cost_per_day"] / 1000],
+        ["Số lượt xe mô phỏng (lượt)"] + [s["n"] for s in sims],
+        ["$W_q$ trung bình (phút)"] + [s["Wq_mean"] for s in sims],
+        ["$W_q^{90}$ (phút)"] + [s["Wq_p90"] for s in sims],
+        ["$W_q$ tối đa (phút)"] + [s["Wq_max"] for s in sims],
+        ["Tỷ lệ phải chờ (\\%)"] + [s["P_wait_gt_0"] * 100 for s in sims],
+        ["$P(W_q>5)$ (\\%)"] + [s["P_wait_gt_target"] * 100 for s in sims],
+        ["Khách bỏ đi vì hàng dài (\\%)"] + [s["balk_rate"] * 100 for s in sims],
+        ["$W_q$ giờ 17--19 (phút)"] + [s["peak_Wq"] for s in sims],
+        ["$P(W_q>5)$ giờ 17--19 (\\%)"] + [s["peak_P"] * 100 for s in sims],
+        ["Bỏ đi giờ 17--19 (\\%)"] + [s["peak_balk"] * 100 for s in sims],
+        ["$W_q$ ô tô (phút)"] + [s["Wq_mean_P1"] for s in sims],
+        ["$W_q$ xe máy (phút)"] + [s["Wq_mean_P2"] for s in sims],
+        ["Mức sử dụng nhân viên (\\%)"] + [s["utilization"] * 100 for s in sims],
+        ["Giờ--nhân viên/ngày (giờ)"] + [s["staff_hours"] for s in sims],
+        ["Chi phí nhân lực (nghìn đ/ngày)"] + [s["cost_per_day"] / 1000 for s in sims],
+        ["Chi phí công nghệ (nghìn đ/ngày)"] + [t / 1000 for t in tech],
     ]
-    write_tex_table(os.path.join(TABLES, "tab_comparison.tex"), comp_header,
-                    comp_rows, nd=2,
-                    align="p{0.33\\linewidth}rrr")
+    write_tex_table(os.path.join(TABLES, "tab_comparison.tex"), comp_header, comp_rows,
+                    align="p{0.36\\linewidth}rrr")
     write_csv(os.path.join(DATA, "comparison.csv"), comp_header,
-              [[c if isinstance(c, str) else round(float(c), 3) for c in row]
-               for row in comp_rows])
+              [[c if isinstance(c, str) else round(float(c), 4) for c in r] for r in comp_rows])
 
-    # 6. Do nhay va rui ro
-    sens_rows = sensitivity([
-        ("A0 – AS-IS", SERVERS_ASIS, MEAN_SERVICE_ASIS, False),
-        ("A1 – Tăng nhân lực", servers_a1, MEAN_SERVICE_ASIS, False),
-        ("A2 – TO-BE", servers_tobe, MEAN_SERVICE_TOBE, True),
-    ])
-    say("\n[6] Do nhay theo nhu cau")
-    for r in sens_rows:
-        say(f"    x{r['scale']:.1f}  {r['name']:<22} Wq={r['Wq_mean']:>7.2f}  "
-            f"Wq_p90={r['Wq_p90']:>7.2f}  P>15={r['P_gt_15']*100:>5.1f}%  "
-            f"rho_peak={r['rho_peak']:.2f}")
-    write_tex_table(
-        os.path.join(TABLES, "tab_sensitivity.tex"),
-        ["Hệ số nhu cầu", "Phương án", "$W_q$ (phút)", "$W_q^{90}$ (phút)",
-         "$P(W_q>15)$ (\\%)", "$\\rho$ giờ cao điểm"],
-        [[f"$\\times${r['scale']:.1f}", r["name"], r["Wq_mean"], r["Wq_p90"],
-          r["P_gt_15"] * 100, r["rho_peak"]] for r in sens_rows],
-        align="llrrrr")
+    plans = [("A0 – AS-IS", SERVERS_ASIS, SERVICE_ASIS),
+             ("A1 – Lịch theo giờ", servers_a1, SERVICE_ASIS),
+             ("A2 – Số hóa + lịch", servers_a2, SERVICE_TOBE)]
+    sens = sensitivity(plans)
+    say("\n[6] Do nhay theo nhu cau (30 ngay, seed rieng)")
+    for r in sens:
+        say(f"    x{r['scale']:.1f}  {r['name']:<20} Wq={r['Wq_mean']:7.3f}  "
+            f"p90={r['Wq_p90']:7.3f}  P>5={r['P_gt']*100:6.2f}%  bo={r['balk']*100:5.2f}%  rho_peak={r['rho_peak']:.2f}")
+    write_tex_table(os.path.join(TABLES, "tab_sensitivity.tex"),
+                    ["Hệ số nhu cầu", "Phương án", "$W_q$ (phút)", "$W_q^{90}$ (phút)",
+                     "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)", "$\\rho$ cao điểm"],
+                    [[f"$\\times${r['scale']:.1f}", r["name"], r["Wq_mean"], r["Wq_p90"],
+                      r["P_gt"] * 100, r["balk"] * 100, r["rho_peak"]] for r in sens],
+                    align="llrrrrr")
 
-    reduced, s_abs = robustness_absence(servers_tobe)
-    ms_low, s_low = partial_ai_benefit(servers_tobe)
-    say(f"\n[7] Rui ro 1 - thieu 1 dieu duong {reduced}: Wq={s_abs['Wq_mean']:.2f} phut, "
-        f"P(Wq>15)={s_abs['P_wait_gt_target']*100:.1f}%")
-    say(f"    Rui ro 2 - AI chi giam 15% thoi gian xu ly (E[S]={ms_low:.2f} phut): "
-        f"Wq={s_low['Wq_mean']:.2f} phut, P(Wq>15)={s_low['P_wait_gt_target']*100:.1f}%")
-    write_tex_table(
-        os.path.join(TABLES, "tab_risk.tex"),
-        ["Tình huống rủi ro", "$W_q$ (phút)", "$W_q^{90}$ (phút)",
-         "$P(W_q>15)$ (\\%)", "$W_q$ nhóm P1 (phút)"],
-        [["TO-BE theo thiết kế", s_a2["Wq_mean"], s_a2["Wq_p90"],
-          s_a2["P_wait_gt_target"] * 100, s_a2["Wq_mean_P1"]],
-         ["Thiếu 1 điều dưỡng ở mọi khung giờ", s_abs["Wq_mean"], s_abs["Wq_p90"],
-          s_abs["P_wait_gt_target"] * 100, s_abs["Wq_mean_P1"]],
-         [f"AI chỉ giảm 15\\% thời gian xử lý", s_low["Wq_mean"], s_low["Wq_p90"],
-          s_low["P_wait_gt_target"] * 100, s_low["Wq_mean_P1"]]],
-        align="p{0.40\\linewidth}rrrr")
+    reduced = [max(1, c - 1) for c in servers_a2]
+    s_abs, _ = scenario("A2 thiếu 1 nhân viên", reduced, SERVICE_TOBE, days=30, seed=SEED + 11)
+    svc_low = {k: v * 0.90 for k, v in SERVICE_ASIS.items()}
+    s_low, _ = scenario("A2 số hóa chỉ giảm 10%", servers_a2, svc_low, days=30, seed=SEED + 13)
+    say(f"\n[7] Rui ro: thieu 1 nhan vien moi gio -> Wq={s_abs['Wq_mean']:.3f}, "
+        f"P>5={s_abs['P_wait_gt_target']*100:.2f}%, bo di={s_abs['balk_rate']*100:.2f}%")
+    say(f"    So hoa chi giam 10% (E[S]={mix_mean(svc_low):.3f}) -> Wq={s_low['Wq_mean']:.3f}, "
+        f"P>5={s_low['P_wait_gt_target']*100:.2f}%, bo di={s_low['balk_rate']*100:.2f}%")
+    write_tex_table(os.path.join(TABLES, "tab_risk.tex"),
+                    ["Tình huống rủi ro", "$W_q$ (phút)", "$W_q^{90}$ (phút)",
+                     "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)"],
+                    [["A2 theo thiết kế", s_a2["Wq_mean"], s_a2["Wq_p90"],
+                      s_a2["P_wait_gt_target"] * 100, s_a2["balk_rate"] * 100],
+                     ["Thiếu 1 nhân viên ở mọi khung giờ", s_abs["Wq_mean"], s_abs["Wq_p90"],
+                      s_abs["P_wait_gt_target"] * 100, s_abs["balk_rate"] * 100],
+                     ["Số hóa chỉ giảm 10\\% thời gian phục vụ", s_low["Wq_mean"], s_low["Wq_p90"],
+                      s_low["P_wait_gt_target"] * 100, s_low["balk_rate"] * 100]],
+                    align="p{0.40\\linewidth}rrrr")
 
-    # 7. Hinh ve
     plt = setup_mpl()
     chart_arrivals(plt, est_rows)
-    chart_wq_by_hour(plt, rows_a0, rows_a1, rows_tobe)
+    chart_wq_by_hour(plt, rows_a0, rows_a1, rows_a2)
     chart_wq_vs_c(plt)
-    chart_sensitivity(plt, sens_rows)
-    chart_priority(plt, s_a0, s_a2)
-    say(f"\n[8] Da xuat 5 hinh vao {FIGS}")
-
-    # 8. Bang tham so (de dua vao phu luc)
-    write_tex_table(
-        os.path.join(TABLES, "tab_assumptions.tex"),
-        ["Mã", "Tham số", "Giá trị sử dụng", "Căn cứ / cách kiểm tra"],
-        [["G1", "Cường độ đến theo giờ $\\lambda_t$",
-          "6--12 yc/giờ; 100 yc/ngày",
-          "Đặt theo quy mô phòng khám ngoại trú vừa; có thể thay bằng log hệ thống"],
-         ["G2", "Cơ cấu mức ưu tiên", "P1 12\\%, P2 58\\%, P3 30\\%",
-          "Giả định nhóm; cần đối chiếu bảng phân loại của cơ sở"],
-         ["G3", "Thời gian xử lý AS-IS $E[S]$", f"{MEAN_SERVICE_ASIS:.0f} phút, CV = {CV_SERVICE}",
-          "Giả định nhóm; kiểm tra bằng bấm giờ mẫu thực tế"],
-         ["G4", "Thời gian xử lý TO-BE $E[S]$", f"{MEAN_SERVICE_TOBE:.0f} phút",
-          "Giả định giảm 33\\% do có bản tóm tắt; đã kiểm tra tình huống chỉ giảm 15\\%"],
-         ["G5", "Lịch trực hiện tại", "2 điều dưỡng, 07:00--19:00",
-          "Giả định nhóm theo cấu hình tham chiếu"],
-         ["G6", "Chi phí trực", f"{COST_PER_SERVER_HOUR:,} VND/giờ/điều dưỡng".replace(",", " "),
-          "Giả định quy ước; chỉ dùng để so sánh tương đối giữa các phương án"],
-         ["G7", "Mức cam kết dịch vụ",
-          "$W_q \\leq 10$ phut; $P(W_q>15) \\leq 5\\%$; P1 $\\leq 5$ phut",
-          "Nhóm tự đặt làm ràng buộc bài toán tối ưu"]],
-        align="p{0.05\\linewidth}p{0.22\\linewidth}p{0.26\\linewidth}p{0.34\\linewidth}")
+    chart_sensitivity(plt, sens)
+    chart_by_class(plt, sims)
+    say(f"\n[8] Da xuat 5 hinh vao figures/")
 
     with open(os.path.join(DATA, "run_log.txt"), "w") as f:
         f.write("\n".join(log) + "\n")
-    say("\nHoan tat. Bang LaTeX trong tables/, du lieu trong data/.")
+    say("Hoan tat.")
 
 
 if __name__ == "__main__":

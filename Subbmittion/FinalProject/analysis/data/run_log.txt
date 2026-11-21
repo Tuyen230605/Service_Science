@@ -1,70 +1,67 @@
 ==============================================================================
-DU AN INT3501 - NHOM 8 | Phan tich hang doi tram tu van - phan loai
-NHAN DU LIEU: Du lieu mo phong (simulated), khong phai du lieu thuc te
+DU AN INT3501 - NHOM 8 | Hang doi tai cua hang xang dau noi thanh Ha Noi
+NHAN DU LIEU: Du lieu mo phong, quy mo hieu chinh tu so lieu cong bo
 ==============================================================================
 
-[1] Du lieu mo phong: 2014 yeu cau / 20 ngay -> /Users/tuananhpham/tuananhpham/myStudy/year2627/scienceService/Service_Science/Subbmittion/FinalProject/analysis/data/requests_asis_simulated.csv
-    E[S] = 9.04 phut; SD = 11.37; CV = 1.26; mu = 6.64 yc/gio/kenh
-    Muc su dung dieu duong (AS-IS): 63.2%
+[0] Hieu chinh quy mo nhu cau
+    110,000 m3 xang/thang / 453 cua hang / 30 ngay = 8,094 L/ngay/cua hang
+    Xe may 75% san luong, 2.5 L/luot -> 2,428 luot/ngay; o to 30.0 L/luot -> 67 luot/ngay; tong 2,496
+    Ty le o to theo luot = 2.70%; lambda theo gio = [112, 187, 212, 162, 137, 137, 150, 125, 125, 137, 162, 212, 225, 175, 125, 112] (tong 2495)
+    E[S] AS-IS = 1.568 phut; TO-BE = 1.254 phut
 
-[2] Kiem dinh Erlang C bang mo phong (CV = 1, FCFS, 200 ngay/cau hinh)
-    lambda=  6 c=2  rho=0.450  Wq_lythuyet=2.29  Wq_mophong=2.24  lech=-1.9%
-    lambda= 10 c=2  rho=0.750  Wq_lythuyet=11.57  Wq_mophong=10.84  lech=-6.3%
-    lambda= 12 c=2  rho=0.900  Wq_lythuyet=38.37  Wq_mophong=24.35  lech=-36.5%
-    lambda= 12 c=3  rho=0.600  Wq_lythuyet=2.66  Wq_mophong=2.92  lech=9.8%
-    lambda=  8 c=1  rho=1.200  Wq_lythuyet=inf  Wq_mophong=nan  lech=nan%
+[1] Du lieu mo phong AS-IS: 50144 luot / 20 ngay -> requests_asis_simulated.csv
+    E[S] = 1.568 phut; SD = 1.353; CV = 0.86; mu = 38.3 xe/gio/kenh; muc su dung = 67.9%
 
-[3] Cau hinh AS-IS (c = 2 ca ngay, E[S] = 9 phut)
-    07-08  lambda=  6  rho=0.45  Wq=2.29  P(Wq>15)=4.47%  DAT
-    08-09  lambda= 10  rho=0.75  Wq=11.57  P(Wq>15)=27.94%  KHONG DAT
-    09-10  lambda= 12  rho=0.90  Wq=38.37  P(Wq>15)=61.09%  KHONG DAT
-    10-11  lambda= 11  rho=0.82  Wq=19.18  P(Wq>15)=41.62%  KHONG DAT
-    11-12  lambda=  8  rho=0.60  Wq=5.06  P(Wq>15)=11.86%  KHONG DAT
-    12-13  lambda=  5  rho=0.38  Wq=1.47  P(Wq>15)=2.55%  DAT
-    13-14  lambda=  7  rho=0.53  Wq=3.42  P(Wq>15)=7.42%  KHONG DAT
-    14-15  lambda= 10  rho=0.75  Wq=11.57  P(Wq>15)=27.94%  KHONG DAT
-    15-16  lambda= 11  rho=0.82  Wq=19.18  P(Wq>15)=41.62%  KHONG DAT
-    16-17  lambda=  9  rho=0.67  Wq=7.53  P(Wq>15)=18.41%  KHONG DAT
-    17-18  lambda=  7  rho=0.53  Wq=3.42  P(Wq>15)=7.42%  KHONG DAT
-    18-19  lambda=  4  rho=0.30  Wq=0.89  P(Wq>15)=1.34%  DAT
+[2] Kiem dinh Erlang C (CV = 1, mot lop xe, 40 ngay/cau hinh)
+    lambda= 112 c=4  rho=0.732  Wq_ct=0.699  Wq_mp=0.751  lech=7.5%
+    lambda= 187 c=6  rho=0.814  Wq_ct=0.770  Wq_mp=0.760  lech=-1.2%
+    lambda= 225 c=6  rho=0.980  Wq_ct=12.173  Wq_mp=7.612  lech=-37.5%
+    lambda= 225 c=7  rho=0.840  Wq_ct=0.801  Wq_mp=0.742  lech=-7.4%
+    lambda= 212 c=5  rho=1.108  Wq_ct=inf  Wq_mp=nan  lech=nan%
 
-[4] Nghiem bai toan toi uu lich truc TO-BE (E[S] = 6 phut)
-    07-08  lambda=  6  c*=2  rho=0.30  Wq=0.59  P(Wq>15)=0.42%
-    08-09  lambda= 10  c*=2  rho=0.50  Wq=2.00  P(Wq>15)=2.74%
-    09-10  lambda= 12  c*=3  rho=0.40  Wq=0.47  P(Wq>15)=0.16%
-    10-11  lambda= 11  c*=2  rho=0.55  Wq=2.60  P(Wq>15)=4.11%
-    11-12  lambda=  8  c*=2  rho=0.40  Wq=1.14  P(Wq>15)=1.14%
-    12-13  lambda=  5  c*=2  rho=0.25  Wq=0.40  P(Wq>15)=0.24%
-    13-14  lambda=  7  c*=2  rho=0.35  Wq=0.84  P(Wq>15)=0.70%
-    14-15  lambda= 10  c*=2  rho=0.50  Wq=2.00  P(Wq>15)=2.74%
-    15-16  lambda= 11  c*=2  rho=0.55  Wq=2.60  P(Wq>15)=4.11%
-    16-17  lambda=  9  c*=2  rho=0.45  Wq=1.52  P(Wq>15)=1.79%
-    17-18  lambda=  7  c*=2  rho=0.35  Wq=0.84  P(Wq>15)=0.70%
-    18-19  lambda=  4  c*=2  rho=0.20  Wq=0.25  P(Wq>15)=0.12%
-    Gio-dieu duong/ngay: AS-IS 24 | A1 29 | TO-BE 25
-    Chi phi truc/ngay (VND): AS-IS 2,880,000 | A1 3,480,000 | TO-BE 3,000,000
+[3] AS-IS theo gio (c = 6, M/M/c)
+    06-07  lambda= 112  rho=0.49  Wq=0.05  P(Wq>5)=0.00%  DAT
+    07-08  lambda= 187  rho=0.81  Wq=0.77  P(Wq>5)=1.56%  DAT
+    08-09  lambda= 212  rho=0.92  Wq=2.71  P(Wq>5)=18.30%  KHONG DAT
+    09-10  lambda= 162  rho=0.71  Wq=0.31  P(Wq>5)=0.12%  DAT
+    10-11  lambda= 137  rho=0.60  Wq=0.12  P(Wq>5)=0.01%  DAT
+    11-12  lambda= 137  rho=0.60  Wq=0.12  P(Wq>5)=0.01%  DAT
+    12-13  lambda= 150  rho=0.65  Wq=0.20  P(Wq>5)=0.03%  DAT
+    13-14  lambda= 125  rho=0.54  Wq=0.08  P(Wq>5)=0.00%  DAT
+    14-15  lambda= 125  rho=0.54  Wq=0.08  P(Wq>5)=0.00%  DAT
+    15-16  lambda= 137  rho=0.60  Wq=0.12  P(Wq>5)=0.01%  DAT
+    16-17  lambda= 162  rho=0.71  Wq=0.31  P(Wq>5)=0.12%  DAT
+    17-18  lambda= 212  rho=0.92  Wq=2.71  P(Wq>5)=18.30%  KHONG DAT
+    18-19  lambda= 225  rho=0.98  Wq=12.17  P(Wq>5)=64.08%  KHONG DAT
+    19-20  lambda= 175  rho=0.76  Wq=0.49  P(Wq>5)=0.47%  DAT
+    20-21  lambda= 125  rho=0.54  Wq=0.08  P(Wq>5)=0.00%  DAT
+    21-22  lambda= 112  rho=0.49  Wq=0.05  P(Wq>5)=0.00%  DAT
 
-[5] So sanh ba phuong an tren cung bo chi so (mo phong 20 ngay, CV = 1,25)
-    Phuong an                  Wq   Wq_p90    P>15   P1_Wq     rho  Gio-DD
-    A0 - AS-IS               9.50    30.13   23.1%    9.51   63.2%      24
-    A1 - Tang nhan luc       3.57    11.03    7.3%    3.12   52.3%      29
-    A2 - TO-BE               1.75     4.88    3.2%    1.13   40.4%      25
+[4] Toi uu lich theo gio
+    A1 (E[S] AS-IS)  c* = [4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4]  -> 88 gio-nhan vien/ngay
+    A2 (E[S] TO-BE)  c* = [3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3]  -> 72 gio-nhan vien/ngay
+    Chi phi nhan luc/ngay: A0 5,568,000 | A1 5,104,000 | A2 4,176,000 (+ cong nghe 250,000)
 
-[6] Do nhay theo nhu cau
-    x0.8  A0 - AS-IS             Wq=   4.43  Wq_p90=  13.25  P>15=  8.9%  rho_peak=0.72
-    x0.8  A1 - Tang nhan luc     Wq=   1.61  Wq_p90=   3.66  P>15=  2.8%  rho_peak=0.48
-    x0.8  A2 - TO-BE             Wq=   0.85  Wq_p90=   1.71  P>15=  1.3%  rho_peak=0.32
-    x1.0  A0 - AS-IS             Wq=  11.54  Wq_p90=  37.38  P>15= 25.6%  rho_peak=0.90
-    x1.0  A1 - Tang nhan luc     Wq=   2.90  Wq_p90=  10.10  P>15=  5.9%  rho_peak=0.60
-    x1.0  A2 - TO-BE             Wq=   1.60  Wq_p90=   5.21  P>15=  2.3%  rho_peak=0.40
-    x1.2  A0 - AS-IS             Wq=  21.05  Wq_p90=  58.61  P>15= 43.4%  rho_peak=1.08
-    x1.2  A1 - Tang nhan luc     Wq=   5.61  Wq_p90=  18.70  P>15= 13.0%  rho_peak=0.72
-    x1.2  A2 - TO-BE             Wq=   2.93  Wq_p90=   8.90  P>15=  5.6%  rho_peak=0.48
-    x1.4  A0 - AS-IS             Wq=  25.22  Wq_p90=  60.24  P>15= 54.8%  rho_peak=1.26
-    x1.4  A1 - Tang nhan luc     Wq=   6.85  Wq_p90=  22.08  P>15= 16.3%  rho_peak=0.84
-    x1.4  A2 - TO-BE             Wq=   3.28  Wq_p90=  10.13  P>15=  6.4%  rho_peak=0.56
+[5] So sanh ba phuong an (mo phong 20 ngay, CV = 0,8)
+    A0 – AS-IS           Wq=0.641 p90=2.368 P>5=1.68% bo=0.49% oto=0.588 xemay=0.642 rho=67.9% gio=96 | 17-19h: Wq=1.817 P>5=6.18% bo=2.26%
+    A1 – Lịch theo giờ   Wq=0.453 p90=1.509 P>5=0.33% bo=0.04% oto=0.423 xemay=0.454 rho=74.4% gio=88 | 17-19h: Wq=0.558 P>5=0.50% bo=0.17%
+    A2 – Số hóa + lịch   Wq=0.433 p90=1.394 P>5=0.48% bo=0.02% oto=0.407 xemay=0.434 rho=72.8% gio=72 | 17-19h: Wq=0.364 P>5=0.08% bo=0.07%
 
-[7] Rui ro 1 - thieu 1 dieu duong [1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1]: Wq=21.44 phut, P(Wq>15)=33.4%
-    Rui ro 2 - AI chi giam 15% thoi gian xu ly (E[S]=7.65 phut): Wq=5.26 phut, P(Wq>15)=10.6%
+[6] Do nhay theo nhu cau (30 ngay, seed rieng)
+    x0.8  A0 – AS-IS           Wq=  0.174  p90=  0.564  P>5=  0.12%  bo= 0.02%  rho_peak=0.78
+    x0.8  A1 – Lịch theo giờ   Wq=  0.139  p90=  0.478  P>5=  0.01%  bo= 0.00%  rho_peak=0.67
+    x0.8  A2 – Số hóa + lịch   Wq=  0.149  p90=  0.504  P>5=  0.04%  bo= 0.00%  rho_peak=0.63
+    x1.0  A0 – AS-IS           Wq=  0.553  p90=  2.042  P>5=  0.93%  bo= 0.31%  rho_peak=0.98
+    x1.0  A1 – Lịch theo giờ   Wq=  0.412  p90=  1.400  P>5=  0.21%  bo= 0.01%  rho_peak=0.84
+    x1.0  A2 – Số hóa + lịch   Wq=  0.394  p90=  1.305  P>5=  0.24%  bo= 0.00%  rho_peak=0.78
+    x1.2  A0 – AS-IS           Wq=  1.318  p90=  4.273  P>5=  4.78%  bo= 2.88%  rho_peak=1.18
+    x1.2  A1 – Lịch theo giờ   Wq=  1.289  p90=  3.586  P>5=  2.87%  bo= 0.94%  rho_peak=1.01
+    x1.2  A2 – Số hóa + lịch   Wq=  1.144  p90=  3.305  P>5=  2.61%  bo= 0.53%  rho_peak=0.94
+    x1.4  A0 – AS-IS           Wq=  2.088  p90=  5.079  P>5= 10.83%  bo= 7.86%  rho_peak=1.37
+    x1.4  A1 – Lịch theo giờ   Wq=  2.985  p90=  5.472  P>5= 15.01%  bo= 6.41%  rho_peak=1.18
+    x1.4  A2 – Số hóa + lịch   Wq=  2.765  p90=  5.341  P>5= 12.82%  bo= 4.86%  rho_peak=1.10
 
-[8] Da xuat 5 hinh vao /Users/tuananhpham/tuananhpham/myStudy/year2627/scienceService/Service_Science/Subbmittion/FinalProject/figures
+[7] Rui ro: thieu 1 nhan vien moi gio -> Wq=2.488, P>5=16.80%, bo di=1.93%
+    So hoa chi giam 10% (E[S]=1.411) -> Wq=0.856, P>5=1.45%, bo di=0.10%
+
+[8] Da xuat 5 hinh vao figures/
