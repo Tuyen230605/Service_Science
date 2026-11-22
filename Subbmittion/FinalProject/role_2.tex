@@ -17,9 +17,11 @@ nhóm suy ra từ số liệu công bố), G (giả định cần đo lại). Ch
 \frac{110\,000\ \text{m}^3/\text{tháng}\times1000}{453\ \text{cửa hàng}\times30\ \text{ngày}}
 \approx 8\,094\ \text{lít/cửa hàng/ngày}\quad\text{(R)}.
 \end{equation}
-Với khoảng 5,6 triệu xe máy và mức tiêu thụ 0,5 lít/xe/ngày, xe máy dùng khoảng
-84\,000~m$^3$/tháng, tức 75\% lượng xăng (E). Một lượt xe máy đổ 2,5 lít (bình
-4,4--5,2 lít~\cite{tank}, đổ khi còn khoảng một nửa), một lượt ô tô 30 lít (E).
+Hà Nội quản lý 6,9 triệu xe máy, trong đó khoảng 5,6 triệu xe chạy xăng và
+1,3 triệu xe điện~\cite{vnex2025}. Với 5,6 triệu xe máy xăng và mức tiêu thụ 0,5 lít/xe/ngày, xe máy dùng khoảng
+84\,000~m$^3$/tháng, tức khoảng 76\% lượng xăng; nhóm làm tròn thành 75\% (E).
+Một lượt xe máy đổ 2,5 lít (bình 4,4--4,9 lít~\cite{tank}, đổ khi còn khoảng một
+nửa), một lượt ô tô 30 lít (E).
 Từ đó cửa hàng đại diện có $8\,094\times0{,}75/2{,}5\approx2\,428$ lượt xe máy
 và $8\,094\times0{,}25/30\approx67$ lượt ô tô mỗi ngày; ô tô chỉ chiếm 2,7\%
 số lượt. Mã \texttt{run\_analysis.py} tính lại toàn bộ chuỗi này và ghi vào
@@ -32,20 +34,31 @@ số lượt. Mã \texttt{run\_analysis.py} tính lại toàn bộ chuỗi này 
 Tham số & Giá trị (đơn vị) & Loại & Căn cứ / cách đo lại \\
 \midrule
 Lượng xăng bán / cửa hàng & 8\,094 lít/ngày & R & 110\,000 m$^3$/tháng; 453 cửa hàng~\cite{sct2026} \\
-Lượt xe / ngày & 2\,495 xe/ngày (xe máy 2\,428; ô tô 67) & E & Chia theo số lít/lượt; đo lại bằng hóa đơn điện tử \\
+Lượt xe / ngày & 2\,495 xe/ngày (xe máy 2\,428; ô tô 67) & E & Chia theo số lít/lượt (2\,495,7 trước làm tròn; bằng tổng $\lambda_t$ đã làm tròn theo giờ); đo lại bằng hóa đơn điện tử \\
 Phân bố theo giờ $\lambda_t$ & 112--225 xe/giờ, đỉnh 18--19 giờ & G & Hai đỉnh đi làm/tan tầm; đo bằng dấu thời gian hóa đơn \\
-$E[S]$ AS-IS & xe máy 1,5; ô tô 4,0 phút/xe (bình quân 1,57) & G & Tài liệu: 1--4 phút/xe máy~\cite{batui}; bấm giờ mẫu \\
+$E[S]$ AS-IS & xe máy 1,5; ô tô 4,0 phút/xe (bình quân 1,57) & G & Chặn trên từ năng lực (xem dưới bảng); nghiên cứu duy nhất tìm được đo 3,89 phút/xe máy ở trạm nông thôn~\cite{batui}; bấm giờ mẫu (Phụ lục~\ref{r2:app-plan}) \\
 $E[S]$ TO-BE & giảm 20\% (bình quân 1,25 phút/xe) & G & Trả trước QR/ứng dụng; đã thử trường hợp chỉ giảm 10\% \\
 Hệ số biến thiên $S$ & CV = 0,8 & G & Lognormal; kiểm tra bằng dữ liệu bấm giờ \\
 Số vòi / nhân viên AS-IS & 8 vòi; 6 nhân viên mỗi giờ & G & Cửa hàng nội thành điển hình \\
 Ngưỡng bỏ đi & 20 xe đang chờ ($\approx$2,5--3 xe/vòi) & G & Quan sát số xe bỏ đi khi hàng dài \\
 Chi phí nhân viên & 58\,000 đồng/giờ & E & 10 triệu đồng/tháng~\cite{wage} $\times$1,215 (BHXH) / 208 giờ \\
-Lãi gộp bán lẻ & 1\,500 đồng/lít & E & Chiết khấu thực tế 100--2\,600 đồng/lít~\cite{chietkhau} \\
+Lãi gộp bán lẻ & 1\,500 đồng/lít & G & Giai đoạn chiết khấu thấp: chỉ 50--150 đồng/lít, có lúc 0; cần $\approx$700 đồng/lít để bù chi phí vận hành~\cite{chietkhau}. Thay bằng số liệu cửa hàng \\
 Chi phí số hóa & 250\,000 đồng/ngày & G & Ứng dụng trả trước, QR, tích hợp POS \\
 Mục tiêu dịch vụ & $E[W_q]\le2$ phút; $P(W_q{>}5)\le5\%$ & G & Nhóm đặt; khách bỏ đi $\le1\%$ \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\textbf{Vì sao chọn $E[S]$ xe máy = 1,5 phút.} Nghiên cứu duy nhất nhóm tìm được
+có số đo là SPBU Batui II (Indonesia): 3,89 phút/xe máy, mô hình M/M/s, 2 làn
+cho xe máy, khoảng 28 xe/giờ, quan sát 30 ngày~\cite{batui}. Đó là trạm ven
+quốc lộ ở vùng nông thôn, tải thấp, nên số đo không chuyển trực tiếp sang cửa
+hàng nội thành. Sản lượng công bố cho một chặn trên: với 8 vòi và
+$\lambda_{\max}=225$ xe/giờ, điều kiện ổn định $\rho<1$ đòi hỏi
+$E[S]<8\times60/225\approx2{,}13$ phút. Nếu $E[S]=3{,}89$ phút thì giờ cao
+điểm cần ít nhất $225\times3{,}89/60\approx14{,}6$, tức 15 kênh, mâu thuẫn với
+quy mô cửa hàng. Giá trị 1,5 phút (G) nằm dưới chặn trên này và phải được bấm
+giờ lại.
 
 \subsection{Định nghĩa chỉ số và đơn vị}
 Với lượt xe $i$, gọi $a_i$, $b_i$, $d_i$ là thời điểm vào hàng chờ, bắt đầu
@@ -60,7 +73,8 @@ xe, giờ nhân viên/ngày và chi phí (nghìn đồng/ngày).
 
 \subsection{Mô hình hàng đợi M/M/c để tham chiếu}
 Giả định dòng đến Poisson, thời gian phục vụ phân phối mũ, $c$ kênh giống nhau,
-FCFS. Đặt $\lambda$ (xe/giờ), $\mu=60/E[S]$ (xe/giờ/kênh), $a=\lambda/\mu$,
+FCFS; các công thức Erlang C và $P(W_q>t)$ theo bài giảng L4~\cite[tr.~46--47, 52]{l4}.
+Đặt $\lambda$ (xe/giờ), $\mu=60/E[S]$ (xe/giờ/kênh), $a=\lambda/\mu$,
 $\rho=\lambda/(c\mu)<1$:
 \begin{align}
  P_0&=\left[\sum_{n=0}^{c-1}\frac{a^n}{n!}+\frac{a^c}{c!(1-\rho)}\right]^{-1},\qquad
@@ -68,9 +82,9 @@ $\rho=\lambda/(c\mu)<1$:
  E[W_q]&=\frac{60\,C(c,a)}{c\mu-\lambda}\ \text{(phút)},\qquad
  P(W_q>t)=C(c,a)\,e^{-(c\mu-\lambda)t/60}\ \ (t\text{ phút}).
 \end{align}
-Theo định luật Little, $L_q=\lambda E[W_q]/60$ (xe). Với $E[S]=1{,}57$ phút,
-$\mu=38{,}3$ xe/giờ/kênh. Tính riêng từng giờ là xấp xỉ trạng thái ổn định.
-\todo{2}{Bổ sung trích dẫn giáo trình/bài giảng L4 cho Erlang C và Little.}
+Theo định luật Little~\cite[tr.~21--22]{l4}, $L_q=\lambda E[W_q]/60$ (xe).
+Với $E[S]=1{,}57$ phút, $\mu=38{,}3$ xe/giờ/kênh. Tính riêng từng giờ là xấp xỉ
+trạng thái ổn định.
 
 \subsection{Mô phỏng sự kiện rời rạc}
 Mỗi giờ sinh số xe theo Poisson với $\lambda_t$, thời điểm đến đều trong giờ;
@@ -133,7 +147,7 @@ hút ở vùng $i$ là
 h_i=\text{dân số}_i\times0{,}695\ \tfrac{\text{xe}}{\text{người}}\times0{,}2\
 \tfrac{\text{lượt}}{\text{xe}\cdot\text{ngày}}\times2\%\ \text{(thị phần)},
 \end{equation}
-với 0,695 = 5,6 triệu xe máy / 8,05 triệu dân (E), 0,2 lượt/ngày = đổ 2,5 lít
+với 0,695 = 5,6 triệu xe máy xăng (2025)~\cite{vnex2025} / 8,05 triệu dân (2019) (E), 0,2 lượt/ngày = đổ 2,5 lít
 mỗi 5 ngày (E), thị phần 2\% (G). Thời gian đi lại $t_{ij}$ (phút) tính từ tọa
 độ xấp xỉ: khoảng cách đường chim bay $\times1{,}35$ (hệ số đường vòng), tốc
 độ 20~km/giờ giờ cao điểm, cộng 2 phút ra/vào. Ngưỡng tiếp cận $R=15$ phút.
@@ -179,22 +193,39 @@ phút, nhu cầu giảm 20\% (KB-A), tăng 20\% (KB-B) và cửa hàng chỉ có
 nhu cầu tăng 20\%, J3 + J4 còn trở thành phương án phục vụ nhiều nhất vì J2 bị
 giới hạn năng lực. Ngược lại, lợi nhuận của J2 + J4 giảm còn 73,6 triệu khi
 nhu cầu giảm 20\% và còn 18,9 triệu nếu chỉ có 6 vòi. Chỉ khi $R=12$ phút (khách
-rất ngại đi xa) thì tối ưu lợi nhuận chuyển sang J4 + J5. Kết luận BT2:
-\textbf{chọn J3 Hà Đông + J4 Hoàng Mai}, giữ J4 cố định và coi J2/J3 là lựa
-chọn phụ thuộc mục tiêu.
+rất ngại đi xa) thì tối ưu lợi nhuận chuyển sang J4 + J5.
+
+\exttable{tab_ext_location_econ.tex}{Độ nhạy lợi nhuận BT2 theo lãi gộp (G) và chi phí cố định $f_j$ (G); số lượt phục vụ của từng tổ hợp giữ nguyên}{r2:loc-econ}
+\textbf{Điều kiện kinh tế.} Hai tham số quyết định mục tiêu (b) đều là giả định:
+lãi gộp 1\,500 đồng/lít và chi phí cố định $f_j$. Bảng~\ref{r2:loc-econ} tính
+lại lợi nhuận khi thay đổi hai tham số này. Số lượt phục vụ không phụ thuộc vào
+chúng nên giữ nguyên. Lãi gộp hòa vốn là 1\,098 đồng/lít với J3 + J4 và 1\,180
+đồng/lít với J2 + J4. Ở mức 700 đồng/lít, ngưỡng bù chi phí mà~\cite{chietkhau}
+nêu, mỗi lượt chỉ đóng góp 106 đồng và không tổ hợp nào có lãi. Ở mức 1\,000
+đồng/lít cũng vậy. Ngay cả khi có lãi, lựa chọn giữa J2 và J3 vẫn đảo chiều:
+J2 + J4 lãi hơn khi lãi gộp đạt 2\,000 đồng/lít hoặc khi $f_j$ giảm 30\%,
+còn J3 + J4 lãi hơn khi $f_j$ tăng 30\%. Kết luận BT2 vì vậy có ba phần.
+(i) \textbf{Chỉ mở thêm cửa hàng khi lãi gộp thực tế đạt trên khoảng 1\,100
+đồng/lít.} (ii) \textbf{J4 Hoàng Mai} có mặt trong mọi phương án lãi nhất (Bảng~\ref{r2:loc-sens} và~\ref{r2:loc-econ}).
+(iii) Điểm thứ hai là J3 Hà Đông nếu ưu tiên lợi nhuận ở mức cơ sở, hoặc J2
+Đống Đa nếu ưu tiên độ phủ hay giá thuê thấp hơn giả định. Cần lấy lãi gộp
+thật và báo giá thuê của từng điểm trước khi quyết định.
 \todo{2}{Thay tọa độ xấp xỉ bằng địa chỉ ứng viên thật và thời gian đi lại từ
 bản đồ số; kiểm tra lại số cửa hàng đối thủ trong bán kính $R$ để hiệu chỉnh thị phần 2\%.}
 
 \subsection{Dự báo lượt xe ngày tới bằng học máy}
 \label{r2:forecast}
 Lịch theo giờ (BT1) chỉ tốt khi biết trước $\lambda_t$. Nhu cầu xăng có các
-biến động \emph{biết trước được}: giá điều chỉnh vào 15 giờ thứ Năm hằng tuần
-(tăng giá thì khách đổ trước 15 giờ, giảm giá thì chờ sau 15 giờ), tuần trước
+biến động \emph{biết trước được}: giá điều chỉnh có hiệu lực lúc 15 giờ, phần
+lớn vào thứ Năm (các kỳ 22/10, 29/10, 5/11, 12/11/2026), đôi khi có kỳ bổ sung
+giữa tuần (31/10, 3/11/2026)~\cite{moit2026,moit2026b}. Khi giá tăng, khách đổ
+trước 15 giờ; khi giá giảm, khách chờ sau 15 giờ. Các biến động khác là tuần trước
 Tết và kỳ nghỉ Tết, và tín hiệu căng thẳng nguồn cung. Nhóm dựng lịch sử 2 năm
 (25/11/2024--22/11/2026) với \emph{lịch sự kiện thật}: Tết Ất Tỵ 29/1/2025, Tết
 Bính Ngọ 17/2/2026, đợt cửa hàng đóng cửa giữa 2025 và đợt 17 cửa hàng tạm
 dừng bán đầu tháng 3/2026~\cite{vtc2026}; biên độ điều chỉnh giá theo tuần lấy
-quanh mức của các kỳ gần đây (1\,310--2\,075 đồng/lít~\cite{moit2026}). Lượt xe
+quanh mức của các kỳ gần đây (E10RON95-III giảm 2\,075 đồng/lít ngày 5/11 và
+1\,311 đồng/lít ngày 12/11/2026~\cite{moit2026b,moit2026}). Lượt xe
 trong lịch sử là mô phỏng. Mô hình học máy là hồi quy Poisson (GLM, ước lượng IRLS):
 \begin{multline}
 \log\lambda_{d,h}=\beta_h+\gamma_{\text{thứ}(d)}+\delta_1\sin\tfrac{2\pi d}{364}+\delta_2\cos\tfrac{2\pi d}{364}
@@ -214,9 +245,17 @@ kiểm tra trên 84 ngày 5/1--29/3/2026 (có Tết và đợt tháng 3).
 GLM giảm MAPE tổng ngày từ 18,33\% (kế hoạch tĩnh) và 19,63\% (trung bình 4 tuần
 cùng thứ) xuống 7,25\%; trên 25 ngày sự kiện, từ khoảng 46\% xuống 10,44\%.
 Trung bình 4 tuần thậm chí kém kế hoạch tĩnh vì nó ``nhớ'' Tết và đợt tháng 3
-sang các tuần sau (Hình~\ref{r2:ml-fig}). Hệ số ước lượng có ý nghĩa vận hành:
-tuần trước Tết $+18\%$ ($e^{0{,}167}$), kỳ nghỉ Tết $-42\%$ ($e^{-0{,}540}$), mỗi
-nghìn đồng/lít tăng giá làm lượt xe trước 15 giờ tăng 28\% ($e^{0{,}249}$).
+sang các tuần sau (Hình~\ref{r2:ml-fig}).
+
+\textbf{Cần đọc kết quả này đúng mức.} Lịch sử lượt xe được mô phỏng với các
+hiệu ứng do nhóm tự đặt: tuần trước Tết $\times1{,}20$, kỳ nghỉ Tết
+$\times0{,}55$, mỗi nghìn đồng/lít tăng giá làm lượt xe trước 15 giờ tăng 25\%.
+Mô hình ước lượng lại được gần đúng các giá trị này: $e^{0{,}167}=1{,}18$,
+$e^{-0{,}540}=0{,}58$ và $e^{0{,}249}=1{,}28$. Điều đó chỉ cho thấy cách xây
+biến và ước lượng là đúng: mô hình tìm lại được cấu trúc đã cài vào dữ liệu.
+Đây \emph{không} phải bằng chứng về hành vi của khách thật. Cũng vì dữ liệu và
+mô hình có cùng cấu trúc, MAPE 7,25\% là giới hạn trên lạc quan. Độ chính xác
+thật chỉ biết được khi huấn luyện trên hóa đơn điện tử.
 Giá trị vận hành của dự báo được đánh giá ở Mục~\ref{r3:ml-staff}.
 \todo{2}{Huấn luyện lại trên dữ liệu hóa đơn điện tử thật; giữ cách chia theo
 thời gian (không trộn ngẫu nhiên) và báo cáo MAPE theo tháng.}

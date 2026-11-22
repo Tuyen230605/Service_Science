@@ -8,7 +8,7 @@ Dau ra: data/ext_*.csv, data/ext_run_log.txt, tables/tab_ext_*.tex,
 Nguon so lieu: dan so quan theo Tong dieu tra 2019 (citypopulation.de, dan theo
 TCTK); 5,6 trieu xe may / 8,05 trieu dan; muc ban 110.000 m3 xang/thang va 453
 cua hang (So Cong Thuong Ha Noi); gia xang E10 RON95-III ky 5/11/2026 (-2.075
-d/L) va 12/11/2026 (-1.310 d/L); Tet Binh Ngo 17/02/2026; dot cang thang nguon
+d/L) va 12/11/2026 (-1.311 d/L); Tet Binh Ngo 17/02/2026; dot cang thang nguon
 cung dau thang 3/2026. Cac tham so con lai la GIA DINH, ghi don vi ben canh.
 """
 
@@ -38,6 +38,10 @@ def say(s=""):
 
 
 def f2(x, nd=2):
+    return ra.vn_decimal(_f2(x, nd))
+
+
+def _f2(x, nd=2):
     if isinstance(x, str):
         return x
     if isinstance(x, (int, np.integer)):
@@ -93,7 +97,7 @@ SITES = [("J1 Cầu Giấy", (21.0300, 105.7820), 120),   # (ten, toa do, f_j tr
          ("J3 Hà Đông", (20.9800, 105.7900), 80),
          ("J4 Hoàng Mai", (20.9850, 105.8420), 95),
          ("J5 Long Biên", (21.0430, 105.8750), 75)]
-MOTO_PER_CAPITA = 5.6e6 / 8.053663e6   # R: 5,6 trieu xe may / dan so 2019 ~ 0,70 xe/nguoi
+MOTO_PER_CAPITA = 5.6e6 / 8.053663e6   # R: 5,6 trieu xe may XANG (VnExpress 16/7/2025; tong 6,9 trieu gom 1,3 trieu xe dien) / dan so 2019
 VISITS_PER_VEHICLE_DAY = 0.2           # E: do xang 5 ngay/lan (2,5 L, ~0,5 L/ngay)
 CAPTURE = 0.02                         # E: thi phan mot cua hang moi gianh duoc trong vung phu
 CIRCUITY = 1.35                        # he so duong vong so voi duong chim bay
@@ -245,7 +249,54 @@ def location_block():
                  hh("Tối ưu", "lợi nhuận"), hh("Lợi nhuận", "tối ưu (tr.đ)"),
                  hh(best["name"], "lợi nhuận (tr.đ)")],
                 sens, "lrlrrlrr", nd=1)
+    location_econ_sens(res)
     return cap, res, best
+
+
+def location_econ_sens(res):
+    """Do nhay loi nhuan BT2 theo lai gop/lit (G) va chi phi co dinh f_j (G).
+    Luot phuc vu cua moi to hop khong phu thuoc hai tham so nay (muc tieu (a)),
+    nen chi can tinh lai loi nhuan = phuc vu x dong gop/luot x 30 - F."""
+    def contrib(m):
+        return LITRES_PER_VISIT_AVG * m - STAFF_COST_PER_VISIT
+
+    def profit(r, m, s):
+        return r["served"] * contrib(m) * 30 / 1e6 - s * r["fixed"]
+
+    def breakeven(r):
+        return (r["fixed"] * 1e6 / (30 * r["served"]) + STAFF_COST_PER_VISIT) / LITRES_PER_VISIT_AVG
+
+    say("\n[L2] Do nhay loi nhuan BT2 theo lai gop/lit va chi phi co dinh f_j")
+    by_name = {r["name"]: r for r in res}
+    focus = ["J3 + J4", "J2 + J4"]
+    for n in focus:
+        say(f"     Lai gop hoa von {n}: {breakeven(by_name[n]):,.0f} d/L")
+    m_star = min(breakeven(r) for r in res)
+    say(f"     Lai gop hoa von thap nhat trong 10 to hop: {m_star:,.0f} d/L")
+    rows = []
+    for label, m, s in [("Lãi gộp 700 đ/L (ngưỡng bù chi phí)", 700, 1.0),
+                        ("Lãi gộp 1\\,000 đ/L", 1000, 1.0),
+                        ("Lãi gộp 1\\,500 đ/L (cơ sở)", ra.MARGIN_PER_LITRE, 1.0),
+                        ("Lãi gộp 2\\,000 đ/L", 2000, 1.0),
+                        ("Cơ sở; $f_j$ giảm 30\\%", ra.MARGIN_PER_LITRE, 0.7),
+                        ("Cơ sở; $f_j$ tăng 30\\%", ra.MARGIN_PER_LITRE, 1.3)]:
+        best = max(res, key=lambda r: profit(r, m, s))
+        n_pos = sum(profit(r, m, s) > 0 for r in res)
+        bp = profit(best, m, s)
+        rows.append([label, round(contrib(m)), best["name"] if bp > 0 else "Không mở",
+                     bp] + [profit(by_name[n], m, s) for n in focus] + [n_pos])
+        say(f"     {plain(label):<36} dong gop={contrib(m):6,.0f} d/luot  LNmax={best['name']} "
+            f"{bp:7.1f}tr  " + "  ".join(f"{n}={profit(by_name[n], m, s):7.1f}" for n in focus)
+            + f"  so to hop co lai={n_pos}/10")
+    write_table("tab_ext_location_econ.tex",
+                [hh("Tình huống"), hh("Đóng góp", "(đ/lượt)"), hh("Lãi nhất"),
+                 hh("Lợi nhuận", "(tr.đ/tháng)")] + [hh(n, "(tr.đ/tháng)") for n in focus]
+                + [hh("Số tổ hợp", "có lãi")],
+                rows, "lrlrrrr", nd=1)
+    write_csv("ext_location_econ.csv", ["case", "contrib_VND_per_visit", "best_combo",
+                                        "best_profit_mVND", "J3J4_profit_mVND",
+                                        "J2J4_profit_mVND", "n_profitable"],
+              [[plain(r[0])] + r[1:] for r in rows])
 
 
 # ============================================================================
@@ -386,7 +437,7 @@ def scenario_block():
                                + k * res[(s[0], st)]["lost_clv_day"])
                           for p, s in zip(SCEN_PROB, SCEN))
         win = min(exp, key=exp.get)
-        clv_rows.append([f"$\\times${k:.1f} ({CLV[2]*k/1e3:,.0f} / {CLV[1]*k/1e6:,.2f})".replace(",", ".")]
+        clv_rows.append([f"$\\times${k:.1f} ({CLV[2]*k/1e3:,.0f} / {CLV[1]*k/1e6:,.2f})".replace(",", "\\,")]
                         + [exp[st] / 1e3 for st in cand] + [win])
         say(f"     CLVx{k:.1f} " + "  ".join(f"{st}={exp[st]/1e3:.1f}" for st in cand) + f" -> {win}")
     write_table("tab_ext_clv.tex",
@@ -418,7 +469,7 @@ TENSIONS = [(dt.date(2025, 7, 1), 7, 0.35),            # R (bao chi): cua hang d
             (dt.date(2026, 3, 4), 8, 0.60)]            # R: 7/3/2026 khach tang cao, 17 cua hang tam dung
 TEST_START, TEST_DAYS = dt.date(2026, 1, 5), 84         # gom Tet 2026 va dot thang 3/2026
 WEEKDAY = np.array([1.04, 1.00, 0.99, 1.02, 1.06, 0.97, 0.92])  # E: T2..CN
-PRICE_SD = 900   # d/L: bien do dieu chinh tuan (vd. 5/11/2026: -2.075; 12/11/2026: -1.310)
+PRICE_SD = 900   # d/L: bien do dieu chinh tuan (vd. 5/11/2026: -2.075; 12/11/2026: -1.311)
 PRE15 = 9        # so khung gio truoc 15h (06-15) trong ngay dieu chinh
 
 

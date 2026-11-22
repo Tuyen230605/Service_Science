@@ -32,6 +32,17 @@ PHAN MO RONG | DU LIEU MO PHONG, HIEU CHINH TU SO LIEU CONG BO
      [do nhay] KB-B: nhu cầu times1.2     Q= 2888.9 chon=J3 + J4   54.5% (co so  53.6%) LNmax=J3 + J4 LN co so=153.8
      [do nhay] Cửa hàng 6 vòi (c=6)       Q= 2166.7 chon=J2 + J3   49.3% (co so  42.6%) LNmax=J3 + J4 LN co so=18.9
 
+[L2] Do nhay loi nhuan BT2 theo lai gop/lit va chi phi co dinh f_j
+     Lai gop hoa von J3 + J4: 1,098 d/L
+     Lai gop hoa von J2 + J4: 1,180 d/L
+     Lai gop hoa von thap nhat trong 10 to hop: 1,098 d/L
+     Lãi gộp 700 đ/L (ngưỡng bù chi phí)  dong gop=   106 d/luot  LNmax=J3 + J5  -146.1tr  J3 + J4= -161.8  J2 + J4= -229.4  so to hop co lai=0/10
+     Lãi gộp 1,000 đ/L                    dong gop= 1,079 d/luot  LNmax=J3 + J4   -39.9tr  J3 + J4=  -39.9  J2 + J4=  -85.9  so to hop co lai=0/10
+     Lãi gộp 1,500 đ/L (cơ sở)            dong gop= 2,700 d/luot  LNmax=J3 + J4   163.2tr  J3 + J4=  163.2  J2 + J4=  153.2  so to hop co lai=10/10
+     Lãi gộp 2,000 đ/L                    dong gop= 4,322 d/luot  LNmax=J2 + J4   392.4tr  J3 + J4=  366.4  J2 + J4=  392.4  so to hop co lai=10/10
+     Cơ sở; f_j giảm 30%                  dong gop= 2,700 d/luot  LNmax=J2 + J4   226.7tr  J3 + J4=  215.7  J2 + J4=  226.7  so to hop co lai=10/10
+     Cơ sở; f_j tăng 30%                  dong gop= 2,700 d/luot  LNmax=J3 + J4   110.7tr  J3 + J4=  110.7  J2 + J4=   79.7  so to hop co lai=7/10
+
 [S1] Kich ban chien luoc (30 ngay/o, cung seed trong mot kich ban)
      Lich A1 = [4, 6, 7, 6, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4] (88); A2 = [3, 5, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 6, 5, 4, 3] (72)
      KB-A Nhu cầu thấp  A0              Wq=  0.16 p90=  0.51 P>5=  0.12% balk= 0.02% gio= 96 mat= 0.29% NL= 5568.0k mat=   378.4k tong=  5946.4k lich=[6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6]

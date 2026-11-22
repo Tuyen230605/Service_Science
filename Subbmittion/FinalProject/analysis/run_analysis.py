@@ -6,7 +6,7 @@ Dau ra: data/*.csv, tables/*.tex, ../figures/*.png
 
 DU LIEU: luot den theo gio la DU LIEU MO PHONG, nhung QUY MO nhu cau duoc hieu
 chinh tu so lieu cong bo (Ha Noi tieu thu ~110.000 m3 xang/thang, 453 cua hang
-ban le - So Cong Thuong Ha Noi; dung tich binh xang xe may 4,4-5,2 L; luong
+ban le - So Cong Thuong Ha Noi; dung tich binh xang xe may 4,4-4,9 L; luong
 nhan vien ban xang 8-12 trieu dong/thang theo tin tuyen dung). Cac tham so con
 lai (phan bo theo gio, thoi gian phuc vu) la GIA DINH co can cu, ghi trong
 CONFIG va trong bang tab_assumptions.tex de thay bang so do thuc khi co.
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import csv
 import os
+import re
 from math import isfinite
 
 import numpy as np
@@ -40,8 +41,8 @@ HN_PETROL_M3_MONTH = 110_000        # R: m3 xang/thang toan Ha Noi (So Cong Thuo
 HN_STORES = 453                     # R: so cua hang ban le xang dau dang hoat dong
 DAYS_PER_MONTH = 30
 LITRES_PER_STORE_DAY = HN_PETROL_M3_MONTH * 1000 / HN_STORES / DAYS_PER_MONTH  # ~8.094 L
-MOTO_VOLUME_SHARE = 0.75            # E: 5,6 trieu xe may x ~0,5 L/ngay ~ 84.000 m3/thang
-LITRES_PER_VISIT = {1: 30.0, 2: 2.5}  # E: o to (binh 40-50 L); xe may (binh 4,4-5,2 L)
+MOTO_VOLUME_SHARE = 0.75            # E: 5,6 trieu xe may xang (VnExpress 16/7/2025) x ~0,5 L/ngay ~ 84.000 m3/thang
+LITRES_PER_VISIT = {1: 30.0, 2: 2.5}  # E: o to (binh 40-50 L); xe may (binh 4,4-4,9 L)
 
 VISITS_CAR = LITRES_PER_STORE_DAY * (1 - MOTO_VOLUME_SHARE) / LITRES_PER_VISIT[1]
 VISITS_MOTO = LITRES_PER_STORE_DAY * MOTO_VOLUME_SHARE / LITRES_PER_VISIT[2]
@@ -77,7 +78,7 @@ C_MAX = 8                           # 8 voi bom -> toi da 8 kenh
 WAGE_MONTH = 10_000_000             # R: 8-12 trieu dong/thang (tin tuyen dung)
 COST_PER_SERVER_HOUR = 58_000       # dong/gio = 10 trieu x 1,215 (BHXH) / 208 gio
 TECH_COST_DAY = 250_000             # E: dong/ngay cho ung dung tra truoc + QR (TO-BE)
-MARGIN_PER_LITRE = 1_500            # E: dong/L lai gop ban le; chiet khau thuc te 2025 dao dong 500-2.600 d/L
+MARGIN_PER_LITRE = 1_500            # G: dong/L lai gop ban le; SGGP 29/7/2026: chiet khau co luc 0-150 d/L, can ~700 d/L de bu chi phi
 
 # Gia dinh G5: khach bo di (balking) khi thay qua nhieu xe dang cho
 BALK_QUEUE = 20                     # xe dang cho (~2,5-3 xe moi voi o gio cao diem)
@@ -239,7 +240,19 @@ def sensitivity(plans):
 
 
 # ----------------------------------------------------------- XUAT BANG ------
+_DEC = re.compile(r"(?<=\d)\.(?=\d)")
+
+
+def vn_decimal(s: str) -> str:
+    """Dau thap phan kieu Viet Nam trong bang LaTeX: 0.64 -> 0{,}64 (CSV/log giu dau cham)."""
+    return _DEC.sub("{,}", s)
+
+
 def fmt(x, nd=2):
+    return vn_decimal(_fmt(x, nd))
+
+
+def _fmt(x, nd=2):
     if isinstance(x, bool):
         return "Đạt" if x else "Không đạt"
     if isinstance(x, (float, np.floating)):
@@ -439,7 +452,7 @@ def main():
     rows_a0 = per_hour_table(SERVERS_ASIS, MEAN_SERVICE_ASIS)
     say("\n[3] AS-IS theo gio (c = 6, M/M/c)")
     for r in rows_a0:
-        say(f"    {r['hour']}  lambda={r['lambda']:>4}  rho={r['rho']:.2f}  Wq={fmt(r['Wq'])}  "
+        say(f"    {r['hour']}  lambda={r['lambda']:>4}  rho={r['rho']:.2f}  Wq={_fmt(r['Wq'])}  "
             f"P(Wq>5)={r['P_gt']*100:.2f}%  {'DAT' if r['feasible'] else 'KHONG DAT'}")
     write_tex_table(os.path.join(TABLES, "tab_asis_hourly.tex"),
                     ["Khung giờ", "$\\lambda$ (xe/giờ)", "$c$", "$\\rho$", "$L_q$ (xe)",

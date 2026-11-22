@@ -1,0 +1,74 @@
+% !TeX root = _main.tex
+% ROLE 2 -- PHU LUC: bieu mau va ke hoach thu thap du lieu thuc (Batch 1, TV2).
+% Duoc \input trong phan \appendix cua _content.tex. Nhan bat dau bang r2:.
+
+\section{Biểu mẫu và kế hoạch thu thập dữ liệu thực}
+\label{r2:app-plan}
+Các tham số G và E trong Bảng~\ref{r2:assumptions} cần được đo lại. Phụ lục này
+mô tả dữ liệu cần thu, cách thu và cách nạp vào mã phân tích.
+
+\subsection{Hai nguồn dữ liệu}
+\begin{enumerate}
+\item \textbf{Hóa đơn điện tử (nguồn chính cho $\lambda_t$).} Mỗi lần bán xăng
+đều có hóa đơn điện tử kèm dấu thời gian~\cite{nd70}. Nhóm đề nghị một cửa hàng
+cung cấp bản trích xuất \emph{đã ẩn danh}: thời điểm xuất hóa đơn, số lít và
+mặt hàng, trong tối thiểu 4 tuần liên tiếp có ít nhất một kỳ điều chỉnh giá.
+Từ đó đếm được số lượt theo giờ và theo ngày; dữ liệu này cũng dùng để huấn
+luyện lại mô hình dự báo ở Mục~\ref{r2:forecast}.
+\item \textbf{Bấm giờ tại chỗ (nguồn cho $E[S]$, CV, bỏ đi).} Hóa đơn chỉ cho
+biết thời điểm thanh toán. Nó không cho biết lúc xe vào hàng chờ ($a_i$), lúc
+bắt đầu bơm ($b_i$) hay số xe bỏ đi. Vì vậy hai người quan sát ghi theo Bảng~\ref{r2:form}.
+\end{enumerate}
+
+\begin{table}[htbp]\centering\small
+\caption{Biểu mẫu bấm giờ; mỗi dòng là một lượt xe. Tên cột trùng với \texttt{data/requests\_asis\_simulated.csv}}
+\label{r2:form}
+\begin{tabularx}{\linewidth}{@{}p{39mm}p{24mm}Y@{}}
+\toprule
+Cột & Đơn vị / mã & Cách ghi \\
+\midrule
+\texttt{data\_label} & \texttt{OBSERVED} & Phân biệt với \texttt{SIMULATED} khi gộp dữ liệu \\
+\texttt{day}, \texttt{hour\_slot} & ngày; \texttt{07-08} & Ngày quan sát và khung giờ \\
+\texttt{vehicle\_id} & số thứ tự & Không ghi biển số \\
+\texttt{vehicle\_class} & Xe máy / Ô tô & \\
+\texttt{t\_arrival\_min} & phút từ 06:00 & $a_i$: lúc xe dừng vào cuối hàng chờ \\
+\texttt{t\_service\_start\_min} & phút từ 06:00 & $b_i$: lúc nhân viên cầm vòi bơm \\
+\texttt{t\_service\_end\_min} & phút từ 06:00 & $d_i$: lúc xe rời trụ sau khi thanh toán \\
+\texttt{balked} & 0/1 & 1 nếu xe đến, thấy hàng dài và bỏ đi \\
+\texttt{servers\_active} & số người & Số nhân viên đang bơm khi xe đến (thêm mới) \\
+\texttt{payment} & TM / QR / thẻ / ứng dụng & Hình thức thanh toán (thêm mới) \\
+\bottomrule
+\end{tabularx}
+\source{Nhóm đề xuất; \texttt{service\_min} và \texttt{wait\_min} được tính từ ba mốc thời gian}
+\end{table}
+
+\subsection{Lịch quan sát và cỡ mẫu}
+\begin{itemize}
+\item \textbf{Khung giờ:} 07--09, 11--13 và 17--19 của 2 ngày thường; thêm 1 thứ
+Năm có kỳ điều chỉnh giá (quan sát 14--16 giờ) và 1 ngày cuối tuần.
+\item \textbf{Cỡ mẫu:} tối thiểu 30--50 lượt có đủ $a_i,b_i,d_i$ cho mỗi loại xe
+trong mỗi khung giờ. Ô tô ít (khoảng 2,7\% lượt), nên ghi mọi ô tô đến.
+\item \textbf{Phân công:} người thứ nhất ghi $a_i$ và số xe bỏ đi ở đầu hàng;
+người thứ hai ghi $b_i,d_i$ tại các trụ. Hai người dùng chung một đồng hồ, ví
+dụ ứng dụng bấm giờ trên điện thoại đã đồng bộ.
+\end{itemize}
+
+\subsection{Kiểm tra và nạp vào mô hình}
+\begin{enumerate}
+\item \textbf{Dòng đến:} đếm số xe theo khoảng 15 phút. Nếu tỷ số phương sai/trung
+bình gần 1 thì giả định Poisson chấp nhận được; nếu lớn hơn 1 nhiều thì dòng
+đến tập trung theo đợt.
+\item \textbf{Thời gian phục vụ:} tính $E[S]$ và CV theo loại xe, so lognormal
+với phân phối mũ (CV = 1) bằng biểu đồ Q--Q. Kết quả thay cho
+\texttt{SERVICE\_ASIS} và \texttt{CV\_SERVICE} trong \texttt{run\_analysis.py}.
+\item \textbf{Lưu lượng:} thay \texttt{HOURLY\_SHARE} bằng tỷ trọng theo giờ từ hóa
+đơn rồi chạy lại hai script. Báo trước cho người phụ trách Mục 8--11, vì bảng
+và hình của mục đó sinh ra từ cùng mã.
+\item \textbf{Ghi nhãn:} dữ liệu đo ghi R, tham số suy ra ghi E, phần còn lại
+giữ G trong Bảng~\ref{r2:assumptions}.
+\end{enumerate}
+
+\textbf{Phương án thay thế và đạo đức.} Nếu cửa hàng không cung cấp hóa đơn,
+nhóm chỉ đếm lượt xe tại chỗ theo khoảng 15 phút để ước lượng $\lambda_t$. Nhóm
+xin phép quản lý cửa hàng trước khi quan sát, không ghi biển số, không chụp
+khuôn mặt và không cản trở hoạt động bán hàng.
