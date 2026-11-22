@@ -124,19 +124,28 @@ def run_day(cfg: SimConfig, rng: np.random.Generator, day: int,
             busy_minutes += req.service
             heapq.heappush(busy, req.t_end)
 
+    # A staffing increase must release waiting customers at the hour boundary,
+    # even if no arrival or completion happens at that instant.
+    next_shift = 60.0 if len(cfg.servers_by_hour) > 1 else float("inf")
     while i < n or waiting or busy:
         t_arr = reqs[i].t_arrival if i < n else float("inf")
         t_dep = busy[0] if busy else float("inf")
-        if t_arr <= t_dep:
-            t = t_arr
+        t = min(t_arr, t_dep, next_shift)
+        while busy and busy[0] <= t:
+            heapq.heappop(busy)
+        if t == next_shift:
+            next_shift += 60.0
+            if next_shift >= 60.0 * len(cfg.servers_by_hour):
+                next_shift = float("inf")
+        # Existing customers retain FCFS priority; a decrease never interrupts
+        # service already underway.
+        try_start(t)
+        while i < n and reqs[i].t_arrival == t:
             if cfg.balk_queue is not None and len(waiting) >= cfg.balk_queue:
                 reqs[i].balked = True
             else:
                 push_wait(reqs[i])
             i += 1
-            try_start(t)
-        else:
-            t = heapq.heappop(busy)
             try_start(t)
 
     return reqs, busy_minutes

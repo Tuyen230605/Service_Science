@@ -1,10 +1,8 @@
 % !TeX root = _main.tex
-% ROLE 2 -- DU LIEU, MO HINH, KIEM CHUNG, AS-IS, MO HINH MO RONG (muc 5--7).
-% Nguoi nhan: nhom tu dien. Muc tieu: 5--7 trang noi dung chinh.
-% DUOC SUA: file nay, figures/r2_*; nhan \label bat dau bang r2:.
-% analysis/ do role 2 dau moi quan ly; bao role 3 truoc khi sinh lai dau ra.
-% DAU VAO: analysis/run_analysis.py, extension_analysis.py, data/run_log.txt, data/ext_run_log.txt.
-% BAN GIAO: tham so co don vi va nguon, kiem chung, AS-IS, dinh vi 2/5, du bao hoc may.
+% ROLE 2: muc 5--6, du lieu, phuong phap, phan tich va nguyen nhan.
+% Chi sua role cua minh va figures/rX_*. Khong sua tay bang do Python sinh.
+% Nguoi ghep bai quan ly _main.tex va _content.tex.
+% Macro Role*Supplement cuoi file giu ban nhap mo rong; KHONG duoc goi trong PDF.
 
 \section{Dữ liệu, giả định và phương pháp phân tích}
 \label{r2:method}
@@ -15,13 +13,13 @@ từ số liệu công bố} và ghi rõ loại căn cứ: R (số liệu công 
 nhóm suy ra từ số liệu công bố), G (giả định cần đo lại). Chuỗi suy luận như sau:
 \begin{equation}
 \frac{110\,000\ \text{m}^3/\text{tháng}\times1000}{453\ \text{cửa hàng}\times30\ \text{ngày}}
-\approx 8\,094\ \text{lít/cửa hàng/ngày}\quad\text{(R)}.
+\approx 8\,094\ \text{lít/cửa hàng/ngày}\quad\text{(E)}.
 \end{equation}
 Hà Nội quản lý 6,9 triệu xe máy, trong đó khoảng 5,6 triệu xe chạy xăng và
-1,3 triệu xe điện~\cite{vnex2025}. Với 5,6 triệu xe máy xăng và mức tiêu thụ 0,5 lít/xe/ngày, xe máy dùng khoảng
-84\,000~m$^3$/tháng, tức khoảng 76\% lượng xăng; nhóm làm tròn thành 75\% (E).
-Một lượt xe máy đổ 2,5 lít (bình 4,4--4,9 lít~\cite{tank}, đổ khi còn khoảng một
-nửa), một lượt ô tô 30 lít (E).
+1,3 triệu xe điện~\cite{vnex2025}. Giả định mỗi xe máy xăng dùng 0,5 lít/ngày,
+xe máy dùng khoảng 84\,000 m$^3$ mỗi tháng, tức khoảng 76\% lượng xăng. Nhóm
+dùng tỷ trọng làm tròn 75\% cho kịch bản (G). Một lượt xe máy đổ 2,5 lít (bình
+4,4--4,9 lít~\cite{tank}, đổ khi còn khoảng một nửa), một lượt ô tô 30 lít (E).
 Từ đó cửa hàng đại diện có $8\,094\times0{,}75/2{,}5\approx2\,428$ lượt xe máy
 và $8\,094\times0{,}25/30\approx67$ lượt ô tô mỗi ngày; ô tô chỉ chiếm 2,7\%
 số lượt. Mã \texttt{run\_analysis.py} tính lại toàn bộ chuỗi này và ghi vào
@@ -29,17 +27,17 @@ số lượt. Mã \texttt{run\_analysis.py} tính lại toàn bộ chuỗi này 
 
 \begin{table}[htbp]\centering\small
 \caption{Tham số đầu vào, đơn vị và căn cứ (R: công bố; E: ước tính từ số liệu công bố; G: giả định)}\label{r2:assumptions}
-\begin{tabularx}{\linewidth}{@{}p{38mm}p{37mm}p{6mm}Y@{}}
+\begin{tabularx}{\linewidth}{@{}p{36mm}p{36mm}p{9mm}Y@{}}
 \toprule
 Tham số & Giá trị (đơn vị) & Loại & Căn cứ / cách đo lại \\
 \midrule
-Lượng xăng bán / cửa hàng & 8\,094 lít/ngày & R & 110\,000 m$^3$/tháng; 453 cửa hàng~\cite{sct2026} \\
+Lượng xăng bán / cửa hàng & 8\,094 lít/ngày & E & 110\,000 m$^3$/tháng; 453 cửa hàng~\cite{sct2026} \\
 Lượt xe / ngày & 2\,495 xe/ngày (xe máy 2\,428; ô tô 67) & E & Chia theo số lít/lượt (2\,495,7 trước làm tròn; bằng tổng $\lambda_t$ đã làm tròn theo giờ); đo lại bằng hóa đơn điện tử \\
 Phân bố theo giờ $\lambda_t$ & 112--225 xe/giờ, đỉnh 18--19 giờ & G & Hai đỉnh đi làm/tan tầm; đo bằng dấu thời gian hóa đơn \\
 $E[S]$ AS-IS & xe máy 1,5; ô tô 4,0 phút/xe (bình quân 1,57) & G & Chặn trên từ năng lực (xem dưới bảng); nghiên cứu duy nhất tìm được đo 3,89 phút/xe máy ở trạm nông thôn~\cite{batui}; bấm giờ mẫu (Phụ lục~\ref{r2:app-plan}) \\
 $E[S]$ TO-BE & giảm 20\% (bình quân 1,25 phút/xe) & G & Trả trước QR/ứng dụng; đã thử trường hợp chỉ giảm 10\% \\
 Hệ số biến thiên $S$ & CV = 0,8 & G & Lognormal; kiểm tra bằng dữ liệu bấm giờ \\
-Số vòi / nhân viên AS-IS & 8 vòi; 6 nhân viên mỗi giờ & G & Cửa hàng nội thành điển hình \\
+Số vòi / nhân viên AS-IS & 8 vòi; 6 nhân viên mỗi giờ & G & Cấu hình cửa hàng giả định \\
 Ngưỡng bỏ đi & 20 xe đang chờ ($\approx$2,5--3 xe/vòi) & G & Quan sát số xe bỏ đi khi hàng dài \\
 Chi phí nhân viên & 58\,000 đồng/giờ & E & 10 triệu đồng/tháng~\cite{wage} $\times$1,215 (BHXH) / 208 giờ \\
 Lãi gộp bán lẻ & 1\,500 đồng/lít & G & Giai đoạn chiết khấu thấp: chỉ 50--150 đồng/lít, có lúc 0; cần $\approx$700 đồng/lít để bù chi phí vận hành~\cite{chietkhau}. Thay bằng số liệu cửa hàng \\
@@ -90,7 +88,9 @@ trạng thái ổn định.
 Mỗi giờ sinh số xe theo Poisson với $\lambda_t$, thời điểm đến đều trong giờ;
 mỗi xe là ô tô với xác suất 2,7\%. Thời gian phục vụ lấy mẫu lognormal theo
 loại xe (CV = 0,8). Khi số xe đang chờ đã từ 20 trở lên, xe mới đến bỏ đi.
-Số kênh đổi theo giờ; kênh đang phục vụ hoàn tất xe hiện tại khi giảm ca.
+Số kênh đổi theo giờ bằng sự kiện tại đúng ranh giới giờ; khi tăng kênh, xe
+đang chờ được phục vụ ngay nếu còn chỗ. Khi giảm kênh, xe đang phục vụ vẫn
+được xử lý đến khi hoàn tất.
 M/M/c dùng để chọn số kênh sơ bộ; mô phỏng dùng để đánh giá hai loại xe, CV
 khác 1 và hành vi bỏ đi mà công thức không mô tả.
 
@@ -112,10 +112,10 @@ tính nhất quán nội bộ, không thay cho dữ liệu đo thực.
 \resulttable{tab_validation.tex}{Đối chiếu M/M/c với mô phỏng CV = 1, một loại xe, FCFS, 40 ngày/cấu hình, không bỏ đi}{r2:validation}
 Ở $\rho\le0{,}84$, sai lệch nằm trong khoảng $-7{,}4\%$ đến $+7{,}5\%$. Ở
 $\rho=0{,}98$ ($\lambda=225$, $c=6$) công thức cho 12,17 phút còn mô phỏng
-7,61 phút ($-37{,}5\%$): khi gần bão hòa, mỗi ngày bắt đầu với hàng rỗng và
-một giờ không đủ để hệ đạt trạng thái ổn định. Cấu hình $\lambda=212$, $c=5$
-có $\rho=1{,}11$, không ổn định. Do đó M/M/c chỉ dùng để chọn công suất; kết
-luận về phương án dựa trên mô phỏng.
+7,61 phút ($-37{,}5\%$). Việc khởi tạo hàng rỗng mỗi ngày và chỉ bỏ giờ đầu
+có thể góp phần gây sai lệch; chưa có kiểm tra hội tụ để xác nhận nguyên nhân. Cấu hình $\lambda=212$, $c=5$
+có $\rho=1{,}11$, không ổn định. Do đó M/M/c chỉ dùng để chọn công suất; so sánh mô phỏng được xem là kết quả thăm dò, chưa phải kiểm chứng đầy đủ
+cho mọi mức tải.
 
 \subsection{Điểm nghẽn AS-IS}
 \resulttable{tab_asis_hourly.tex}{M/M/c theo giờ với 6 kênh và $E[S]=1{,}57$ phút}{r2:hourly}
@@ -124,7 +124,7 @@ luận về phương án dựa trên mô phỏng.
 \caption{Thời gian chờ M/M/c theo giờ của ba phương án.}\label{r2:wq-hour}
 \source{\texttt{analysis/run\_analysis.py}; tham số Bảng~\ref{r2:assumptions}}
 \end{figure}
-Lịch cố định 6 nhân viên vừa \emph{thừa} vừa \emph{thiếu}. Từ 09:00 đến 17:00,
+Trong kịch bản giả định, lịch cố định 6 kênh chưa khớp biến động nhu cầu. Từ 09:00 đến 17:00,
 $\rho$ chỉ 0,54--0,71; trong khi giờ 18--19 có $\rho=0{,}98$, $E[W_q]=12{,}17$
 phút và 64\% xe chờ quá 5 phút; hai giờ 08--09 và 17--18 cũng vượt mục tiêu
 (18,3\% chờ quá 5 phút). Mô phỏng cả ngày cho kết quả trung bình ``đẹp'' ---
@@ -134,6 +134,20 @@ giờ, không theo trung bình ngày.
 \todo{2}{Thay $\lambda_t$ giả định bằng số hóa đơn điện tử theo giờ của một cửa
 hàng thật (tối thiểu 4 tuần) và chạy lại toàn bộ.}
 
+
+\subsection{Diễn giải nguyên nhân và giới hạn suy luận}
+Hai cơ chế cần tách biệt. Thứ nhất, giữ $c_t$ cố định khi $\lambda_t$ tăng
+làm công suất dự phòng giảm; kiểm tra bằng A0 và A1, giữ nguyên thời gian
+phục vụ. Thứ hai, thanh toán tại trụ nằm trong thời gian chiếm kênh; nếu
+rút ngắn được thao tác này, công suất mỗi kênh có thể tăng. A2 kiểm tra giả
+định đó, chưa chứng minh QR tự nó làm giảm thời gian phục vụ 20\%.
+
+Các nguyên nhân khác như bố trí lối vào, vòi hỏng, thiếu loại nhiên liệu
+hoặc thao tác khác nhau giữa nhân viên chưa nằm trong mô hình. Khi thu thập
+số liệu thực, cần kiểm tra các yếu tố này trước khi khẳng định nguyên nhân
+chính là lịch nhân viên.
+
+\newcommand{\RoleTwoSupplement}{%
 \section{Mô hình mở rộng: định vị rời rạc và dự báo nhu cầu}
 \label{r2:extension}
 \subsection{Chọn 2 trong 5 điểm mở cửa hàng mới}
@@ -259,3 +273,5 @@ thật chỉ biết được khi huấn luyện trên hóa đơn điện tử.
 Giá trị vận hành của dự báo được đánh giá ở Mục~\ref{r3:ml-staff}.
 \todo{2}{Huấn luyện lại trên dữ liệu hóa đơn điện tử thật; giữ cách chia theo
 thời gian (không trộn ngẫu nhiên) và báo cáo MAPE theo tháng.}
+
+}
