@@ -2,7 +2,7 @@
 A/B/C, trai nghiem khach hang theo the he va hoc may du bao nhu cau.
 
 Chay:  python3 extension_analysis.py      (sau run_analysis.py; KHONG ghi de dau ra cu)
-Dau ra: data/ext_*.csv, data/ext_run_log.txt, tables/tab_ext_*.tex,
+Dau ra: data/ext_*.csv, data/ext_run_log.txt, ../tables/tab_ext_*.tex,
         ../figures/r2_location.png, r2_forecast.png, r3_scenarios.png
 
 Nguon so lieu: dan so quan theo Tong dieu tra 2019 (citypopulation.de, dan theo

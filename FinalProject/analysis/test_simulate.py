@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 import numpy as np
-import simulate as sim
+import FinalProject.analysis.simulate as sim
 
 
 class StaffingBoundaryTests(unittest.TestCase):

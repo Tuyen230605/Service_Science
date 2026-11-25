@@ -2,7 +2,7 @@
 De tai: hang doi va phan bo nhan vien tai mot cua hang xang dau noi thanh Ha Noi.
 
 Chay:  python3 run_analysis.py
-Dau ra: data/*.csv, tables/*.tex, ../figures/*.png
+Dau ra: data/*.csv, ../tables/*.tex, ../figures/*.png
 
 DU LIEU: luot den theo gio la DU LIEU MO PHONG, nhung QUY MO nhu cau duoc hieu
 chinh tu so lieu cong bo (Ha Noi tieu thu ~110.000 m3 xang/thang, 453 cua hang
@@ -26,7 +26,7 @@ from simulate import SimConfig, run, summarize
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-TABLES = os.path.join(HERE, "tables")
+TABLES = os.path.abspath(os.path.join(HERE, "..", "tables"))
 FIGS = os.path.abspath(os.path.join(HERE, "..", "figures"))
 for d in (DATA, TABLES, FIGS):
     os.makedirs(d, exist_ok=True)
