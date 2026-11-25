@@ -2,7 +2,7 @@
 De tai: hang doi va phan bo nhan vien tai mot cua hang xang dau noi thanh Ha Noi.
 
 Chay:  python3 run_analysis.py
-Dau ra: data/*.csv, ../tables/*.tex, ../figures/*.png
+Dau ra: data/*.csv, tables/*.tex, ../figures/*.png
 
 DU LIEU: luot den theo gio la DU LIEU MO PHONG, nhung QUY MO nhu cau duoc hieu
 chinh tu so lieu cong bo (Ha Noi tieu thu ~110.000 m3 xang/thang, 453 cua hang
@@ -21,12 +21,12 @@ from math import isfinite
 
 import numpy as np
 
-import queueing as q
-from simulate import SimConfig, run, summarize
+import FinalProject.analysis.queueing as q
+from FinalProject.analysis.simulate import SimConfig, run, summarize
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-TABLES = os.path.abspath(os.path.join(HERE, "..", "tables"))
+TABLES = os.path.abspath(os.path.join(HERE, "..", "tables"))  # FinalProject/tables (LaTeX doc tu day)
 FIGS = os.path.abspath(os.path.join(HERE, "..", "figures"))
 for d in (DATA, TABLES, FIGS):
     os.makedirs(d, exist_ok=True)
@@ -236,6 +236,54 @@ def sensitivity(plans):
             rows.append({"scale": scale, "name": name, "Wq_mean": s["Wq_mean"],
                          "Wq_p90": s["Wq_p90"], "P_gt": s["P_wait_gt_target"],
                          "balk": s["balk_rate"], "rho_peak": m["rho"]})
+    return rows
+
+
+# Do nhay theo gia dinh G3: thoi gian phuc vu that khac gia dinh 1,5 phut/xe may.
+SERVICE_FACTORS = (0.8, 1.0, 1.2, 1.4)   # xe may 1,2 / 1,5 / 1,8 / 2,1 phut
+
+
+def scale_service(svc, f):
+    return {k: v * f for k, v in svc.items()}
+
+
+def sensitivity_service(plans):
+    """Giu nguyen lich da lap voi E[S] gia dinh; cho E[S] that lech di. Dong thoi
+    tinh lai lich toi uu A1/A2 neu biet truoc E[S] that (gio cong can co)."""
+    rows, replan = [], []
+    peak = int(np.argmax(HOURLY_LAMBDA))
+    for f in SERVICE_FACTORS:
+        for name, servers, svc in plans:
+            svc_f = scale_service(svc, f)
+            reqs, _ = run(sim_config(servers, svc_f, days=30, seed=SEED + 17))
+            s = summarize(reqs, TARGET_T)
+            m = q.metrics(HOURLY_LAMBDA[peak], 60.0 / mix_mean(svc_f), servers[peak], TARGET_T)
+            rows.append({"factor": f, "moto": svc_f[2], "name": name, "Wq_mean": s["Wq_mean"],
+                         "Wq_p90": s["Wq_p90"], "P_gt": s["P_wait_gt_target"],
+                         "balk": s["balk_rate"], "rho_peak": m["rho"]})
+        opt1 = optimize_staffing(mix_mean(scale_service(SERVICE_ASIS, f)))
+        opt2 = optimize_staffing(mix_mean(scale_service(SERVICE_TOBE, f)))
+        replan.append({"factor": f, "moto": SERVICE_ASIS[2] * f,
+                       "mean": mix_mean(scale_service(SERVICE_ASIS, f)),
+                       "h_a1": sum(r["c_star"] for r in opt1),
+                       "bad_a1": sum(not r["feasible"] for r in opt1),
+                       "h_a2": sum(r["c_star"] for r in opt2),
+                       "bad_a2": sum(not r["feasible"] for r in opt2)})
+    return rows, replan
+
+
+def sensitivity_other(plans):
+    """Do nhay theo gia dinh G (CV cua S, nguong bo di) cho A0 va A1, E[S] co so."""
+    rows = []
+    cases = [("CV", cv, BALK_QUEUE, cv) for cv in (0.5, 0.8, 1.0, 1.2)] + \
+            [("Ngưỡng bỏ đi", b, b, CV_SERVICE) for b in (10, 20, 30)]
+    for label, val, balk, cv in cases:
+        for name, servers, svc in plans[:2]:
+            reqs, _ = run(sim_config(servers, svc, days=30, seed=SEED + 19, cv=cv, balk=balk))
+            s = summarize(reqs, TARGET_T)
+            rows.append({"param": label, "value": val, "name": name, "Wq_mean": s["Wq_mean"],
+                         "Wq_p90": s["Wq_p90"], "P_gt": s["P_wait_gt_target"],
+                         "balk": s["balk_rate"]})
     return rows
 
 
@@ -534,6 +582,38 @@ def main():
                      "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)", "$\\rho$ cao điểm"],
                     [[f"$\\times${r['scale']:.1f}", r["name"], r["Wq_mean"], r["Wq_p90"],
                       r["P_gt"] * 100, r["balk"] * 100, r["rho_peak"]] for r in sens],
+                    align="llrrrrr")
+
+    sens_s, replan = sensitivity_service(plans)
+    say("\n[6b] Do nhay theo E[S] (giu lich; 30 ngay, seed rieng)")
+    for r in sens_s:
+        say(f"    x{r['factor']:.1f} (xe may {r['moto']:.2f} ph)  {r['name']:<20} Wq={r['Wq_mean']:7.3f}  "
+            f"p90={r['Wq_p90']:7.3f}  P>5={r['P_gt']*100:6.2f}%  bo={r['balk']*100:5.2f}%  rho_peak={r['rho_peak']:.2f}")
+    for r in replan:
+        say(f"    Lap lai lich x{r['factor']:.1f}: A1 can {r['h_a1']} gio ({r['bad_a1']} gio khong dat du 8 kenh); "
+            f"A2 can {r['h_a2']} gio ({r['bad_a2']} gio khong dat)")
+    write_tex_table(os.path.join(TABLES, "tab_sens_service.tex"),
+                    ["Hệ số $E[S]$", "$E[S]$ xe máy (phút)", "Phương án", "$W_q$ (phút)",
+                     "$W_q^{90}$ (phút)", "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)", "$\\rho$ cao điểm"],
+                    [[f"$\\times${r['factor']:.1f}", r["moto"], r["name"], r["Wq_mean"], r["Wq_p90"],
+                      r["P_gt"] * 100, r["balk"] * 100, r["rho_peak"]] for r in sens_s],
+                    align="lrlrrrrr")
+    write_tex_table(os.path.join(TABLES, "tab_sens_replan.tex"),
+                    ["Hệ số $E[S]$", "$E[S]$ xe máy (phút)", "$E[S]$ bình quân (phút)",
+                     "A1: giờ công cần", "A1: số giờ không đạt", "A2: giờ công cần", "A2: số giờ không đạt"],
+                    [[f"$\\times${r['factor']:.1f}", r["moto"], r["mean"], r["h_a1"], r["bad_a1"],
+                      r["h_a2"], r["bad_a2"]] for r in replan])
+
+    sens_o = sensitivity_other(plans)
+    say("\n[6c] Do nhay theo CV va nguong bo di (A0, A1; 30 ngay, seed rieng)")
+    for r in sens_o:
+        say(f"    {r['param']:<13}={r['value']:<4} {r['name']:<20} Wq={r['Wq_mean']:7.3f}  "
+            f"p90={r['Wq_p90']:7.3f}  P>5={r['P_gt']*100:6.2f}%  bo={r['balk']*100:5.2f}%")
+    write_tex_table(os.path.join(TABLES, "tab_sens_other.tex"),
+                    ["Giả định", "Giá trị", "Phương án", "$W_q$ (phút)", "$W_q^{90}$ (phút)",
+                     "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)"],
+                    [[r["param"], vn_decimal(f"{r['value']}"), r["name"], r["Wq_mean"], r["Wq_p90"],
+                      r["P_gt"] * 100, r["balk"] * 100] for r in sens_o],
                     align="llrrrrr")
 
     reduced = [max(1, c - 1) for c in servers_a2]

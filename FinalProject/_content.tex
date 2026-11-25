@@ -45,6 +45,12 @@ Bahan Bakar Umum (Studi Kasus: SPBU Batui II)'', \textit{Jurnal Teknik Industri 
 (M/M/s; khoảng 28 xe/giờ; thời gian phục vụ xe máy trung bình 3,89 phút). \url{https://doi.org/10.31004/jutin.v9i1.54743}
 \bibitem{l4} Học phần INT3501, \textit{Hàng đợi trong dịch vụ} (bài giảng L4). Tài liệu nội bộ:
 \path{Lecture/L4_Hang_Doi-2.pdf}.
+\bibitem{maglio2008} P.~P.~Maglio, J.~Spohrer, ``Fundamentals of service science'',
+\textit{Journal of the Academy of Marketing Science}, 36(1), 18--20, 2008.
+\bibitem{alter2013} S.~Alter, ``Work system theory: Overview of core concepts, extensions, and challenges for the future'',
+\textit{Journal of the Association for Information Systems}, 14(2), 72--121, 2013.
+\bibitem{vargo2004} S.~L.~Vargo, R.~F.~Lusch, ``Evolving to a new dominant logic for marketing'',
+\textit{Journal of Marketing}, 68(1), 1--17, 2004.
 \end{thebibliography}
 % Them nguon hoc thuat SAU KHI da doc/kiem chung; khong tu dien DOI/nam/tac gia.
 
@@ -82,6 +88,7 @@ Thành phần & Phạm vi AI hỗ trợ & Cách kiểm chứng / việc cần l�
 \midrule\endhead
 Văn bản, bố cục & Claude Code tạo bản nháp; Codex chỉnh mạch vấn đề, nguyên nhân, giải pháp và đánh giá. & Mỗi người rà soát phần mình; đối chiếu rubric và số liệu trong log. \\
 Số liệu công bố & Claude Code tìm qua công cụ tìm kiếm web ngày 21/11/2026. & Mở lại từng URL trong tài liệu tham khảo; sửa nếu khác. \\
+Nguồn học thuật & Claude Code gợi ý ba nguồn cho khung hệ thống và đồng tạo giá trị (Maglio \& Spohrer; Alter; Vargo \& Lusch). & Role 1 mở bản gốc, kiểm tra thông tin xuất bản và nội dung trích. \\
 Sơ đồ & Claude Code dựng mã TikZ cho Resource Map, BPMN AS-IS, TO-BE. & Role 1/3 kiểm tra ký pháp, đối chiếu quan sát thực tế. \\
 Mã nguồn & Claude Code viết lại \texttt{run\_analysis.py}, \path{extension_analysis.py}, thêm loại xe và hành vi bỏ đi vào \texttt{simulate.py}. & Codex sửa sự kiện đổi giờ và chạy lại phân tích chính; role 2 tiếp tục kiểm tra giả định và tải cao. \\
 Bảng và biểu đồ & Sinh tự động từ mã; không sửa tay. & Đối chiếu với \path{data/run_log.txt}, \path{data/ext_run_log.txt}. \\

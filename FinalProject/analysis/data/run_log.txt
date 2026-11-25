@@ -61,6 +61,40 @@ NHAN DU LIEU: Du lieu mo phong, quy mo hieu chinh tu so lieu cong bo
     x1.4  A1 – Lịch theo giờ   Wq=  2.985  p90=  5.453  P>5= 14.81%  bo= 6.46%  rho_peak=1.18
     x1.4  A2 – Số hóa + lịch   Wq=  2.759  p90=  5.336  P>5= 12.77%  bo= 4.83%  rho_peak=1.10
 
+[6b] Do nhay theo E[S] (giu lich; 30 ngay, seed rieng)
+    x0.8 (xe may 1.20 ph)  A0 – AS-IS           Wq=  0.110  p90=  0.366  P>5=  0.00%  bo= 0.01%  rho_peak=0.78
+    x0.8 (xe may 1.20 ph)  A1 – Lịch theo giờ   Wq=  0.097  p90=  0.339  P>5=  0.03%  bo= 0.00%  rho_peak=0.67
+    x0.8 (xe may 0.96 ph)  A2 – Số hóa + lịch   Wq=  0.109  p90=  0.383  P>5=  0.05%  bo= 0.00%  rho_peak=0.63
+    x1.0 (xe may 1.50 ph)  A0 – AS-IS           Wq=  0.566  p90=  2.056  P>5=  1.12%  bo= 0.39%  rho_peak=0.98
+    x1.0 (xe may 1.50 ph)  A1 – Lịch theo giờ   Wq=  0.406  p90=  1.357  P>5=  0.23%  bo= 0.03%  rho_peak=0.84
+    x1.0 (xe may 1.20 ph)  A2 – Số hóa + lịch   Wq=  0.389  p90=  1.266  P>5=  0.27%  bo= 0.01%  rho_peak=0.78
+    x1.2 (xe may 1.80 ph)  A0 – AS-IS           Wq=  1.643  p90=  5.238  P>5= 11.53%  bo= 3.01%  rho_peak=1.18
+    x1.2 (xe may 1.80 ph)  A1 – Lịch theo giờ   Wq=  1.593  p90=  4.377  P>5=  6.71%  bo= 1.00%  rho_peak=1.01
+    x1.2 (xe may 1.44 ph)  A2 – Số hóa + lịch   Wq=  1.372  p90=  3.831  P>5=  5.04%  bo= 0.54%  rho_peak=0.94
+    x1.4 (xe may 2.10 ph)  A0 – AS-IS           Wq=  2.906  p90=  7.087  P>5= 29.34%  bo= 7.65%  rho_peak=1.37
+    x1.4 (xe may 2.10 ph)  A1 – Lịch theo giờ   Wq=  4.043  p90=  7.586  P>5= 38.58%  bo= 6.34%  rho_peak=1.18
+    x1.4 (xe may 1.68 ph)  A2 – Số hóa + lịch   Wq=  3.693  p90=  7.416  P>5= 31.57%  bo= 4.69%  rho_peak=1.10
+    Lap lai lich x0.8: A1 can 72 gio (0 gio khong dat du 8 kenh); A2 can 59 gio (0 gio khong dat)
+    Lap lai lich x1.0: A1 can 88 gio (0 gio khong dat du 8 kenh); A2 can 72 gio (0 gio khong dat)
+    Lap lai lich x1.2: A1 can 101 gio (1 gio khong dat du 8 kenh); A2 can 83 gio (0 gio khong dat)
+    Lap lai lich x1.4: A1 can 114 gio (3 gio khong dat du 8 kenh); A2 can 96 gio (0 gio khong dat)
+
+[6c] Do nhay theo CV va nguong bo di (A0, A1; 30 ngay, seed rieng)
+    CV           =0.5  A0 – AS-IS           Wq=  0.537  p90=  1.920  P>5=  0.56%  bo= 0.22%
+    CV           =0.5  A1 – Lịch theo giờ   Wq=  0.339  p90=  1.125  P>5=  0.07%  bo= 0.01%
+    CV           =0.8  A0 – AS-IS           Wq=  0.609  p90=  2.264  P>5=  1.40%  bo= 0.40%
+    CV           =0.8  A1 – Lịch theo giờ   Wq=  0.423  p90=  1.417  P>5=  0.23%  bo= 0.02%
+    CV           =1.0  A0 – AS-IS           Wq=  0.588  p90=  2.152  P>5=  1.26%  bo= 0.34%
+    CV           =1.0  A1 – Lịch theo giờ   Wq=  0.486  p90=  1.641  P>5=  0.53%  bo= 0.04%
+    CV           =1.2  A0 – AS-IS           Wq=  0.700  p90=  2.649  P>5=  2.34%  bo= 0.73%
+    CV           =1.2  A1 – Lịch theo giờ   Wq=  0.561  p90=  1.919  P>5=  0.84%  bo= 0.12%
+    Ngưỡng bỏ đi =10   A0 – AS-IS           Wq=  0.372  p90=  1.430  P>5=  0.01%  bo= 1.22%
+    Ngưỡng bỏ đi =10   A1 – Lịch theo giờ   Wq=  0.366  p90=  1.273  P>5=  0.03%  bo= 0.47%
+    Ngưỡng bỏ đi =20   A0 – AS-IS           Wq=  0.609  p90=  2.264  P>5=  1.40%  bo= 0.40%
+    Ngưỡng bỏ đi =20   A1 – Lịch theo giờ   Wq=  0.423  p90=  1.417  P>5=  0.23%  bo= 0.02%
+    Ngưỡng bỏ đi =30   A0 – AS-IS           Wq=  0.740  p90=  2.641  P>5=  3.77%  bo= 0.13%
+    Ngưỡng bỏ đi =30   A1 – Lịch theo giờ   Wq=  0.428  p90=  1.422  P>5=  0.33%  bo= 0.00%
+
 [7] Rui ro: thieu 1 nhan vien moi gio -> Wq=2.483, P>5=16.71%, bo di=1.92%
     So hoa chi giam 10% (E[S]=1.411) -> Wq=0.855, P>5=1.45%, bo di=0.10%
 

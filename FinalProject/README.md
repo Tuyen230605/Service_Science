@@ -43,12 +43,14 @@ máy. Đầu ra `ext_*` là kết quả phiên bản trước, chưa sinh lại 
 
 ## Chạy và biên dịch
 
-Từ thư mục `analysis` (cần numpy, matplotlib):
+Từ thư mục gốc repo (mã dùng import dạng gói `FinalProject.analysis.*`; cần numpy, matplotlib):
 
 ```bash
-python3 -m unittest test_simulate -v
-python3 run_analysis.py
+python3 -m unittest FinalProject.analysis.test_simulate -v
+python3 -m FinalProject.analysis.run_analysis
 ```
+
+Bảng sinh ra nằm ở `FinalProject/tables/`, hình ở `FinalProject/figures/`.
 
 Từ thư mục `FinalProject`:
 

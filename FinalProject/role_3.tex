@@ -128,6 +128,41 @@ Khi tăng 40\%, mọi lịch đều hỏng (4,8--7,9\% khách bỏ đi). Một l
 tối ưu cho tải cơ sở, không bền trước biến động nhu cầu --- đây là lý do của
 việc đo lại nhu cầu và điều chỉnh kế hoạch công suất khi điều kiện thay đổi.
 
+\subsection{Độ nhạy theo các giả định chưa đo được}
+Thời gian phục vụ, độ biến động của nó và ngưỡng bỏ đi đều là giả định G
+(Bảng~\ref{r2:assumptions}), chưa có số đo thực. Vì vậy nhóm cho các tham số
+này lệch khỏi giá trị cơ sở để xem kết luận có còn đứng vững không. Mỗi cấu
+hình chạy 30 ngày với seed riêng, nên mức cơ sở chênh nhẹ so với
+Bảng~\ref{r3:comparison}.
+
+\resulttable{tab_sens_service.tex}{Độ nhạy theo thời gian phục vụ: giữ nguyên lịch đã lập với $E[S]$ giả định, cho $E[S]$ thực lệch $\times$0,8--1,4 (30 ngày, seed riêng). A2 dùng $E[S]$ TO-BE nhân cùng hệ số}{r3:sens-service}
+\resulttable{tab_sens_replan.tex}{Số giờ công cần có nếu lập lại lịch theo $E[S]$ thực; ``không đạt'' là số khung giờ không đạt mục tiêu dù mở đủ 8 kênh}{r3:sens-replan}
+\resulttable{tab_sens_other.tex}{Độ nhạy theo hệ số biến thiên CV của $S$ và ngưỡng bỏ đi (A0, A1; $E[S]$ cơ sở; 30 ngày, seed riêng)}{r3:sens-other}
+
+\begin{itemize}
+\item \textbf{$E[S]$ là giả định quyết định.} Nếu thời gian phục vụ thực ngắn
+hơn 20\%, mọi phương án đều đạt mục tiêu. Nếu dài hơn 20\% (xe máy 1,8 phút)
+mà vẫn giữ lịch cũ, A1 vượt ngưỡng: $P(W_q{>}5)=6{,}71\%$ và 1,00\% khách bỏ
+đi. A1 vẫn tốt hơn A0 (11,53\%; 3,01\%). Nếu dài hơn 40\%, lịch A1 có tỷ lệ chờ quá 5 phút
+cao hơn A0 (38,58\% so với 29,34\%) vì A1 đã bớt nhân viên ở các giờ thấp điểm.
+\item \textbf{Lập lại lịch theo $E[S]$ đo được thì A1 vẫn dùng được, nhưng có
+giới hạn.} Với $E[S]$ dài hơn 20\%, A1 cần 101 giờ công/ngày thay vì 88, và
+có 1 khung giờ không đạt mục tiêu dù mở đủ 8 vòi. Với $E[S]$ dài hơn 40\%,
+con số này là 3 khung giờ. Khi đó số vòi trở thành ràng buộc, chỉ tăng nhân
+viên là không đủ. Rút ngắn thời gian chiếm trụ (A2) lúc này là điều kiện cần
+chứ không chỉ để tiết kiệm: khi lập lại lịch, A2 đạt mục tiêu ở mọi khung giờ
+trong cả bốn mức (96 giờ công ở mức $\times$1,4).
+\item \textbf{CV và ngưỡng bỏ đi không đổi thứ hạng.} Khi CV đi từ 0,5 đến
+1,2, A1 luôn đạt mục tiêu ($P(W_q{>}5)\le0{,}84\%$) và luôn tốt hơn A0. Ngưỡng
+bỏ đi chủ yếu chuyển rủi ro giữa ``chờ lâu'' và ``mất khách''. Với ngưỡng 10
+xe, A0 mất 1,22\% khách; với ngưỡng 30 xe, A0 có 3,77\% xe chờ quá 5 phút. A1
+ổn định trong cả hai trường hợp.
+\end{itemize}
+Kết luận: cách làm của A1 (lập lịch theo giờ từ $\lambda_t$ và $E[S]$) bền
+với sai lệch giả định. Tuy vậy, \emph{con số} giờ công cụ thể phải được tính
+lại từ $E[S]$ đo thực. Đo thời gian phục vụ (Phụ lục~\ref{r2:app-plan}) vì thế
+là việc cần làm trước khi áp dụng lịch.
+
 \subsection{Rủi ro và giới hạn}
 \resulttable{tab_risk.tex}{Các tình huống rủi ro của A2 (30 ngày, seed riêng)}{r3:risks}
 Thiếu một nhân viên ở mọi giờ làm $P(W_q{>}5)$ tăng lên 16,71\% và 1,92\% khách
