@@ -1,73 +1,177 @@
 % !TeX root = _main.tex
-% ROLE 2 -- PHU LUC: bieu mau va ke hoach thu thap du lieu thuc (Batch 1, TV2).
-% Duoc \input trong phan \appendix cua _content.tex. Nhan bat dau bang r2:.
+% ROLE 2 -- PHU LUC: cong thuc, bang so chi tiet cua Muc 5--6, cach doc du
+% lieu Google Maps va bieu mau de xuat cho lan do sau. Duoc \input trong phan \appendix cua
+% _content.tex. Nhan bat dau bang r2:.
 
-\section{Biểu mẫu và kế hoạch thu thập dữ liệu thực}
+\section{Số liệu chi tiết và dữ liệu Google Maps (Mục 5--6)}
+\label{r2:appendix}
+
+\subsection{Cách ước tính quy mô và căn cứ tham số}
+\label{r2:app-params}
+Lượng xăng bán trung bình của một cửa hàng được tính từ sản lượng toàn thành phố:
+\begin{equation}
+\frac{110\,000\ \text{m}^3/\text{tháng}\times1000}{453\ \text{cửa hàng}\times30\ \text{ngày}}
+\approx 8\,094\ \text{lít/cửa hàng/ngày}\quad\text{(E)}.
+\end{equation}
+Hà Nội quản lý 6,9 triệu xe máy, trong đó khoảng 5,6 triệu xe chạy xăng và
+1,3 triệu xe điện~\cite{vnex2025}. Nếu mỗi xe máy xăng dùng 0,5 lít mỗi ngày,
+xe máy dùng khoảng 84\,000~m$^3$ mỗi tháng, tức khoảng 76\% lượng xăng. Nhóm
+làm tròn tỷ trọng này thành 75\% (G). Một lượt xe máy đổ 2,5 lít, vì bình chứa
+4,4--4,9 lít~\cite{tank} và khách thường đổ khi còn khoảng một nửa. Một lượt ô
+tô đổ 30 lít (E). Từ đó, cửa hàng đại diện có
+$8\,094\times0{,}75/2{,}5\approx2\,428$ lượt xe máy và
+$8\,094\times0{,}25/30\approx67$ lượt ô tô mỗi ngày.
+
+Giá trị $E[S]$ có một chặn trên. Với 8 vòi và $\lambda_{\max}=225$ xe/giờ,
+hàng chờ chỉ ổn định khi $\rho<1$, tức
+\begin{equation}
+E[S]<\frac{8\times60}{225}\approx2{,}13\ \text{phút}.
+\end{equation}
+Nếu $E[S]=3{,}89$ phút như ở trạm Batui~\cite{batui}, giờ cao điểm cần ít
+nhất $225\times3{,}89/60\approx14{,}6$, tức 15 kênh. Bảng~\ref{r2:assumptions-detail}
+ghi đầy đủ căn cứ của từng tham số trong Bảng~\ref{r2:assumptions}.
+
+\begin{table}[H]\centering\small
+\caption{Căn cứ chi tiết của các tham số đầu vào}\label{r2:assumptions-detail}
+\begin{tabularx}{\linewidth}{@{}p{34mm}Y@{}}
+\toprule
+Tham số & Căn cứ \\
+\midrule
+Lượng xăng bán & 110\,000 m$^3$/tháng; 453 cửa hàng~\cite{sct2026} \\
+Lượt xe / ngày & 2\,495,7 trước làm tròn; bằng tổng $\lambda_t$ đã làm tròn theo giờ \\
+$\lambda_t$ & Hai đỉnh theo giờ đi làm và tan tầm; tỷ trọng từng giờ ghi trong \texttt{HOURLY\_SHARE}; đã đối chiếu với Google Maps của hai trạm (Mục~\ref{r2:gmaps}) \\
+$E[S]$ & Dưới chặn trên 2,13 phút; trạm Batui (Indonesia, 2 làn xe máy, 28 xe/giờ) đo 3,89 phút/xe máy~\cite{batui} \\
+CV & Phân phối lognormal; chưa có số đo, đã thử CV từ 0,5 đến 1,2 (Mục~\ref{r3:evaluation}) \\
+Mức giảm 20\% & Giả định cho trả trước qua QR/ứng dụng; đã thử trường hợp chỉ giảm 10\% (Mục~\ref{r3:evaluation}) \\
+Ngưỡng bỏ đi & 20 xe, khoảng 2,5--3 xe mỗi vòi \\
+Chi phí nhân viên & 10 triệu đồng/tháng, trong khoảng lương của các tin tuyển dụng toàn thời gian tại Hà Nội~\cite{wageMB,wageHFC}; nhân 1,215 vì doanh nghiệp đóng 21,5\% bảo hiểm~\cite{bhxh2026}; chia 208 giờ (26 ngày $\times$ 8 giờ) \\
+Lãi gộp & Có giai đoạn chiết khấu chỉ 50--150 đồng/lít, cần khoảng 700 đồng/lít để bù chi phí~\cite{chietkhau} \\
+Chi phí số hóa & Ứng dụng trả trước, QR, kết nối máy POS \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Công thức M/M/c}
+\label{r2:app-formula}
+Các công thức theo bài giảng L4~\cite[slide~22--23, 49--50, 55]{l4}; số kênh
+$c$ ở đây tương ứng với $s$ trong bài giảng. Đặt
+$\lambda$ là số xe đến mỗi giờ, $\mu=60/E[S]$ là số xe một kênh phục vụ được
+mỗi giờ, $a=\lambda/\mu$ và $\rho=\lambda/(c\mu)<1$. Xác suất hệ thống không có
+xe $P_0$ và xác suất một xe phải chờ $C(c,a)$ là
+\begin{equation}
+ P_0=\left[\sum_{n=0}^{c-1}\frac{a^n}{n!}+\frac{a^c}{c!(1-\rho)}\right]^{-1},\qquad
+ C(c,a)=\frac{a^c}{c!(1-\rho)}P_0.
+\end{equation}
+Thời gian chờ trung bình và xác suất chờ quá $t$ phút là
+\begin{equation}
+ E[W_q]=\frac{60\,C(c,a)}{c\mu-\lambda}\ \text{(phút)},\qquad
+ P(W_q>t)=C(c,a)\,e^{-(c\mu-\lambda)t/60}.
+\end{equation}
+Số xe chờ trung bình theo định luật Little là $L_q=\lambda E[W_q]/60$. Với
+$E[S]=1{,}57$ phút, $\mu=38{,}3$ xe/giờ/kênh.
+
+\subsection{Bảng kết quả chi tiết}
+\label{r2:app-tables}
+Bảng~\ref{r2:gmaps-share} là số liệu của Hình~\ref{r2:arrivals}. Giả định G
+dồn 16\% lượt xe vào 07--09 giờ, trong khi hai trạm chỉ có 10,9\% và 11,9\%.
+Ngược lại, khung 19--22 giờ ở trạm Mỹ Đình chiếm 25,8\% lượt xe, gần gấp đôi
+mức 16,5\% của giả định G.
+\begin{table}[H]\centering\small
+\caption{Tỷ trọng và lượt xe theo giờ: giả định G và Google Maps (trung bình 7 ngày)}\label{r2:gmaps-share}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_gmaps_share.tex}}
+\source{\texttt{tables/tab\_gmaps\_share.tex}; ảnh Google Maps~\cite{gmaps2026}; $\lambda$ tính bằng xe/giờ với cùng tổng 2\,495 lượt/ngày}
+\end{table}
+
+Bảng~\ref{r2:lambda} là lượt xe trong dữ liệu mô phỏng theo giả định G. Tỷ số phương sai
+trên trung bình dao động từ 0,34 đến 1,68 quanh mức 1, phù hợp với dòng đến
+Poisson; mỗi giờ chỉ có 20 ngày nên tỷ số này còn dao động khá nhiều.
+\begin{table}[H]\centering\small
+\caption{Lượt xe đến theo giờ trong dữ liệu mô phỏng}\label{r2:lambda}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_lambda.tex}}
+\source{\texttt{tables/tab\_lambda.tex}; dữ liệu mô phỏng}
+\end{table}
+
+Bảng~\ref{r2:validation-table} là số liệu của Hình~\ref{r2:validation}a. Cấu
+hình $\lambda=212$, $c=5$ có $\rho=1{,}11$ nên hàng chờ không ổn định và công
+thức không áp dụng được. Kết quả chạy dài cho $\rho=0{,}98$ lần lượt là 10,76;
+12,93 và 13,26 phút, trung bình 12,32 phút.
+\begin{table}[H]\centering\small
+\caption{Đối chiếu M/M/c với mô phỏng (CV = 1, một loại xe, không bỏ đi, 40 ngày mỗi cấu hình)}\label{r2:validation-table}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_validation.tex}}
+\source{\texttt{tables/tab\_validation.tex}; dữ liệu mô phỏng}
+\end{table}
+
+Bảng~\ref{r2:hourly} là số liệu của Hình~\ref{r2:asis-load}, gồm thêm số xe
+chờ $L_q$, thời gian chờ và phân vị 90\% $W_q^{90}$ theo từng giờ.
+\begin{table}[H]\centering\small
+\caption{M/M/c theo giờ với 6 kênh và $E[S]=1{,}57$ phút}\label{r2:hourly}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_asis_hourly.tex}}
+\source{\texttt{tables/tab\_asis\_hourly.tex}; dữ liệu mô phỏng}
+\end{table}
+\FloatBarrier
+
+\subsection{Cách đọc dữ liệu Google Maps và hướng đo lại}
 \label{r2:app-plan}
-Các tham số G và E trong Bảng~\ref{r2:assumptions} cần được đo lại. Phụ lục này
-mô tả dữ liệu cần thu, cách thu và cách nạp vào mã phân tích.
+\paragraph{Thu thập.} Nhóm mở trang của hai trạm trên Google Maps, chọn mục
+``Giờ đông khách'', lần lượt chọn từng ngày trong tuần và chụp màn hình. Ảnh
+được lưu trong \path{analysis/data/gmaps/}, mỗi trạm 7 ảnh. Mỗi biểu đồ có 24
+cột, từ 04 giờ sáng đến 03 giờ sáng hôm sau. Cột tô đỏ ``Trực tiếp'' là độ
+đông lúc chụp, nên nhóm lấy phần màu nhạt phía sau, tức mức thường lệ.
 
-\subsection{Hai nguồn dữ liệu}
-\begin{enumerate}
-\item \textbf{Hóa đơn điện tử (nguồn chính cho $\lambda_t$).} Mỗi lần bán xăng
-đều có hóa đơn điện tử kèm dấu thời gian~\cite{nd70}. Nhóm đề nghị một cửa hàng
-cung cấp bản trích xuất \emph{đã ẩn danh}: thời điểm xuất hóa đơn, số lít và
-mặt hàng, trong tối thiểu 4 tuần liên tiếp có ít nhất một kỳ điều chỉnh giá.
-Từ đó đếm được số lượt theo giờ và theo ngày.
-\item \textbf{Bấm giờ tại chỗ (nguồn cho $E[S]$, CV, bỏ đi).} Hóa đơn chỉ cho
-biết thời điểm thanh toán. Nó không cho biết lúc xe vào hàng chờ ($a_i$), lúc
-bắt đầu bơm ($b_i$) hay số xe bỏ đi. Vì vậy hai người quan sát ghi theo Bảng~\ref{r2:form}.
-\end{enumerate}
+\paragraph{Quy đổi.} Tệp \texttt{gmaps.py} đo chiều cao $h_{d,t}$ của cột giờ
+$t$ ngày $d$ bằng số điểm ảnh. Bảy ngày của một trạm dùng chung thang đo, vì
+đều so với giờ đông nhất trong tuần~\cite{gmapshelp}. Nhóm lấy trung bình 7
+ngày, chia cho tổng 16 giờ từ 06 đến 22 giờ, rồi nhân với tổng lượt xe:
+\begin{equation}
+s_t=\frac{\bar h_t}{\sum_{u=6}^{21}\bar h_u},\qquad
+\lambda_t=2\,495{,}7\times s_t,\qquad
+\bar h_t=\frac{1}{7}\sum_{d=1}^{7}h_{d,t}.
+\end{equation}
+Cột cao nhất trong ảnh dài khoảng 40--70 điểm ảnh, nên đo lệch một điểm ảnh
+làm sai khoảng 1,5--2,5\% ở giờ đông. Kết quả đo lưu ở
+\path{data/gmaps_popular_times.csv}.
+
+\paragraph{Giới hạn.} Cách quy đổi trên giả định độ đông tỷ lệ thuận với số xe
+đến. Giả định này có thể sai theo hai hướng. Người ở lại lâu được đếm nhiều
+lần hơn, nên giờ có hàng chờ dài có thể trông đông hơn thực tế. Google cũng
+chỉ đếm người dùng bật Lịch sử vị trí, có thể gồm cả khách cửa hàng tiện lợi.
+Ngoài ra, biểu đồ là trung bình vài tháng, nên không thấy được ngày điều chỉnh
+giá. Nhóm chỉ có hai trạm, nên kết quả dùng để kiểm tra giả định G chứ không
+thay giả định này.
+
+\paragraph{Hướng đo lại.} Nhóm không đo tại cửa hàng. Google Maps cũng không
+cho thời gian phục vụ $E[S]$, CV và số xe bỏ đi. Nếu một cửa hàng đồng ý hợp
+tác, hai nguồn sau sẽ thay được các giả định còn lại. Nguồn thứ nhất là hóa đơn
+điện tử đã ẩn danh trong ít nhất 4 tuần, vì mỗi hóa đơn có thời điểm
+xuất~\cite{nd70}; nguồn này cho $\lambda_t$ thật. Nguồn thứ hai là bấm giờ tại
+trụ theo Bảng~\ref{r2:form}, khoảng 30--50 lượt mỗi loại xe trong các giờ đông.
+Số đo được thay vào \texttt{HOURLY\_SHARE}, \texttt{SERVICE\_ASIS} và
+\texttt{CV\_SERVICE} trong \texttt{run\_analysis.py}. Người quan sát cần xin phép
+cửa hàng, không ghi biển số và không chụp khuôn mặt.
 
 \begin{table}[htbp]\centering\small
-\caption{Biểu mẫu bấm giờ; mỗi dòng là một lượt xe. Tên cột trùng với \texttt{data/requests\_asis\_simulated.csv}}
+\caption{Biểu mẫu bấm giờ đề xuất; mỗi dòng là một lượt xe. Tên cột trùng với \texttt{data/requests\_asis\_simulated.csv}}
 \label{r2:form}
 \begin{tabularx}{\linewidth}{@{}p{39mm}p{24mm}Y@{}}
 \toprule
 Cột & Đơn vị / mã & Cách ghi \\
 \midrule
 \texttt{data\_label} & \texttt{OBSERVED} & Phân biệt với \texttt{SIMULATED} khi gộp dữ liệu \\
-\texttt{day}, \texttt{hour\_slot} & ngày; \texttt{07-08} & Ngày quan sát và khung giờ \\
+\texttt{day}, \texttt{hour\_slot} & ngày; \texttt{17-18} & Ngày quan sát và khung giờ \\
 \texttt{vehicle\_id} & số thứ tự & Không ghi biển số \\
 \texttt{vehicle\_class} & Xe máy / Ô tô & \\
 \texttt{t\_arrival\_min} & phút từ 06:00 & $a_i$: lúc xe dừng vào cuối hàng chờ \\
 \texttt{t\_service\_start\_min} & phút từ 06:00 & $b_i$: lúc nhân viên cầm vòi bơm \\
+\texttt{t\_pump\_end\_min} & phút từ 06:00 & $e_i$: lúc nhân viên ngắt vòi bơm \\
 \texttt{t\_service\_end\_min} & phút từ 06:00 & $d_i$: lúc xe rời trụ sau khi thanh toán \\
 \texttt{balked} & 0/1 & 1 nếu xe đến, thấy hàng dài và bỏ đi \\
-\texttt{servers\_active} & số người & Số nhân viên đang bơm khi xe đến (thêm mới) \\
-\texttt{payment} & TM / QR / thẻ / ứng dụng & Hình thức thanh toán (thêm mới) \\
+\texttt{servers\_active} & số người & Số nhân viên đang bơm khi xe đến \\
+\texttt{payment\_result} & OK / lỗi / đổi & Thanh toán thành công, bị lỗi, hay phải đổi hình thức \\
 \bottomrule
 \end{tabularx}
-\source{Nhóm đề xuất; \texttt{service\_min} và \texttt{wait\_min} được tính từ ba mốc thời gian}
+\source{Nhóm đề xuất; \texttt{service\_min} và \texttt{wait\_min} được tính từ các mốc thời gian}
 \end{table}
 
-\subsection{Lịch quan sát và cỡ mẫu}
-\begin{itemize}
-\item \textbf{Khung giờ:} 07--09, 11--13 và 17--19 của 2 ngày thường; thêm 1 thứ
-Năm có kỳ điều chỉnh giá (quan sát 14--16 giờ) và 1 ngày cuối tuần.
-\item \textbf{Cỡ mẫu:} tối thiểu 30--50 lượt có đủ $a_i,b_i,d_i$ cho mỗi loại xe
-trong mỗi khung giờ. Ô tô ít (khoảng 2,7\% lượt), nên ghi mọi ô tô đến.
-\item \textbf{Phân công:} người thứ nhất ghi $a_i$ và số xe bỏ đi ở đầu hàng;
-người thứ hai ghi $b_i,d_i$ tại các trụ. Hai người dùng chung một đồng hồ, ví
-dụ ứng dụng bấm giờ trên điện thoại đã đồng bộ.
-\end{itemize}
-
-\subsection{Kiểm tra và nạp vào mô hình}
-\begin{enumerate}
-\item \textbf{Dòng đến:} đếm số xe theo khoảng 15 phút. Nếu tỷ số phương sai/trung
-bình gần 1 thì giả định Poisson chấp nhận được; nếu lớn hơn 1 nhiều thì dòng
-đến tập trung theo đợt.
-\item \textbf{Thời gian phục vụ:} tính $E[S]$ và CV theo loại xe, so lognormal
-với phân phối mũ (CV = 1) bằng biểu đồ Q--Q. Kết quả thay cho
-\texttt{SERVICE\_ASIS} và \texttt{CV\_SERVICE} trong \texttt{run\_analysis.py}.
-\item \textbf{Lưu lượng:} thay \texttt{HOURLY\_SHARE} bằng tỷ trọng theo giờ từ hóa
-đơn rồi chạy lại hai script. Báo trước cho người phụ trách Mục 7--9, vì bảng
-và hình của mục đó sinh ra từ cùng mã.
-\item \textbf{Ghi nhãn:} dữ liệu đo ghi R, tham số suy ra ghi E, phần còn lại
-giữ G trong Bảng~\ref{r2:assumptions}.
-\end{enumerate}
-
-\textbf{Phương án thay thế và đạo đức.} Nếu cửa hàng không cung cấp hóa đơn,
-nhóm chỉ đếm lượt xe tại chỗ theo khoảng 15 phút để ước lượng $\lambda_t$. Nhóm
-xin phép quản lý cửa hàng trước khi quan sát, không ghi biển số, không chụp
-khuôn mặt và không cản trở hoạt động bán hàng.
+Mốc $e_i$ tách thời gian phục vụ thành thời gian bơm ($b_i$ đến $e_i$) và thời
+gian thanh toán ($e_i$ đến $d_i$). Nhờ đó có thể kiểm tra trực tiếp giả định
+của A2, rằng thanh toán chiếm phần đáng kể trong thời gian xe đứng ở trụ.

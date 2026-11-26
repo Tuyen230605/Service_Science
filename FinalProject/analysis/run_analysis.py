@@ -166,6 +166,32 @@ def validate_formulas():
     return rows
 
 
+def convergence_check(configs=((225, 6), (187, 6)), days=200, long_hours=3000,
+                      long_seeds=(1, 2, 3), warmup_hours=100):
+    """Vi sao mo phong lech cong thuc o tai cao? Do Wq theo gio ke tu luc mo cua
+    (ngay 16 gio, bat dau hang rong) va chay mot mach rat dai de xap xi trang thai on dinh.
+    CV = 1, mot lop xe: dung cac gia dinh cua M/M/c."""
+    mu = 60.0 / MEAN_SERVICE_ASIS
+    out = []
+    for lam, c in configs:
+        base = dict(class_mix={2: 1.0}, mean_service_min=MEAN_SERVICE_ASIS, cv_service=1.0)
+        reqs, _ = run(SimConfig(hourly_lambda=[lam] * HOURS, servers_by_hour=[c] * HOURS,
+                                days=days, seed=SEED + 101 + lam, **base))
+        by_hour = []
+        for h in range(HOURS):
+            w = [r.wq for r in reqs if h * 60 <= r.t_arrival < (h + 1) * 60]
+            by_hour.append(float(np.mean(w)))
+        longs = []
+        for sd in long_seeds:
+            rl, _ = run(SimConfig(hourly_lambda=[lam] * long_hours, servers_by_hour=[c] * long_hours,
+                                  days=1, seed=SEED + 200 + sd, **base))
+            longs.append(float(np.mean([r.wq for r in rl if r.t_arrival >= warmup_hours * 60])))
+        out.append({"lambda": lam, "c": c, "rho": q.utilization(lam, mu, c),
+                    "Wq_analytic": q.metrics(lam, mu, c, TARGET_T)["Wq"],
+                    "by_hour": by_hour, "long_runs": longs})
+    return out
+
+
 # ------------------------------------------- 3. DANH GIA THEO GIO -----------
 def feasible(m) -> bool:
     return (m["stable"] and m["Wq"] <= TARGET_WQ_MEAN + 1e-9
@@ -330,6 +356,69 @@ def write_csv(path, header, rows):
 
 
 # ---------------------------------------------------------------- CHARTS ----
+# ------------------------- 6d. DOI CHIEU VOI GOOGLE MAPS (GIO DONG KHACH) ----
+def gmaps_lambda(share):
+    """Giu tong luot/ngay cua hieu chinh, chi doi cach chia theo gio."""
+    return [int(round(VISITS_DAY * w)) for w in share]
+
+
+def _sim_check(servers, lam, label_station, label_plan):
+    reqs, _ = run(sim_config(servers, SERVICE_ASIS, lam=lam, days=DAYS, seed=SEED))
+    s = summarize(reqs, TARGET_T)
+    worst, worst_h = 0.0, 0
+    for h in range(HOURS):
+        sub = [r for r in reqs if h * 60 <= r.t_arrival < (h + 1) * 60]
+        p = summarize(sub, TARGET_T)["P_wait_gt_target"]
+        if p > worst:
+            worst, worst_h = p, h
+    mmc = per_hour_table(servers, MEAN_SERVICE_ASIS, lam=lam)
+    return {"station": label_station, "plan": label_plan, "staff_hours": sum(servers),
+            "bad_hours": sum(not r["feasible"] for r in mmc),
+            "bad_list": [r["hour"] for r in mmc if not r["feasible"]],
+            "Wq_mean": s["Wq_mean"], "P_gt": s["P_wait_gt_target"], "balk": s["balk_rate"],
+            "worst_P": worst, "worst_hour": hour_label(worst_h)}
+
+
+def gmaps_check(servers_a1):
+    """Chay lai A0 va A1 voi phan bo theo gio lay tu Google Maps cua hai tram.
+    Day la kiem tra do nhay: KHONG thay duong co so (HOURLY_SHARE)."""
+    from FinalProject.analysis import gmaps
+    data = gmaps.extract()
+    profiles, rows = {}, []
+    rows.append(_sim_check(SERVERS_ASIS, HOURLY_LAMBDA, "Giả định G", "A0"))
+    rows.append(_sim_check(servers_a1, HOURLY_LAMBDA, "Giả định G", "A1"))
+    for st, mat in data.items():
+        share = gmaps.hourly_share(mat, OPEN_HOUR, HOURS)
+        lam = gmaps_lambda(share)
+        replan = [r["c_star"] for r in optimize_staffing(MEAN_SERVICE_ASIS, lam=lam)]
+        name = gmaps.STATIONS[st]
+        profiles[st] = {"name": name, "share": share, "lambda": lam, "replan": replan,
+                        "coverage": gmaps.window_coverage(mat, OPEN_HOUR, HOURS),
+                        "peak_by_day": [OPEN_HOUR + int(np.argmax(r[OPEN_HOUR - gmaps.FIRST_HOUR:
+                                        OPEN_HOUR - gmaps.FIRST_HOUR + HOURS])) for r in mat]}
+        rows.append(_sim_check(SERVERS_ASIS, lam, name, "A0"))
+        rows.append(_sim_check(servers_a1, lam, name, "A1"))
+        rows.append(_sim_check(replan, lam, name, "A1 lập lại"))
+    return profiles, rows
+
+
+def chart_gmaps(plt, profiles):
+    """Luot xe theo gio: gia dinh G (cot) so voi phan bo Google Maps cua hai tram (duong)."""
+    fig, ax = plt.subplots(figsize=(6.2, 2.7))
+    labels = [hour_label(h) for h in range(HOURS)]
+    x = np.arange(HOURS)
+    ax.bar(x, HOURLY_LAMBDA, color=C_BLUE, alpha=0.35, width=0.62, label="Giả định G của mô hình")
+    for (st, p), col, mk in zip(profiles.items(), (C_ORANGE, C_AQUA), ("o", "s")):
+        ax.plot(x, p["lambda"], color=col, marker=mk, markersize=3.5, label=p["name"])
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.set_ylim(0, 260)
+    ax.set_ylabel("Xe/giờ")
+    ax.set_xlabel("Khung giờ")
+    _legend_below(ax, 3, rotate=True)
+    _finish(ax, plt, "r2_gmaps.png", rotate=True)
+
+
 def setup_mpl():
     import matplotlib
     matplotlib.use("Agg")
@@ -339,7 +428,7 @@ def setup_mpl():
         "font.size": 9, "axes.titlesize": 10, "axes.labelsize": 9,
         "axes.edgecolor": C_AXIS, "axes.labelcolor": C_INK,
         "text.color": C_INK, "xtick.color": C_MUTED, "ytick.color": C_MUTED,
-        "axes.grid": True, "grid.color": C_GRID, "grid.linewidth": 0.8,
+        "axes.grid": False,
         "axes.spines.top": False, "axes.spines.right": False,
         "legend.frameon": False, "lines.linewidth": 2.0,
         "savefig.bbox": "tight", "figure.facecolor": "white",
@@ -347,9 +436,13 @@ def setup_mpl():
     return plt
 
 
+def _legend_below(ax, ncol, rotate=False):
+    """Dat chu giai duoi truc x de khong che duong/cot du lieu."""
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.42 if rotate else -0.22),
+              ncol=ncol, fontsize=8, handlelength=1.8, columnspacing=1.2)
+
+
 def _finish(ax, plt, fname, rotate=False):
-    ax.grid(axis="x", visible=False)
-    ax.set_axisbelow(True)
     if rotate:
         plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
     ax.figure.savefig(os.path.join(FIGS, fname))
@@ -367,7 +460,6 @@ def chart_arrivals(plt, est_rows):
                         ha="center", fontsize=8, color=C_INK)
     ax.set_ylabel("Xe/giờ ($\\hat{\\lambda}$)")
     ax.set_xlabel("Khung giờ")
-    ax.set_title("Lượt xe đến theo khung giờ (mô phỏng 20 ngày)")
     _finish(ax, plt, "fig_arrivals.png", rotate=True)
 
 
@@ -386,12 +478,11 @@ def chart_wq_by_hour(plt, rows_a0, rows_a1, rows_a2):
         ax.plot(labels, [clip(r["Wq"]) for r in rows], color=col, marker=mk,
                 markersize=4, label=lab)
     ax.axhline(TARGET_WQ_MEAN, color=C_MUTED, linestyle="--", linewidth=1.2)
-    ax.annotate("Mục tiêu $W_q \\leq 2$ phút", (0.02, TARGET_WQ_MEAN + 0.6),
+    ax.annotate("Mục tiêu $W_q \\leq 2$ phút", (0.30, TARGET_WQ_MEAN + 0.6),
                 xycoords=("axes fraction", "data"), fontsize=8, color=C_MUTED)
     ax.set_ylabel("$W_q$ (phút, cắt tại 20)")
     ax.set_xlabel("Khung giờ")
-    ax.set_title("Thời gian chờ theo khung giờ (M/M/c) – ba phương án")
-    ax.legend(loc="upper left", fontsize=8)
+    _legend_below(ax, 2, rotate=True)
     _finish(ax, plt, "fig_wq_by_hour.png", rotate=True)
 
 
@@ -410,8 +501,7 @@ def chart_wq_vs_c(plt):
     ax.set_xticks(cs)
     ax.set_xlabel("Số vị trí bơm có nhân viên $c$")
     ax.set_ylabel("$W_q$ (phút, trục log)")
-    ax.set_title(f"Năng lực và thời gian chờ giờ cao điểm ($\\lambda$ = {lam} xe/giờ)")
-    ax.legend(fontsize=8)
+    _legend_below(ax, 2)
     _finish(ax, plt, "fig_wq_vs_c.png")
 
 
@@ -426,8 +516,7 @@ def chart_sensitivity(plt, rows):
     ax.set_xticks([0.8, 1.0, 1.2, 1.4])
     ax.set_xlabel("Hệ số nhu cầu so với hiện tại")
     ax.set_ylabel("$W_q$ trung bình (phút, cắt tại 30)")
-    ax.set_title("Độ nhạy theo mức nhu cầu (mô phỏng 30 ngày/kịch bản)")
-    ax.legend(fontsize=8)
+    _legend_below(ax, 3)
     _finish(ax, plt, "fig_sensitivity.png")
 
 
@@ -444,9 +533,59 @@ def chart_by_class(plt, sims):
                         ha="center", fontsize=7.5, color=C_INK)
     ax.set_xticks(x, [CLASS_NAME[1], CLASS_NAME[2]])
     ax.set_ylabel("$W_q$ trung bình (phút)")
-    ax.set_title("Thời gian chờ theo loại xe (mô phỏng 20 ngày)")
-    ax.legend(fontsize=8)
+    _legend_below(ax, 3)
     _finish(ax, plt, "fig_by_class.png")
+
+
+def chart_validation(plt, val_rows, conv):
+    """Hai o: (a) chenh lech cong thuc - mo phong theo rho; (b) Wq theo gio ke tu khi mo cua."""
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.0, 2.7), gridspec_kw={"width_ratios": [1, 1.35]})
+    ok = sorted([r for r in val_rows if isfinite(r["Wq_analytic"])], key=lambda r: r["rho"])
+    xs = np.arange(len(ok))
+    wd = 0.36
+    a1.bar(xs - wd / 2, [r["Wq_analytic"] for r in ok], wd, color=C_BLUE, label="Công thức M/M/c")
+    a1.bar(xs + wd / 2, [r["Wq_sim"] for r in ok], wd, color=C_ORANGE, label="Mô phỏng")
+    a1.set_xticks(xs, [f"$\\rho$={r['rho']:.2f}".replace(".", ",") for r in ok], fontsize=7.5)
+    a1.set_ylabel("$W_q$ (phút)")
+    a1.set_title("(a) Theo mức tải", fontsize=9)
+    _legend_below(a1, 2)
+    hrs = np.arange(1, HOURS + 1)
+    for cv, col, mk in zip(conv, (C_ORANGE, C_AQUA), ("o", "s")):
+        rho = f"{cv['rho']:.2f}".replace(".", ",")
+        a2.plot(hrs, cv["by_hour"], color=col, marker=mk, markersize=3.5,
+                label=f"Mô phỏng, $\\rho$ = {rho}")
+        a2.axhline(cv["Wq_analytic"], color=col, linestyle="--", linewidth=1.1)
+    a2.annotate("Nét đứt: giá trị theo công thức", (0.40, 0.30), xycoords="axes fraction",
+                fontsize=7.5, color=C_MUTED)
+    a2.set_xticks([1, 4, 8, 12, 16])
+    a2.set_xlabel("Giờ thứ mấy kể từ khi mở cửa")
+    a2.set_ylabel("$W_q$ (phút)")
+    a2.set_title("(b) Theo thời gian trong ngày", fontsize=9)
+    _legend_below(a2, 2, rotate=False)
+    a2.get_legend().set_bbox_to_anchor((0.5, -0.32))
+    fig.tight_layout(w_pad=2.0)
+    _finish(a2, plt, "r2_validation.png")
+
+
+def chart_asis_load(plt, rows_a0):
+    """Tai rho theo gio cua lich AS-IS; cot cam la gio khong dat muc tieu."""
+    fig, ax = plt.subplots(figsize=(6.2, 2.6))
+    labels = [r["hour"] for r in rows_a0]
+    cols = [C_BLUE if r["feasible"] else C_ORANGE for r in rows_a0]
+    ax.bar(labels, [r["rho"] for r in rows_a0], color=cols, width=0.62)
+    for x, r in zip(labels, rows_a0):
+        if not r["feasible"]:
+            ax.annotate(f"{r['P_gt']*100:.0f}%", (x, r["rho"]), textcoords="offset points",
+                        xytext=(0, 3), ha="center", fontsize=7.5, color=C_INK)
+    ax.set_ylim(0, 1.12)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda v, _: f"{v:.1f}".replace(".", ",")))
+    ax.set_ylabel("Hệ số tải $\\rho$")
+    ax.set_xlabel("Khung giờ")
+    from matplotlib.patches import Patch
+    ax.legend(handles=[Patch(color=C_BLUE, label="Đạt mục tiêu"),
+                       Patch(color=C_ORANGE, label="Không đạt (số trên cột: % xe chờ quá 5 phút)")],
+              loc="upper center", bbox_to_anchor=(0.5, -0.36), ncol=2, fontsize=8)
+    _finish(ax, plt, "r2_asis_load.png", rotate=True)
 
 
 # ------------------------------------------------------------------ MAIN ----
@@ -496,6 +635,14 @@ def main():
                      "$W_q$ mô phỏng (phút)", "Chênh lệch (\\%)"],
                     [[r["lambda"], r["c"], r["rho"], r["Wq_analytic"], r["Wq_sim"],
                       r["gap_pct"]] for r in val_rows], nd=3)
+
+    conv = convergence_check()
+    say("\n[2b] Kiem tra hoi tu (CV = 1; ngay 16 gio x 200 ngay; mach dai 3000 gio, bo 100 gio dau)")
+    for cv in conv:
+        say(f"    lambda={cv['lambda']} c={cv['c']} rho={cv['rho']:.3f} Wq_ct={cv['Wq_analytic']:.2f} | "
+            f"Wq theo gio: " + " ".join(f"{v:.2f}" for v in cv["by_hour"]))
+        say(f"        mach dai: " + " ".join(f"{v:.2f}" for v in cv["long_runs"])
+            + f"  (TB {np.mean(cv['long_runs']):.2f})")
 
     rows_a0 = per_hour_table(SERVERS_ASIS, MEAN_SERVICE_ASIS)
     say("\n[3] AS-IS theo gio (c = 6, M/M/c)")
@@ -635,13 +782,47 @@ def main():
                       s_low["P_wait_gt_target"] * 100, s_low["balk_rate"] * 100]],
                     align="p{0.40\\linewidth}rrrr")
 
+    profiles, gm_rows = gmaps_check(servers_a1)
+    say("\n[6d] Doi chieu phan bo theo gio voi Google Maps (14 anh, 2 tram x 7 ngay; "
+        "giu tong luot/ngay, E[S] AS-IS, 20 ngay, cung seed)")
+    for st, p in profiles.items():
+        say(f"    {st}: ty trong 06-22 = " + " ".join(f"{v:.3f}" for v in p["share"]))
+        say(f"        lambda = {p['lambda']}; 06-22 chiem {p['coverage']:.1%} do dong ca ngay; "
+            f"gio dong nhat theo ngay T2..CN = {p['peak_by_day']}")
+        say(f"        lich lap lai c* = {p['replan']} -> {sum(p['replan'])} gio")
+    for r in gm_rows:
+        say(f"    {r['station']:<28} {r['plan']:<11} gio={r['staff_hours']:>3} "
+            f"gio khong dat (M/M/c)={r['bad_hours']} {r['bad_list']}  Wq={r['Wq_mean']:.3f} "
+            f"P>5={r['P_gt']*100:.2f}% bo={r['balk']*100:.2f}% | gio te nhat {r['worst_hour']}: "
+            f"P>5={r['worst_P']*100:.1f}%")
+    write_tex_table(os.path.join(TABLES, "tab_gmaps.tex"),
+                    ["Phân bố theo giờ", "Lịch", "Giờ công", "Giờ không đạt",
+                     "$W_q$ (phút)", "$P(W_q{>}5)$ (\\%)", "Bỏ đi (\\%)",
+                     "Giờ tệ nhất: $P(W_q{>}5)$ (\\%)"],
+                    [[r["station"].replace("Trạm Xăng Dầu ", ""), r["plan"], r["staff_hours"], r["bad_hours"], r["Wq_mean"],
+                      r["P_gt"] * 100, r["balk"] * 100,
+                      f"{r['worst_hour']}: " + _fmt(r["worst_P"] * 100, 1)] for r in gm_rows],
+                    align="llrrrrrr")
+    sh_rows = [[hour_label(h), HOURLY_SHARE[h] * 100]
+               + [p["share"][h] * 100 for p in profiles.values()]
+               + [HOURLY_LAMBDA[h]] + [p["lambda"][h] for p in profiles.values()]
+               for h in range(HOURS)]
+    names = [p["name"].replace("Trạm Xăng Dầu ", "") for p in profiles.values()]
+    write_tex_table(os.path.join(TABLES, "tab_gmaps_share.tex"),
+                    ["Khung giờ", "G (\\%)"] + [f"{n} (\\%)" for n in names]
+                    + ["$\\lambda$ G"] + [f"$\\lambda$ {n}" for n in names],
+                    sh_rows, nd=1)
+
     plt = setup_mpl()
+    chart_gmaps(plt, profiles)
     chart_arrivals(plt, est_rows)
     chart_wq_by_hour(plt, rows_a0, rows_a1, rows_a2)
     chart_wq_vs_c(plt)
     chart_sensitivity(plt, sens)
     chart_by_class(plt, sims)
-    say(f"\n[8] Da xuat 5 hinh vao figures/")
+    chart_validation(plt, val_rows, conv)
+    chart_asis_load(plt, rows_a0)
+    say(f"\n[8] Da xuat 8 hinh vao figures/")
 
     with open(os.path.join(DATA, "run_log.txt"), "w") as f:
         f.write("\n".join(log) + "\n")
