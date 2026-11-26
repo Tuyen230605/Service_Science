@@ -225,7 +225,7 @@ Cơ quan thuế & Quy định hóa đơn điện tử & Giao dịch minh bạch 
 \label{r1:asis}
 \noindent
 Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ quy trình theo ký hiệu chuẩn (Hình~\ref{r1:bpmn}). Sơ đồ đi từ lúc xe đến cửa hàng cho tới lúc xe nhận hóa đơn và rời trụ. Mỗi bên tham gia có một khung riêng gọi là pool, và pool có thể chia thành các làn theo người thực hiện. Pool Cửa hàng có hai làn là Nhân viên bơm và POS/HĐĐT. Ngân hàng và cơ quan thuế được vẽ dạng hộp đen, tức chỉ ghi tên mà không vẽ các bước bên trong. Thông tin trao đổi giữa các pool được vẽ bằng mũi tên nét đứt, gọi là luồng thông điệp~\cite{rubric}.
-\begin{sidewaysfigure}\centering
+\begin{figure}[!htbp]\centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
   mf/.style={{Circle[open,length=1.4mm]}-{Stealth[length=2.2mm,open]},dashed,thick,blue!50!black}, mlab/.style={font=\scriptsize\itshape,fill=white,inner sep=1pt,text=blue!50!black}, blab/.style={font=\scriptsize}, gx/.style={diamond,draw,thick,fill=white,minimum width=9mm,minimum height=9mm,inner sep=0pt,font=\large}, bbox/.style={draw,thick,fill=gray!12}]
@@ -314,7 +314,7 @@ Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ 
 luồng thông điệp giữa các pool; pool xám là hộp đen. Nhãn đỏ là mốc thời gian dùng để đo $W_q=b_i-a_i$ và $S=d_i-b_i$, cùng điểm chờ, điểm lỗi và điểm chuyển giao.}
 \label{r1:bpmn}
 \source{nhóm vẽ bằng TikZ theo ký pháp BPMN (sự kiện, bước công việc, điểm rẽ nhánh, pool/làn, luồng thông điệp); Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra ký pháp và luồng}
-\end{sidewaysfigure}
+\end{figure}
 
 Trên sơ đồ có ba điểm rẽ nhánh, vẽ bằng hình thoi có dấu $\times$. Ở nhánh đầu, khách bỏ đi nếu thấy từ 20 xe đang chờ; con số này do nhóm giả định. Ở nhánh thứ hai, quy trình tách theo cách khách trả tiền, bằng tiền mặt hay QR. Ở nhánh thứ ba, máy POS chờ ngân hàng báo có, tức xác nhận tiền đã vào tài khoản. Nếu QR lỗi hoặc chờ quá lâu, nhân viên phải thu lại bằng tiền mặt trong khi xe vẫn đứng ở trụ.
 
