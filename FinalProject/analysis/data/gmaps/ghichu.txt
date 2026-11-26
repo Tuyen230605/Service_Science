@@ -1,0 +1,10 @@
+Anh chup bieu do "Gio dong khach" tren Google Maps (popular times)
+tram1 = Tram Xang Dau My Dinh
+tram2 = Tram Xang Dau ATS Mipecorp
+Ngay chup: 27/11/2026, khoang 00:29-00:35 (theo thoi diem luu tep)
+Dia chi:
+  tram1: 1 Đ. Lê Quang Đạo, Từ Liêm, Hà Nội
+  tram2: 8 Đường Phạm Hùng, Yên Hòa, Hà Nội
+Moi anh: 24 cot, tu 04:00 den 03:00 hom sau. Cot do "Truc tiep" (anh thu5)
+la do dong luc chup; gmaps.py lay muc thuong le (phan mau nhat).
+So do cot: ../gmaps_popular_times.csv (sinh boi analysis/gmaps.py)

@@ -46,16 +46,20 @@ dầu dùng Claude Code (Anthropic) để tìm số liệu công bố, viết l�
 sinh bảng/hình và soạn bản nháp ba role. Lượt rà soát tiếp theo dùng Codex để thu gọn lập luận về hàng đợi, sửa sự
 kiện đổi công suất theo giờ, chạy lại phân tích chính và kiểm tra biên dịch.
 Nguồn quy mô Hà Nội đã được mở đối chiếu; các nguồn khác cần kiểm tra theo
-phạm vi sử dụng. Nhóm chịu trách nhiệm kiểm tra nội dung trước khi nộp.
+phạm vi sử dụng. Ngày 26/11/2026, Claude Code viết lại Mục 5--6 và Phụ lục B
+theo góp ý của nhóm, thêm kiểm tra hội tụ cho mô phỏng, rồi mở lại và đối chiếu
+nguyên văn các nguồn của Mục 5--6; TV2 rà soát kết quả. Ngày 27/11/2026, TV2
+chụp 14 biểu đồ Giờ đông khách trên Google Maps; Claude Code viết mã đo chiều
+cao cột, chạy lại mô hình với phân bố này và sửa Mục 6, Phụ lục B. Nhóm chịu trách nhiệm kiểm tra nội dung trước khi nộp.
 \begin{longtable}{@{}p{30mm}p{48mm}p{72mm}@{}}
 \toprule
 Thành phần & Phạm vi AI hỗ trợ & Cách kiểm chứng / việc cần làm \\
 \midrule\endhead
 % Văn bản, bố cục & Claude Code và Codex hỗ trợ biên tập câu chữ theo dàn ý của nhóm. & Mỗi người rà soát phần mình; đối chiếu rubric và số liệu trong log. \\
-Số liệu công bố & Claude Code hỗ trợ tìm số liệu qua công cụ tìm kiếm web ngày 21/11/2026. & Mở lại từng URL trong tài liệu tham khảo; sửa nếu khác. \\
+Số liệu công bố & Claude Code hỗ trợ tìm số liệu qua công cụ tìm kiếm web ngày 21/11/2026. & Mở lại từng URL trong tài liệu tham khảo; sửa nếu khác. Nguồn của Mục 5--6 đã được đối chiếu ngày 26/11/2026; nguồn lương được thay bằng tin tuyển dụng toàn thời gian còn hạn. \\
 Nguồn học thuật & Claude Code hỗ trợ tìm các bài báo cho khung hệ thống và đồng tạo giá trị (Maglio \& Spohrer; Vargo \& Lusch). & Kiểm tra thông tin xuất bản qua DOI; chưa truy cập được toàn văn nên chỉ trích định nghĩa chung, đối chiếu với phần tóm tắt. \\
 % Sơ đồ & Claude Code hỗ trợ dựng mã TikZ cho Resource Map, BPMN AS-IS, TO-BE. & Role 1/3 kiểm tra ký pháp, đối chiếu quan sát thực tế. \\
-Mã nguồn & Claude Code và Codex hỗ trợ viết và sửa mã: \texttt{run\_analysis.py}, \path{extension_analysis.py}, loại xe, hành vi bỏ đi và sự kiện đổi giờ trong \texttt{simulate.py}. & Chạy lại phân tích chính và đối chiếu với log; role 2 kiểm tra giả định và tải cao. \\
+Mã nguồn & Claude Code và Codex hỗ trợ viết và sửa mã: \texttt{run\_analysis.py}, \path{extension_analysis.py}, loại xe, hành vi bỏ đi và sự kiện đổi giờ trong \texttt{simulate.py}; kiểm tra hội tụ và hai hình \texttt{r2\_validation}, \texttt{r2\_asis\_load} (26/11/2026); đọc ảnh Google Maps (27/11/2026). & Chạy lại phân tích chính và đối chiếu với log; role 2 kiểm tra giả định và tải cao; so số đo cột với ảnh gốc trong \path{data/gmaps/}. \\
 \bottomrule
 \end{longtable}
 
