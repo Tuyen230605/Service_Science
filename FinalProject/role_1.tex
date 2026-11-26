@@ -1,328 +1,277 @@
 % !TeX root = _main.tex
-% ROLE 1: muc 1--4, van de, pham vi, he thong, nguon luc va AS-IS.
-% Chi sua role cua minh va figures/rX_*. Khong sua tay bang do Python sinh.
-% Nguoi ghep bai quan ly _main.tex va _content.tex.
+% ROLE 1 (TV1 -- mo hinh dich vu): muc 1--4 -- bai toan, pham vi, cau hinh cua hang,
+% Work System Framework, Resource Map, BPMN AS-IS va chan doan diem nghen.
+% Chi sua role cua minh va figures/r1_*. Khong sua tay bang do Python sinh.
+% So do BPMN: sua tep figures/r1_bpmn_asis.bpmn tren demo.bpmn.io roi xuat lai PDF
+% (xem role_1_notes.md). Nguoi ghep bai quan ly _main.tex va _content.tex.
 % Macro Role*Supplement cuoi file giu ban nhap mo rong; KHONG duoc goi trong PDF.
 
 \section{Bài toán, mục tiêu và phạm vi nghiên cứu}
 \label{r1:scope}
-\subsection{Bối cảnh và vấn đề}
-\noindent
-Bán lẻ xăng ở nội thành Hà Nội có đặc điểm là nhiều lượt khách nhưng mỗi lượt mua ít. Thành phố có 453 cửa hàng xăng dầu~\cite{sct2026} và khoảng 5,6 triệu xe máy chạy xăng~\cite{vnex2025}, trong khi bình xăng xe máy phổ biến chỉ chứa dưới 5 lít~\cite{tank}. Mỗi lượt chỉ bơm vài lít, nên nhiều khả năng một phần đáng kể thời gian xe đứng ở trụ dành cho việc mời xe, trả tiền và lấy hóa đơn. Từ năm 2025, mỗi lần bán còn phải xuất thêm một hóa đơn điện tử~\cite{nd70}.
+\subsection{Vấn đề: công suất không theo nhịp nhu cầu}
+Hà Nội có 453 cửa hàng bán lẻ xăng dầu, tiêu thụ khoảng 110\,000~m$^3$ xăng/tháng~\cite{sct2026}
+(quy mô tham chiếu). Báo cáo xét một cửa hàng \emph{giả định} 8 vòi, cố định 6 nhân viên bơm mỗi
+giờ (Mục~\ref{r1:config}). Lượt xe mô phỏng dao động 112--225 xe/giờ, giờ đỉnh gấp đôi giờ thấp,
+nhưng số kênh không đổi; mức bận $\rho_t=\lambda_tE[S]/c_t$ vì vậy chạy từ 0,49 đến 0,98
+(Bảng~\ref{r2:hourly}). Cửa hàng lệch theo \emph{cả hai chiều}:
+\begin{itemize}
+\item \textbf{Thừa}: 8/16 giờ có $\rho_t\le0{,}60$, khi đó 4--5 kênh đã đủ.
+\item \textbf{Thiếu}: 08--09, 17--18, 18--19 có $\rho_t\ge0{,}92$, không đạt mục tiêu chờ. Gần bão
+hòa, hàng chờ tăng phi tuyến: từ 17--18 sang 18--19, lượt xe tăng 6\% nhưng $W_q$ tăng 4,5 lần
+(2,7 lên 12,2 phút).
+\item \textbf{Mong manh}: ở ba giờ đỉnh, mất một kênh (vòi lỗi, nhân viên vắng) là
+$\rho_t=1{,}11$--$1{,}18>1$, hàng tăng tới khi khách bỏ đi; giờ thấp mất một kênh vẫn còn $\rho_t\le0{,}85$.
+\end{itemize}
+Khách chờ và bỏ đi đúng lúc đông nhất, trong khi cửa hàng trả lương cho kênh rảnh ở giờ thấp: thêm
+người cho mọi giờ không giải quyết đúng chỗ.
 
-Khó khăn của cửa hàng là lượng xe đến không đều, trong khi lãi trên mỗi lít lại thấp. Nhóm giả định xe dồn vào giờ đi làm và tan tầm, rồi thưa hơn vào giữa ngày. Khoản chiết khấu cửa hàng được hưởng trên mỗi lít có lúc thấp hơn nhiều so với mức cần để bù chi phí~\cite{chietkhau}. Vì thế, tăng người cho mọi giờ khó là cách làm phù hợp.
+\subsection{Câu hỏi phân tích}
+Có thể đưa giờ đỉnh về vùng an toàn ($\rho_t\lesssim0{,}85$) mà không tăng tổng giờ công không?
+Vì $\lambda_t$ ngoài tầm kiểm soát, chỉ còn hai đòn bẩy trong $\rho_t=\lambda_tE[S]/c_t$:
+\textbf{(Q1)} chuyển kênh từ giờ thấp sang giờ đỉnh ($c_t$, phương án A1);
+\textbf{(Q2)} rút ngắn thời gian chiếm trụ, chủ yếu là thanh toán ($E[S]$, phương án A2) --- cần
+bớt bao nhiêu giây mỗi xe (Mục~\ref{r1:payment}).
 
-Từ đó, vấn đề chính là \textbf{cửa hàng dùng một lịch nhân viên cố định cho lượng khách thay đổi theo giờ}. Vào giờ cao điểm, số nhân viên không theo kịp lượng xe, trong khi mỗi xe lại đứng ở trụ khá lâu để trả tiền và lấy hóa đơn. Khách vì thế phải chờ lâu, có người bỏ đi; còn giờ vắng khách thì thừa người. Bài toán đặt ra là bố trí số nhân viên theo từng giờ để giảm thời gian chờ và số khách bỏ đi mà không tăng chi phí nhân lực.
-%
-Nếu giải quyết được, cả ba bên đều có lợi. Khách chờ ít hơn và ít phải bỏ đi. Cửa hàng giữ được lượt bán mà không phải thêm người cho mọi giờ. Nhân viên được chia việc đều hơn giữa giờ đông và giờ vắng.
-% 
-Bảng~\ref{r1:problem} tóm tắt vấn đề theo người bị ảnh hưởng, nơi xảy ra, thời điểm, mức độ và hệ quả.
-
-\begin{table}[!htbp]\centering\small
-\caption{Vấn đề dịch vụ: ai, ở đâu, khi nào, mức độ và hệ quả}\label{r1:problem}
-\begin{tabularx}{\linewidth}{@{}p{34mm}Y@{}}
+\subsection{Cấu hình cửa hàng và ranh giới hệ thống}
+\label{r1:config}
+Bảng~\ref{r1:boundary} chốt một ranh giới và một định nghĩa lượt khách dùng chung cho Resource
+Map, BPMN, dữ liệu và mô hình hàng đợi.
+\begin{table}[htb]\centering\small
+\caption{Cấu hình cửa hàng giả định, ranh giới hệ thống và ranh giới phép đo}\label{r1:boundary}
+\begin{tabularx}{\linewidth}{@{}p{25mm}Y@{}}
 \toprule
-\textbf{Khía cạnh} & \textbf{Mô tả} \\
+Thành phần & Quy ước dùng trong báo cáo \\
 \midrule
-Người được phục vụ & Khách đổ xăng tại cửa hàng, chủ yếu đi xe máy, một phần nhỏ đi ô tô \\
-\rowcolor{lightgray}
-Nơi xảy ra & Hàng chờ trước 8 trụ bơm (giả định), từ lúc xe vào hàng đến lúc được mời vào trụ \\
-Thời điểm & Hai đỉnh sáng và chiều (phân bố giả định); rõ nhất ở 17:00--19:00, còn giờ 08--09 sát ngưỡng với 4,6\% xe chờ quá 5 phút và 1\% bỏ đi; khung 09:00--17:00 dư công suất (mô phỏng) \\
-\rowcolor{lightgray}
-Biểu hiện & Hàng có thể kéo dài; khách khó đoán thời gian chờ; một phần khách có thể bỏ đi \\
-Mức độ (mô phỏng) & Cả ngày mỗi xe chỉ chờ trung bình 0,64 phút, nhưng khung 17--19 giờ có 6,2\% xe chờ quá 5 phút và 2,3\% xe bỏ đi; giờ 18--19 các vòi gần như bận kín (Mục~\ref{r2:diagnosis}) \\
-\rowcolor{lightgray}
-Hệ quả & Khách mất thêm thời gian; cửa hàng có thể mất lượt bán; nhân viên dễ quá tải \\
-Nguyên nhân giả định & (1) số nhân viên cố định trong khi lượng xe đến dao động theo giờ; (2) mỗi xe đứng ở trụ lâu do thanh toán và hóa đơn \\
+Cấu hình & 8 vòi; khung 06:00--22:00; AS-IS cố định 6 nhân viên bơm/giờ (96 giờ công/ngày) và một
+cửa hàng trưởng. Giả định, cần đối chiếu cửa hàng thật. \\
+Lượt khách & Một xe vào khu trụ bơm trong khung phân tích, kể cả xe bỏ đi; xe máy 97,3\%, ô tô 2,7\%. \\
+Kênh phục vụ & Một vòi có nhân viên phụ trách, $c_t\le8$. Các làn được gộp thành một hàng chung FCFS
+(xấp xỉ việc khách chọn làn ngắn, đổi làn); thực tế mỗi trụ có làn riêng. \\
+Mốc đo & $a_i$: vào hàng chờ; $b_i$: nhân viên cầm vòi bơm (bắt đầu phục vụ); $d_i$: rời trụ sau khi trả tiền. Kết thúc ngoại
+lệ: bỏ đi; rời trụ chưa mua được vì vòi lỗi, hết loại xăng. \\
+Thanh toán & Tại trụ, khi xe còn chiếm vị trí bơm: tiền mặt (đếm, trả tiền thừa) hoặc QR/thẻ (chờ báo
+có). HĐĐT lập tự động theo từng lần bán khi kết thúc bơm~\cite{tbtc2024,nd70}. \\
+Các bên & Trong ranh giới: khách, nhân viên bơm, cửa hàng trưởng, POS/HĐĐT. Ngoài ranh giới, cấp nguồn
+lực và quy tắc: doanh nghiệp xăng dầu, ngân hàng/ví, cơ quan thuế. \\
+Ngoài phạm vi & Chất lượng xăng, nhập hàng, tồn bể; giá, chiết khấu; phòng cháy; dịch vụ phụ; 22:00--06:00. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Câu hỏi phân tích và tiêu chí đánh giá}
-\noindent
-Từ vấn đề trên, câu hỏi chính của báo cáo là: nếu cửa hàng thay đổi số nhân viên theo từng giờ thay vì giữ cố định, tỷ lệ xe chờ quá 5 phút và tỷ lệ khách bỏ đi trong giờ cao điểm, nhất là khung 17:00--19:00, có giảm xuống mức chấp nhận được không? Nếu chưa đủ, có cần cải tiến thêm khâu thanh toán không? Để trả lời, nhóm so sánh ba phương án trên cùng một lượng xe đến được mô phỏng. Đầu tiên, phương án A0 giữ nguyên cách làm hiện tại. Tiếp theo, phương án A1 thay đổi số nhân viên theo từng giờ. Cuối cùng, phương án A2 làm như A1 và cho khách trả tiền trước bằng QR hoặc ứng dụng để xe đứng ở trụ ngắn hơn. Quy trình hiện tại được gọi là AS-IS, còn quy trình sau cải tiến gọi là TO-BE.
+\subsection{Mục tiêu và tiêu chí đánh giá}
+\label{r1:goals}
+Ngưỡng so sánh phương án (mục tiêu nghiên cứu, cần thống nhất lại với cửa hàng): $W_q$ trung bình
+$\le2$ phút, $P(W_q{>}5)\le5\%$, tỷ lệ bỏ đi $\le1\%$, đánh giá riêng cả ngày và khung 17:00--19:00,
+kèm giờ công và chi phí. Không đặt trước tỷ lệ cắt giảm nhân lực phải đạt.
 
-Nhóm dùng ba ngưỡng để xác định mức chấp nhận được: thời gian chờ trung bình không quá 2 phút, tỷ lệ chờ quá 5 phút không quá 5\% và tỷ lệ bỏ đi không quá 1\%. Đây là ngưỡng do nhóm đặt, nên cần thống nhất lại với cửa hàng nếu áp dụng thật. Mỗi phương án được đánh giá trên cả ngày và riêng khung 17:00--19:00, nơi vấn đề rõ nhất, kèm theo giờ công và chi phí. Phương án được chọn là phương án đạt các ngưỡng với chi phí hợp lý và xếp được thành lịch ca thực tế.
-
-\subsection{Phạm vi và ranh giới}
-\noindent
-Nhóm xét một cửa hàng giả định, vì số liệu thời gian chờ của một cửa hàng cụ thể hiện còn khó tiếp cận. Quy mô cửa hàng được ước tính từ các số liệu công bố ở trên, còn mọi kết quả về thời gian chờ đều là kết quả mô phỏng (Mục~\ref{r2:method}). Phân tích chỉ xoay quanh hàng chờ và cách bố trí nhân viên; các vấn đề như chọn vị trí cửa hàng hay chiến lược dài hạn nằm ngoài phạm vi.
-
-Ranh giới được xác định theo hai lớp (Bảng~\ref{r1:boundary}). Lớp thứ nhất là ranh giới dịch vụ, gồm các bên và hoạt động của cửa hàng từ lúc xe vào đến lúc rời trụ; đầu mối, ngân hàng và cơ quan thuế nằm bên ngoài và chỉ được xét ở phần trao đổi với cửa hàng. Lớp thứ hai là ranh giới phép đo, tức phần mô hình thực sự tính: ba mốc thời gian của mỗi xe (vào hàng, bắt đầu được phục vụ, rời trụ) trong khung 06:00--22:00, với tối đa 8 vòi có nhân viên. Cách chia này giúp phân tích tập trung vào đúng điểm nghẽn. Kẹt xe trên đường không thuộc trách nhiệm của cửa hàng, còn ban đêm ít xe nên hàng chờ nhiều khả năng không đáng kể. Chất lượng xăng và tồn kho ít liên quan đến bố trí nhân viên; riêng tình huống hết hàng có thể làm hàng dài ra mà không do thiếu người, nên được tách riêng khi diễn giải kết quả.
-
-\begin{table}[htbp]\centering\small
-\caption{Phạm vi dịch vụ và phạm vi mô hình định lượng}\label{r1:boundary}
-\begin{tabularx}{\linewidth}{@{}p{32mm}Y@{}}
-\toprule
-\textbf{Thành phần} & \textbf{Mô tả} \\
-\midrule
-Khách hàng & Xe máy (97,3\% lượt) và ô tô (2,7\% lượt); tỷ lệ ước tính (Mục~\ref{r2:method}). \\
-Tác nhân bên trong & Nhân viên bơm, cửa hàng trưởng; 8 vòi bơm, cột bơm, máy tính tiền. \\
-Tác nhân bên ngoài & Doanh nghiệp đầu mối (đơn vị cấp xăng), ngân hàng/ví điện tử, cơ quan thuế; chỉ xét phần trao đổi với cửa hàng. \\
-Điểm bắt đầu & Xe vào cửa hàng và nhìn thấy hàng chờ tại các trụ bơm. \\
-Điểm kết thúc & Xe được bơm đủ, thanh toán xong, có hóa đơn điện tử và rời trụ. \\
-Phép đo & Ba mốc thời gian của mỗi xe: vào hàng (hoặc bỏ đi), bắt đầu được phục vụ, rời trụ; từ đó tính thời gian chờ và thời gian phục vụ (Mục~\ref{r1:system}). \\
-Ngoài mô hình & Chất lượng xăng, tồn kho, an toàn phòng cháy, dịch vụ phụ (rửa xe, cửa hàng tiện lợi). \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\section{Mô hình hệ thống dịch vụ}
+\section{Mô hình hệ thống làm việc của cửa hàng}
 \label{r1:system}
-\noindent
-Nhóm chọn mô hình hệ thống dịch vụ làm khung phân tích chính. Theo khung này, một hệ thống dịch vụ gồm con người, công nghệ và thông tin dùng chung như quy định, cách đo, phối hợp với nhau để cùng tạo ra giá trị~\cite{maglio2008}. Hướng dẫn của học phần gợi ý hai khung có thể dùng là Work System Framework và mô hình hệ thống dịch vụ~\cite{rubric}. Nhóm chọn khung thứ hai vì ở cửa hàng xăng, khách trực tiếp tham gia vào dịch vụ: mở nắp bình, báo số tiền, quét QR. Những thao tác đó kéo dài thời gian xe đứng ở trụ, nên cần nhìn khách như một bên cùng tạo ra giá trị. Cách nhìn này cũng nối thẳng sang bản đồ nguồn lực ở Mục~\ref{r1:resources}.
+Nhóm dùng khung \emph{Hệ thống làm việc} (Work System Framework, WSF)~\cite{alter2013,l2b}
+vì hàng chờ là vấn đề vận hành: ai làm gì, với thông tin và công nghệ nào, theo nhịp nào. WSF
+cho hai lợi ích cụ thể: mỗi thành phần ánh xạ sang một biến của mô hình hàng đợi (dòng
+``$\Rightarrow$'' trong Hình~\ref{r1:wsf}); và tách bốn loại lỗi --- thông tin, công nghệ,
+hoạt động, thiết chế~\cite{l2b} --- dùng cho chẩn đoán ở Mục~\ref{r1:asis}.
 
-Để đưa các thành phần vào mô hình hàng đợi, báo cáo dùng một số biến. Mỗi xe $i$ có ba mốc thời gian: lúc vào hàng chờ $a_i$, lúc bắt đầu được phục vụ $b_i$ và lúc rời trụ $d_i$. Từ đó, thời gian chờ là $W_q=b_i-a_i$ và thời gian phục vụ là $S=d_i-b_i$, với $E[S]$ là thời gian phục vụ trung bình. Trong mỗi giờ $t$, $\lambda_t$ là số xe đến, còn $c_t$ là số vòi có nhân viên đứng, gọi là \emph{kênh phục vụ}. Hệ số tải $\rho$ cho biết các kênh đang bận đến mức nào; khi $\rho$ gần 1, hàng chờ thường dài ra rất nhanh. Bảng~\ref{r1:components} cho thấy mỗi thành phần biểu hiện thế nào ở cửa hàng và gắn với biến nào.
-\begin{table}[!htb]\centering\small
-\caption{Các thành phần của hệ thống và liên hệ với bài toán chờ}\label{r1:components}
-\begin{tabularx}{\linewidth}{@{}p{20mm}p{60mm}Y@{}}
-\toprule
-\textbf{Thành phần} & \textbf{Biểu hiện tại cửa hàng} & \textbf{Liên hệ bài toán} \\
-\midrule
-Con người & Khách xe máy/ô tô, nhân viên bơm, cửa hàng trưởng & Số kênh $c_t$; tỷ trọng loại xe \\
-Hoạt động & Mời xe, bơm, thu tiền, xuất hóa đơn & Thời gian phục vụ $S$ \\
-Thông tin & Giá niêm yết, số tiền, hóa đơn điện tử & Dữ liệu bán theo giờ để ước $\lambda_t$ \\
-Công nghệ & Cột bơm, máy POS, QR/ví, ứng dụng trả trước & Rút ngắn thanh toán (A2) \\
-Quy tắc & Xe đến trước phục vụ trước; hóa đơn từng lần bán & Ràng buộc $c_t\le8$ \\
-Kết quả & Xe được phục vụ, khách quay lại & $W_q$, tỷ lệ chờ quá 5 phút, bỏ đi, chi phí \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\begin{figure}[htb]\centering
+\begin{tikzpicture}[font=\scriptsize,
+  wsf/.style={draw,thick,rounded corners=2pt,align=left,inner sep=2.5pt},
+  band/.style={draw,thick,fill=gray!12}]
+\node[wsf,fill=blue!7,text width=127mm] (cus) {\textbf{Khách hàng.} Người đi xe máy (97,3\% lượt)
+  và ô tô (2,7\%), đến không hẹn trước, quyết định vào hay đi tiếp khi nhìn hàng.
+  $\Rightarrow$ $\lambda_t$ theo giờ, tỷ trọng loại xe, ngưỡng bỏ đi 20 xe (giả định).};
+\node[wsf,fill=blue!7,text width=127mm,below=2mm of cus] (prod) {\textbf{Sản phẩm \& dịch vụ.}
+  Nhiên liệu đúng loại, đủ số tiền; giao dịch đúng; HĐĐT từng lần bán; thời gian chờ ngắn.
+  $\Rightarrow$ $W_q$, $P(W_q{>}5)$, tỷ lệ bỏ đi, chi phí nhân lực.};
+\node[wsf,fill=green!9,text width=127mm,below=2mm of prod] (proc) {\textbf{Quy trình \& hoạt động.}
+  Chờ $\rightarrow$ mời vào trụ $\rightarrow$ tiếp nhận yêu cầu $\rightarrow$ bơm $\rightarrow$
+  thu tiền hoặc chờ báo có $\rightarrow$ rời trụ; HĐĐT lập song song (Hình~\ref{r1:bpmn}).
+  $\Rightarrow$ $S=d_i-b_i$; thanh toán diễn ra khi xe còn chiếm trụ.};
+\node[wsf,fill=orange!12,text width=39.5mm,below=2mm of proc.south west,anchor=north west] (par)
+  {\textbf{Người tham gia.} Nhân viên bơm, cửa hàng trưởng; khách tự mở nắp, báo yêu cầu,
+  quét QR. $\Rightarrow$ số kênh $c_t$; AS-IS cố định 6, một người vắng là mất một kênh.};
+\node[wsf,fill=orange!12,text width=39.5mm,below=2mm of proc.south,anchor=north] (inf)
+  {\textbf{Thông tin.} Loại xăng, số tiền, giá; trạng thái báo có; dữ liệu HĐĐT.
+  $\Rightarrow$ đếm lượt đã mua để ước lượng $\lambda_t$; chưa ghi lượt bỏ đi, lúc bắt đầu chờ.};
+\node[wsf,fill=orange!12,text width=39.5mm,below=2mm of proc.south east,anchor=north east] (tec)
+  {\textbf{Công nghệ.} Cột bơm, POS, QR/thẻ, hệ thống HĐĐT nối cơ quan thuế.
+  $\Rightarrow$ A2 giảm $E[S]$; rủi ro báo có chậm, giao dịch treo, lỗi POS.};
+\node[fit=(cus)(par)(inf)(tec),inner sep=1.2mm] (core) {};
+\draw[band] ($(core.north west)+(-7mm,0)$) rectangle ($(core.south west)+(-1mm,0)$);
+\draw[band] ($(core.north east)+(1mm,0)$) rectangle ($(core.south east)+(7mm,0)$);
+\draw[band] ($(core.south west)+(-7mm,-1mm)$) rectangle ($(core.south east)+(7mm,-7.5mm)$);
+\node[rotate=90,align=center,text width=44mm,font=\tiny] at ($(core.west)+(-4mm,0)$)
+  {\textbf{Môi trường}: đỉnh 07--09 và 17--19 giờ; quy định HĐĐT từng lần bán~\cite{nd70}; cửa hàng lân cận};
+\node[rotate=-90,align=center,text width=44mm,font=\tiny] at ($(core.east)+(4mm,0)$)
+  {\textbf{Chiến lược}: mục tiêu ở Mục~\ref{r1:goals}; lịch nhân sự hiện ưu tiên đơn giản hơn khớp nhu cầu};
+\node[align=center,font=\tiny] at ($(core.south)+(0,-4.25mm)$)
+  {\textbf{Hạ tầng dùng chung}: 8 vòi bơm ($c_t\le8$), làn chờ và mặt bằng, bể chứa, mạng Internet,
+  hạ tầng ngân hàng và hệ thống hóa đơn điện tử};
+\end{tikzpicture}
+\caption{Chín thành phần WSF của cửa hàng giả định (AS-IS); dòng ``$\Rightarrow$'' là biến hoặc điểm yếu dùng trong phân tích.}
+\label{r1:wsf}
+\source{nhóm áp dụng khung WSF~\cite{alter2013,l2b}; Claude (Anthropic) hỗ trợ soạn nội dung và
+mã TikZ, nhóm kiểm tra với Bảng~\ref{r1:boundary}}
+\end{figure}
 
-Các thành phần này tác động đến hàng chờ theo một chuỗi khá rõ. Lịch ca quyết định mỗi giờ có bao nhiêu kênh $c_t$, còn máy POS, QR và hóa đơn ảnh hưởng nhiều đến thời gian phục vụ $E[S]$. Đặt hai yếu tố này cạnh lượng xe đến $\lambda_t$ sẽ cho ra thời gian chờ $W_q$ và tỷ lệ khách bỏ đi. Vì vậy, A1 giảm hàng chờ bằng cách chỉnh lịch ca, còn A2 bằng cách rút ngắn thao tác tại trụ.
+Đọc theo WSF, hàng chờ đến từ hai chỗ không khớp. (1) \emph{Chiến lược nhân sự không khớp
+khách hàng}: nhu cầu gấp đôi từ giờ thấp đến giờ đỉnh, lịch giữ 6 kênh. (2) \emph{Quy trình
+đặt thanh toán vào thời gian chiếm trụ}: mọi giây đếm tiền hay chờ báo có đều cộng vào $S$,
+nên cộng thẳng vào tải $a_t=\lambda_tE[S]$. Hai chỗ này là hai đòn bẩy A1 và A2 (Mục~\ref{r3:tobe}).
 
 \section{Bản đồ nguồn lực và cơ chế đồng tạo giá trị}
 \label{r1:resources}
-\noindent
-Nhóm dùng logic hướng dịch vụ (S-D logic)~\cite{vargo2004} để đọc bản đồ nguồn lực. Theo cách nhìn này, giá trị không do riêng cửa hàng tạo ra mà hình thành khi nhiều bên cùng góp nguồn lực, gọi là \emph{đồng tạo giá trị}. Hình~\ref{r1:resource-map} thể hiện điều đó. Bên trong ranh giới cửa hàng, khách góp tiền, thời gian và một phần thao tác; nhân viên góp giờ công; cửa hàng trưởng sắp xếp lịch ca. Bên ngoài, doanh nghiệp đầu mối cung cấp xăng và giá bán, ngân hàng lo phần thanh toán qua điện thoại, còn cơ quan thuế đặt ra quy định về hóa đơn.
+Hình~\ref{r1:resource-map} coi cửa hàng là một hệ thống dịch vụ, tức cấu hình nguồn lực của nhiều bên cùng tạo giá trị~\cite{maglio2008}, và chia nguồn lực thành năm loại~\cite{l2b,vargo2004}: nhân lực và kỹ năng
+(\emph{operant}); vật chất và hạ tầng (\emph{operand}); thông tin; công nghệ thanh toán/HĐĐT;
+quy tắc và lịch ca. Mỗi bên ghi rõ nguồn lực mình góp; mũi tên cho biết ai cấp gì cho ai.
 
-\begin{figure}[!hbpt]\centering
-\setlength{\fboxsep}{1pt}%
-\def\rb#1#2{\fcolorbox{#1!70!black}{#1!18}{\tiny\bfseries\strut #2}}%
-\def\rNL{\rb{orange}{NL}}\def\rCN{\rb{green}{CN}}\def\rDL{\rb{blue}{DL}}%
-\def\rQT{\rb{violet}{QT}}\def\rTC{\rb{red}{TC}}%
-\resizebox{\linewidth}{!}{%
-\begin{tikzpicture}[
-  actor/.style={rectangle,rounded corners=2pt,draw,thick,fill=gray!5,align=center,font=\scriptsize,minimum width=31mm,minimum height=11mm},
-  hub/.style={actor,fill=blue!6,very thick,minimum width=38mm,minimum height=14mm},
-  xch/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]},thick},
-  inf/.style={-{Stealth[length=2mm]},thick,dashed},
-  lab/.style={font=\tiny,align=left,inner sep=1.5pt}]
-% ranh gioi he thong
-\draw[dashed,thick,gray!60!black,rounded corners=4pt] (-0.5,0.75) rectangle (10.3,-7.35);
-\node[font=\scriptsize,text=gray!40!black,anchor=north west] at (-0.4,0.7)
-  {Ranh giới hệ thống: một cửa hàng, 06:00--22:00};
-% ben trong
-\node[hub] (s) at (5,-3.3) {\textbf{Điểm phục vụ}\\8 vòi, cột bơm, POS/QR\\\rCN};
-\node[actor] (c) at (1.6,-0.6) {\textbf{Khách xe máy / ô tô}\\\rTC\,\rDL\,\rNL};
-\node[actor] (e) at (1.6,-6.2) {\textbf{Nhân viên bơm}\\\rNL\,\rQT};
-\node[actor] (m) at (8.3,-6.2) {\textbf{Cửa hàng trưởng}\\\rQT\,\rDL};
+\begin{figure}[htb]\centering
+\newcommand*{\rt}[2]{\tikz[baseline=(t.base)]\node[fill=#2,text=white,font=\tiny\bfseries,
+  inner sep=1.1pt,rounded corners=1pt](t){#1};}
+\newcommand*{\NL}{\rt{NL}{teal!80!black}}
+\newcommand*{\VC}{\rt{VC}{brown!80!black}}
+\newcommand*{\TT}{\rt{TT}{blue!70!black}}
+\newcommand*{\CN}{\rt{CN}{violet!80!black}}
+\newcommand*{\QT}{\rt{QT}{orange!85!black}}
+\begin{tikzpicture}[font=\scriptsize,
+  act/.style={draw,thick,rounded corners=3pt,fill=white,align=center,text width=21mm,inner sep=2pt},
+  ext/.style={draw,thick,fill=gray!12,align=center,text width=19.5mm,inner sep=2pt},
+  lbl/.style={font=\tiny,inner sep=0.6pt,align=center},
+  sv/.style={-{Stealth[length=1.6mm]},very thick},
+  inf/.style={-{Stealth[length=1.6mm]},thick,dashed},
+  mon/.style={-{Stealth[length=1.6mm]},thick,dotted,green!45!black},
+  rul/.style={-{Stealth[length=1.6mm]},thick,dash dot,orange!85!black},
+  bad/.style={-{Stealth[length=1.6mm]},thick,densely dashed,red!70!black}]
+\draw[thick,dashed,rounded corners=6pt,fill=blue!3] (-5.3,-2.95) rectangle (5.3,3.05);
+\node[anchor=north west,font=\scriptsize\bfseries,inner sep=1pt] at (-5.22,3.0)
+  {Ranh giới hệ thống (06:00--22:00)};
+% trong ranh gioi
+\node[act] (K) at (-4.0,0) {\textbf{Khách hàng}\\\VC\ xe, bình xăng, tiền\\\TT\ yêu cầu; thời gian};
+\node[act] (N) at (0,0) {\textbf{Nhân viên bơm}\\\NL\ bơm, thu tiền, xử lý tình huống};
+\node[act] (H) at (4.0,0) {\textbf{Hạ tầng}\\\VC\ 8 vòi, làn chờ, bể, nhiên liệu};
+\node[act,text width=27mm] (M) at (0,2.15) {\textbf{Cửa hàng trưởng}\\\QT\ lịch ca $c_t$\quad\NL\ xử lý sự cố};
+\node[act,text width=27mm] (P) at (0,-2.1) {\textbf{POS / HĐĐT}\\\CN\ ghi giao dịch, lập HĐĐT};
+% ngoai ranh gioi
+\node[ext] (CT) at (-6.72,1.95) {\textbf{Cửa hàng lân cận}\\nhận khách bỏ đi};
+\node[ext] (NH) at (-6.72,-1.95) {\textbf{Ngân hàng / ví}\\\CN\ thanh toán số};
+\node[ext] (DN) at (6.72,1.95) {\textbf{Doanh nghiệp xăng dầu}\\\VC\ nhiên liệu \QT\ giá};
+\node[ext] (TH) at (6.72,-1.95) {\textbf{Cơ quan thuế}\\\QT\ quy định HĐĐT};
+% khach -- nhan vien
+\draw[inf] ([yshift=3.2mm]K.east) -- node[lbl,above]{yêu cầu} ([yshift=3.2mm]N.west);
+\draw[sv] (N.west) -- node[lbl,above]{bơm, xác nhận} (K.east);
+\draw[mon] ([yshift=-3.2mm]K.east) -- node[lbl,below]{tiền mặt} ([yshift=-3.2mm]N.west);
+\draw[sv] (H.west) -- node[lbl,above]{vòi, nhiên liệu} (N.east);
+\draw[rul] ([xshift=-3mm]M.south) -- node[lbl,left]{lịch ca} ([xshift=-3mm]N.north);
+\draw[inf] ([xshift=3mm]N.north) -- node[lbl,right]{báo sự cố} ([xshift=3mm]M.south);
+\draw[inf] (N.south) -- node[lbl,right]{dữ liệu lần bơm} (P.north);
 % ben ngoai
-\node[actor] (b) at (15.6,-0.6) {\textbf{Doanh nghiệp đầu mối}\\\rTC\,\rQT};
-\node[actor] (p) at (15.6,-3.3) {\textbf{Ngân hàng / ví điện tử}\\\rCN\,\rDL};
-\node[actor] (t) at (15.6,-6.2) {\textbf{Cơ quan thuế,}\\\textbf{Sở Công Thương}\\\rQT\,\rDL};
-% canh ben trong
-\draw[xch] (c) -- node[lab,anchor=south west,xshift=1mm]
-  {trả tiền, tự mở nắp, quét QR\\nhận xăng, hóa đơn} (s);
-\draw[xch] (e) -- node[lab,anchor=north west,xshift=1mm]
-  {giờ công, kỹ năng\\nhận lương} (s);
-\draw[inf] (c) -- node[lab,align=right,anchor=east,xshift=-0.5mm]
-  {yêu cầu:\\loại xăng,\\số tiền} (e);
-\draw[inf] (m) -- node[lab,below=0.5mm]{lịch ca} (e);
-\draw[inf] (s) -- node[lab,anchor=west,pos=0.6,xshift=2.5mm]
-  {giao dịch, doanh thu\\theo giờ} (m);
-% canh ra ngoai
-\draw[xch] (s) -- node[lab,sloped,above=1pt,pos=0.74]{cấp xăng, giá bán lẻ}
-                  node[lab,sloped,below=1pt,pos=0.74]{trả tiền hàng} (b);
-\draw[xch] (s) -- node[lab,above,pos=0.74]{thanh toán QR, báo có}
-                  node[lab,below,pos=0.74]{phí giao dịch} (p);
-\draw[inf,{Stealth[length=2mm]}-{Stealth[length=2mm]}] (s)
-   -- node[lab,sloped,above=1pt,pos=0.74]{quy định hóa đơn}
-      node[lab,sloped,below=1pt,pos=0.74]{dữ liệu HĐĐT} (t);
+\draw[bad] (K.north) |- node[lbl,pos=0.72,above]{bỏ đi khi hàng $\ge$ 20 xe} (CT.east);
+\draw[mon] (K.south) |- node[lbl,pos=0.62,above]{chuyển khoản QR / thẻ} ([yshift=2.5mm]NH.east);
+\draw[inf] ([yshift=-2.5mm]NH.east) -- node[lbl,pos=0.3,below]{báo có} ([yshift=-2.5mm]P.west);
+\draw[mon] (M.east) -- node[lbl,pos=0.62,above]{doanh thu, dữ liệu bán} (M.east -| DN.west);
+\draw[sv] ([yshift=-3mm]DN.west) -| node[lbl,pos=0.3,below]{nhiên liệu, giá} (H.north);
+\draw[inf] ([yshift=2.5mm]P.east) -- node[lbl,pos=0.62,above]{dữ liệu HĐĐT} ([yshift=2.5mm]P.east -| TH.west);
+\draw[rul] ([yshift=-2.5mm]TH.west) -- node[lbl,pos=0.38,below]{quy định hóa đơn} ([yshift=-2.5mm]TH.west -| P.east);
+\node[font=\tiny\itshape,align=center,text width=21mm,text=blue!45!black] at (-2.75,1.55)
+  {Giá trị đồng tạo: bơm nhanh, trả đúng tiền, có hóa đơn. Lệch nhịp theo giờ $\Rightarrow$ khách chờ, bỏ đi.};
 % chu giai
-\node[anchor=west,font=\scriptsize] at (-0.5,-7.85)
-  {\textbf{Loại nguồn lực:}\enspace \rNL\ nhân lực\enspace \rCN\ công nghệ, hạ tầng\enspace \rDL\ dữ liệu, thông tin\enspace \rQT\ quy tắc, tri thức\enspace \rTC\ tài chính, hàng hóa};
-\draw[xch] (-0.4,-8.35) -- (0.5,-8.35) node[right,font=\scriptsize]{trao đổi nguồn lực};
-\draw[inf] (3.6,-8.35) -- (4.5,-8.35) node[right,font=\scriptsize]{thông tin, điều phối};
-\draw[dashed,thick,gray!60!black,rounded corners=2pt] (7.8,-8.22) rectangle (8.6,-8.48);
-\node[right,font=\scriptsize] at (8.6,-8.35) {ranh giới hệ thống};
-\end{tikzpicture}}
-\caption{Bản đồ nguồn lực của cửa hàng xăng: các tác nhân bên trong và bên ngoài
-ranh giới hệ thống, cùng những gì họ trao đổi với điểm phục vụ.}
+\node[anchor=north,font=\tiny,inner sep=0pt,align=center] at (0,-3.1) {%
+\tikz\draw[sv](0,0)--(5mm,0);\ dịch vụ, vật chất\quad
+\tikz\draw[inf](0,0)--(5mm,0);\ thông tin\quad
+\tikz\draw[mon](0,0)--(5mm,0);\ tiền\quad
+\tikz\draw[rul](0,0)--(5mm,0);\ quy tắc\quad
+\tikz\draw[bad](0,0)--(5mm,0);\ mất giá trị\\[0.6mm]
+\NL\ nhân lực (operant)\ \ \VC\ vật chất, hạ tầng (operand)\ \ \TT\ thông tin\ \ \CN\ công nghệ\ \ \QT\ quy tắc, lịch ca};
+\end{tikzpicture}
+\caption{Bản đồ nguồn lực: ranh giới hệ thống, năm loại nguồn lực của từng bên và các dòng trao đổi.}
 \label{r1:resource-map}
+\source{nhóm xây dựng theo hướng dẫn Bản đồ nguồn lực~\cite{l2b}; Claude (Anthropic) hỗ trợ
+bố cục và mã TikZ, nhóm kiểm tra từng dòng trao đổi với Bảng~\ref{r1:stakeholders}}
 \end{figure}
 
-% \begin{figure}[!hbpt]\centering
-% \setlength{\fboxsep}{1pt}%
-% \def\rb#1#2{\fcolorbox{#1!70!black}{#1!18}{\tiny\bfseries\strut #2}}%
-% \def\rNL{\rb{orange}{NL}}\def\rCN{\rb{green}{CN}}\def\rDL{\rb{blue}{DL}}%
-% \def\rQT{\rb{violet}{QT}}\def\rTC{\rb{red}{TC}}%
-% \resizebox{\linewidth}{!}{%
-% \begin{tikzpicture}[
-%   actor/.style={rectangle,rounded corners=3pt,draw,thick,fill=gray!6,align=center,font=\scriptsize,minimum width=31mm,minimum height=11mm}, hub/.style={actor,fill=blue!6,very thick,minimum width=38mm,minimum height=14mm}, xch/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]},thick}, inf/.style={-{Stealth[length=2mm]},thick,dashed}, lab/.style={font=\tiny,align=center,fill=white,inner sep=1pt}]
-% % ranh gioi he thong
-% \draw[dashed,very thick,gray!70!black,rounded corners=6pt] (-0.5,0.75) rectangle (10.3,-7.35);
-% \node[font=\scriptsize\bfseries,text=gray!40!black,anchor=north west] at (-0.4,0.7)
-%   {Ranh giới hệ thống: một cửa hàng, khung 06:00--22:00};
-% % tac nhan ben trong
-% \node[hub] (s) at (5,-3.3) {\textbf{Điểm phục vụ}\\8 vòi, cột bơm, POS/QR\\\rCN};
-% \node[actor] (c) at (1.6,-0.6) {\textbf{Khách xe máy / ô tô}\\\rTC\,\rDL\,\rNL};
-% \node[actor] (e) at (1.6,-6.2) {\textbf{Nhân viên bơm}\\\rNL\,\rQT};
-% \node[actor] (m) at (8.3,-6.2) {\textbf{Cửa hàng trưởng}\\\rQT\,\rDL};
-% % tac nhan ben ngoai
-% \node[actor] (b) at (14.0,-0.6) {\textbf{Doanh nghiệp đầu mối}\\\rTC\,\rQT};
-% \node[actor] (p) at (14.0,-3.3) {\textbf{Ngân hàng / ví điện tử}\\\rCN\,\rDL};
-% \node[actor] (t) at (14.0,-6.2) {\textbf{Cơ quan thuế,}\\\textbf{Sở Công Thương}\\\rQT\,\rDL};
-% % trao doi nguon luc
-% \draw[xch] (c) -- node[lab,pos=0.5]{tiền, thời gian chờ, tự thao tác\\(mở nắp, quét QR)\\$\leftrightarrow$ xăng, hóa đơn} (s);
-% \draw[xch] (e) -- node[lab,pos=0.5]{giờ công, kỹ năng\\$\leftrightarrow$ lương 8--15 tr/tháng} (s);
-% \draw[inf] (c.south) -- node[lab]{yêu cầu (loại xăng, số tiền)\\$\leftrightarrow$ lời mời, hướng dẫn} (e.north);
-% \draw[inf] (m) -- node[lab,below=1mm]{lịch ca $c_t$} (e);
-% \draw[inf] (s) -- node[lab,pos=0.55]{giao dịch theo giờ\\($\lambda_t$, doanh thu)} (m);
-% \draw[xch] (b) -- node[lab,pos=0.2]{xăng, giá bán lẻ\\$\leftrightarrow$ tiền hàng} (s);
-% \draw[xch] (p) -- node[lab,pos=0.2]{hạ tầng QR, báo có\\$\leftrightarrow$ phí giao dịch} (s);
-% \draw[inf,{Stealth[length=2mm]}-{Stealth[length=2mm]}] (t) -- node[lab,pos=0.2]{quy định hóa đơn\\$\leftrightarrow$ dữ liệu HĐĐT} (s);
-% % chu giai
-% \node[anchor=west,font=\scriptsize] at (-0.5,-7.85)
-%   {\textbf{Loại nguồn lực:}\enspace \rNL\ nhân lực\enspace \rCN\ công nghệ, hạ tầng\enspace \rDL\ dữ liệu, thông tin\enspace \rQT\ quy tắc, tri thức\enspace \rTC\ tài chính, hàng hóa};
-% \draw[xch] (-0.4,-8.4) -- (0.6,-8.4) node[right,font=\scriptsize]{trao đổi nguồn lực/giá trị};
-% \draw[inf] (4.4,-8.4) -- (5.4,-8.4) node[right,font=\scriptsize]{dòng thông tin, điều phối};
-% \draw[dashed,very thick,gray!70!black,rounded corners=2pt] (9.0,-8.25) rectangle (9.8,-8.55);
-% \node[right,font=\scriptsize] at (9.8,-8.4) {ranh giới hệ thống};
-% \end{tikzpicture}}
-% \caption{Bản đồ nguồn lực của cửa hàng xăng. Nhãn màu trong mỗi ô là loại nguồn
-% lực mà tác nhân đó đóng góp; nhãn trên cạnh là nguồn lực trao đổi theo hai chiều.}
-% \label{r1:resource-map}
-% % \source{nhóm vẽ bằng TikZ dựa trên các tác nhân trong Bảng~\ref{r1:components}; Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra tác nhân và luồng}
-% \end{figure}
+Nguồn lực khan hiếm nhất là \emph{thời gian của vị trí bơm có người}: mọi dòng trao đổi đều đi
+qua nó. Hai bên ngoài ranh giới tác động thẳng lên nguồn lực này mà cửa hàng không kiểm soát được:
+ngân hàng (báo có chậm thì xe đứng lâu ở trụ) và doanh nghiệp (hết hàng thì mất kênh). Khi nguồn lực
+lệch nhịp, chi phí chuyển thành thời gian chờ rồi thành khách bỏ sang cửa hàng lân cận --- phía
+\emph{suy giảm giá trị} mà mô hình đo bằng $W_q$ và tỷ lệ bỏ đi (Bảng~\ref{r1:stakeholders}).
 
-
-
-Giá trị chỉ được tạo ra trọn vẹn khi nguồn lực của các bên khớp nhau trong từng giờ. Khi chưa khớp, người chịu thiệt trước hết thường là khách, vì họ phải chờ. Ở cửa hàng này có hai chỗ dễ lệch. Thứ nhất, lịch ca có thể không theo kịp lượng xe giờ tan tầm, tức $c_t$ thấp so với $\lambda_t$. Thứ hai, việc trả tiền và xuất hóa đơn có thể kéo dài $E[S]$. Đáng chú ý là cửa hàng đã có sẵn dữ liệu để xử lý chỗ lệch thứ nhất: hóa đơn điện tử của mỗi lần bán~\cite{nd70} cho biết số lượt bán theo từng giờ, và A1 dùng chính dữ liệu này để xếp lịch. Bảng~\ref{r1:stakeholders} tóm tắt mỗi bên góp gì, nhận gì và chịu rủi ro gì.
-
-\begin{table}[!hbpt]\centering\small
-\caption{Đóng góp, lợi ích và rủi ro của các bên}\label{r1:stakeholders}
-\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{35mm}Y Y Y@{}}
+\begin{table}[htb]\centering\footnotesize
+\caption{Lợi ích, chi phí và rủi ro của các bên (nguồn lực góp xem Hình~\ref{r1:resource-map})}\label{r1:stakeholders}
+\begin{tabularx}{\linewidth}{@{}p{30mm}Y Y@{}}
 \toprule
-\textbf{Bên liên quan} & \textbf{Đóng góp} & \textbf{Nhận được} & \textbf{Rủi ro / chi phí} \\
+Bên & Lợi ích nhận & Chi phí, rủi ro \\
 \midrule
-\rowcolor{lightgray}
-\multicolumn{4}{@{}l}{\textit{Bên trong cửa hàng}} \\
-Khách hàng & Tiền, thời gian; tự mở nắp bình, báo số tiền, quét QR & Xăng, hóa đơn & Chờ lâu giờ cao điểm; chờ thêm khi QR lỗi \\
-Nhân viên bơm & Giờ công, kỹ năng & Lương 8--15 triệu đồng/tháng~\cite{wage} & Quá tải giờ cao điểm; dễ nhầm khi thu tiền mặt \\
-Cửa hàng & Mặt bằng, 8 vòi bơm, lịch ca & Doanh thu, lượt bán & Chi phí nhân lực; mất khách khi hàng dài \\
-\midrule
-\rowcolor{lightgray}
-\multicolumn{4}{@{}l}{\textit{Bên ngoài cửa hàng}} \\
-Doanh nghiệp đầu mối & Xăng, giá bán lẻ & Sản lượng bán ra ổn định & Thiếu hàng có thể bị nhầm là thiếu người \\
-Ngân hàng / ví điện tử & Hạ tầng thanh toán QR & Phí giao dịch & Sự cố hệ thống làm chậm trụ \\
-Cơ quan thuế & Quy định hóa đơn điện tử & Giao dịch minh bạch & Thêm một bước ở trụ \\
+Khách xe máy, ô tô & Nhiên liệu, giao dịch đúng, HĐĐT & Chờ lâu giờ đỉnh, bỏ đi; khách quen tiền mặt thiệt nếu bị ép số hóa \\
+Nhân viên bơm & Lương 8--12 triệu đồng/tháng~\cite{wage} & Quá tải giờ đỉnh; sai sót tiền mặt; lịch theo giờ dễ thành ca vụn \\
+Cửa hàng trưởng & Kiểm soát chi phí, ít khiếu nại & Thiếu dữ liệu theo giờ để lập lịch; xử lý giao dịch lỗi \\
+Doanh nghiệp xăng dầu & Sản lượng, dữ liệu bán & Biên lợi nhuận mỏng~\cite{chietkhau}; mất khách khi hàng dài \\
+Ngân hàng, ví điện tử & Phí, dữ liệu giao dịch & Báo có chậm, giao dịch treo làm xe đứng lâu ở trụ \\
+Cơ quan thuế & Dữ liệu từng lần bán & Lỗi truyền dữ liệu phải xử lý sau \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\section{Quy trình hiện tại và chẩn đoán điểm nghẽn}
+\section{Quy trình hiện tại (BPMN AS-IS) và chẩn đoán điểm nghẽn}
 \label{r1:asis}
-\noindent
-Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ quy trình theo ký hiệu chuẩn (Hình~\ref{r1:bpmn}). Sơ đồ đi từ lúc xe đến cửa hàng cho tới lúc xe nhận hóa đơn và rời trụ. Mỗi bên tham gia có một khung riêng gọi là pool, và pool có thể chia thành các làn theo người thực hiện. Pool Cửa hàng có hai làn là Nhân viên bơm và POS/HĐĐT. Ngân hàng và cơ quan thuế được vẽ dạng hộp đen, tức chỉ ghi tên mà không vẽ các bước bên trong. Thông tin trao đổi giữa các pool được vẽ bằng mũi tên nét đứt, gọi là luồng thông điệp~\cite{rubric}.
-\begin{sidewaysfigure}\centering
-\resizebox{\linewidth}{!}{%
-\begin{tikzpicture}[
-  mf/.style={{Circle[open,length=1.4mm]}-{Stealth[length=2.2mm,open]},dashed,thick,blue!50!black}, mlab/.style={font=\scriptsize\itshape,fill=white,inner sep=1pt,text=blue!50!black}, blab/.style={font=\scriptsize}, gx/.style={diamond,draw,thick,fill=white,minimum width=9mm,minimum height=9mm,inner sep=0pt,font=\large}, bbox/.style={draw,thick,fill=gray!12}]
-\def\W{23.2}
-% ---- Pool Khach hang ----
-\draw[thick] (0,0) rectangle (\W,-2.4);
-\draw[thick] (0.6,0) -- (0.6,-2.4);
-\node[rotate=90,font=\scriptsize\bfseries] at (0.3,-1.2) {Khách hàng};
-% ---- Pool Cua hang: 2 lan ----
-\draw[thick] (0,-2.9) rectangle (\W,-8.3);
-\draw[thick] (0.6,-2.9) -- (0.6,-8.3);
-\draw (1.2,-2.9) -- (1.2,-8.3);
-\draw (0.6,-5.6) -- (\W,-5.6);
-\node[rotate=90,font=\scriptsize\bfseries] at (0.3,-5.6) {Cửa hàng xăng dầu};
-\node[rotate=90,font=\scriptsize] at (0.9,-4.25) {Nhân viên bơm};
-\node[rotate=90,font=\scriptsize] at (0.9,-6.95) {POS / HĐĐT};
-% ---- Pool hop den ----
-\draw[bbox] (0,-8.8) rectangle (16.0,-9.6);
-\node[font=\scriptsize\bfseries] at (8.0,-9.2) {Ngân hàng / ví điện tử};
-\draw[bbox] (16.5,-8.8) rectangle (\W,-9.6);
-\node[font=\scriptsize\bfseries] at (19.85,-9.2) {Cơ quan thuế (hệ thống HĐĐT)};
-% ---- Quy trinh khach hang ----
-\node[ev] (cs) at (1.7,-1.5) {};
-\node[blab,below=0mm of cs] {xe đến};
-\node[task] (c1) at (3.4,-1.5) {Đến cửa hàng,\\nhìn hàng chờ};
-\node[gx] (cg) at (5.4,-1.5) {$\times$};
-\node[blab,below=0.3mm of cg] {$\ge$20 xe chờ?};
-\node[evend] (cb) at (6.7,-0.55) {};
-\node[blab,anchor=west] at (7.0,-0.55) {bỏ đi -- mất lượt bán};
-\node[task] (c2) at (8.6,-1.5) {Xếp hàng\\chờ tới lượt};
-\node[task,minimum width=26mm] (c3) at (11.4,-1.5) {Vào trụ, báo loại\\xăng và số tiền};
-\node[task] (c4) at (16.8,-1.5) {Thanh toán\\(tiền mặt / QR)};
-\node[task] (c5) at (20.8,-1.5) {Nhận hóa đơn,\\rời trụ};
-\node[evend] (ce) at (22.5,-1.5) {};
-\draw[flow] (cs) -- (c1);
-\draw[flow] (c1) -- (cg);
-\draw[flow] (cg.north) |- node[pos=0.3,left,blab]{có} (cb);
-\draw[flow] (cg.east) -- node[above,blab]{không} (c2);
-\draw[flow] (c2) -- (c3);
-\draw[flow] (c3) -- (c4);
-\draw[flow] (c4) -- (c5);
-\draw[flow] (c5) -- (ce);
-% ---- Lan nhan vien bom ----
-\node[ev] (ss) at (7.6,-3.8) {};
-\node[blab,below=0mm of ss] {trụ rảnh};
-\node[task] (s1) at (9.6,-3.8) {Mời xe kế tiếp\\vào trụ};
-\node[task] (s2) at (12.6,-3.8) {Bơm xăng theo\\yêu cầu};
-\node[gx] (sg) at (14.4,-3.8) {$\times$};
-\node[blab,anchor=north east] at ($(sg.south)+(-0.1,-0.05)$) {Hình thức trả?};
-\node[task] (s3) at (16.8,-3.8) {Thu tiền mặt,\\trả tiền thừa};
-\node[task] (s4) at (20.8,-3.8) {Giao hóa đơn,\\giải phóng trụ};
-\node[evend] (se) at (22.5,-3.8) {};
-\node[blab,anchor=south] at (se.north) {trụ sẵn sàng};
-\draw[flow] (ss) -- (s1);
-\draw[flow] (s1) -- (s2);
-\draw[flow] (s2) -- (sg);
-\draw[flow] (sg) -- node[above,blab]{tiền mặt} (s3);
-\draw[flow] (s4) -- (se);
-% ---- Lan POS / HDDT ----
-\node[task] (p1) at (14.4,-7.0) {Chờ ngân hàng\\báo có (QR)};
-\node[gx] (pg) at (16.8,-7.0) {$\times$};
-\node[blab,below=0.5mm of pg] {Đã nhận tiền?};
-\node[task] (p2) at (19.0,-7.0) {Xuất hóa đơn\\điện tử từng lần};
-\draw[flow] (sg) -- node[pos=0.3,right,blab]{QR} (p1);
-\draw[flow] (p1) -- (pg);
-\draw[flow] (pg) -- node[above,blab]{có} (p2);
-\draw[flow] (pg.north) -- node[pos=0.22,left,blab,align=right]{không (QR lỗi):\\thu lại tiền mặt} (s3.south);
-\draw[flow] (s3.east) -| (p2.north);
-\draw[flow] (p2.east) -| (s4.south);
-% ---- Luong thong diep ----
-\draw[mf] (10.3,-3.35) -- node[mlab]{lời mời} (10.3,-1.95);
-\draw[mf] (12.1,-1.95) -- node[mlab]{yêu cầu} (12.1,-3.35);
-\draw[mf] (16.8,-1.95) -- node[mlab]{tiền mặt} (16.8,-3.35);
-\draw[mf] (21.3,-3.35) -- node[mlab]{hóa đơn} (21.3,-1.95);
-\draw[mf] (14.4,-8.8) -- node[mlab]{báo có} (14.4,-7.45);
-\draw[mf] (19.0,-7.45) -- node[mlab]{dữ liệu HĐ} (19.0,-8.8);
-% ---- Moc do va diem chu y ----
-\node[tmark] at (8.6,-2.15) {$a_i$: vào hàng};
-\node[tmark] at (9.6,-4.5) {$b_i$: bắt đầu phục vụ};
-\node[tmark] at (20.3,-2.15) {$d_i$: rời trụ};
-\node[tmark,anchor=west,align=left] at (1.4,-3.5) {\textbf{(1) Điểm chờ:} xe xếp hàng\\từ $a_i$ đến $b_i$ ($W_q$)};
-\node[tmark,anchor=west,align=left] at (1.4,-6.5) {\textbf{(2) Điểm lỗi:} QR không báo có\\$\rightarrow$ xử lý lại bằng tiền mặt};
-\node[tmark,anchor=west,align=left] at (1.4,-7.6) {\textbf{(3) Chuyển giao:} nhân viên $\rightarrow$ POS\\$\rightarrow$ cơ quan thuế (HĐĐT)};
-\end{tikzpicture}}
-\caption{BPMN AS-IS tại một vòi bơm. Nét liền: luồng trình tự trong pool; nét đứt xanh:
-luồng thông điệp giữa các pool; pool xám là hộp đen. Nhãn đỏ là mốc thời gian dùng để đo $W_q=b_i-a_i$ và $S=d_i-b_i$, cùng điểm chờ, điểm lỗi và điểm chuyển giao.}
+\subsection{Sơ đồ quy trình AS-IS}
+Hình~\ref{r1:bpmn} mô hình hóa \emph{một lượt xe} theo BPMN~2.0~\cite{bpmn202,l3b}. Khách và cửa
+hàng là hai pool riêng, trao đổi bằng luồng thông điệp; cửa hàng có ba lane (nhân viên bơm, POS/HĐĐT,
+cửa hàng trưởng); cơ quan thuế là pool thu gọn. Ngân hàng không vẽ thành pool; ``nhận báo có'' là
+phản hồi từ bên này. Ngoài luồng chính có bốn nhánh: bỏ đi khi hàng từ 20 xe (ngưỡng giả định);
+vòi lỗi hoặc hết loại xăng; QR/thẻ quá thời gian chưa báo có (vòng thanh toán lại); lập HĐĐT lỗi.
+Nhánh HĐĐT chạy song song với thu tiền vì hóa đơn lập tự động khi kết thúc bơm~\cite{tbtc2024},
+nên không cộng vào $S$; phần còn lại của $S$ (từ $b_i$ đến $d_i$) gồm bơm và thanh toán; vài giây xe vào trụ, báo yêu cầu trước đó được tính vào $W_q$.
+Sơ đồ đã được đi thử bằng sáu kịch bản~\cite{l3b} (tiền mặt; QR/thẻ thành công; QR/thẻ quá thời
+gian; hàng từ 20 xe; vòi lỗi; lỗi HĐĐT): kịch bản nào cũng tới được một sự kiện kết thúc.
+
+\begin{figure}[p]\centering
+\rotatebox{90}{\begin{minipage}{\textheight}\centering
+\includegraphics[width=0.94\linewidth]{figures/r1_bpmn_asis.pdf}
+\caption{BPMN AS-IS cho một lượt xe tại cửa hàng giả định. W: điểm chờ; F: điểm lỗi;
+H: chuyển giao; $a_i$, $b_i$, $d_i$: mốc đo $W_q=b_i-a_i$ và $S=d_i-b_i$.
+Ngưỡng 20 xe là giả định của mô phỏng.}
 \label{r1:bpmn}
-\source{nhóm vẽ bằng TikZ theo ký pháp BPMN (sự kiện, bước công việc, điểm rẽ nhánh, pool/làn, luồng thông điệp); Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra ký pháp và luồng}
-\end{sidewaysfigure}
+\source{tệp nguồn \texttt{figures/r1\_bpmn\_asis.bpmn}, mở và sửa được trên demo.bpmn.io;
+Claude (Anthropic) hỗ trợ dựng tệp BPMN và bố cục, nhóm kiểm tra ký pháp theo~\cite{l3b}}
+\end{minipage}}
+\end{figure}
 
-Trên sơ đồ có ba điểm rẽ nhánh, vẽ bằng hình thoi có dấu $\times$. Ở nhánh đầu, khách bỏ đi nếu thấy từ 20 xe đang chờ; con số này do nhóm giả định. Ở nhánh thứ hai, quy trình tách theo cách khách trả tiền, bằng tiền mặt hay QR. Ở nhánh thứ ba, máy POS chờ ngân hàng báo có, tức xác nhận tiền đã vào tài khoản. Nếu QR lỗi hoặc chờ quá lâu, nhân viên phải thu lại bằng tiền mặt trong khi xe vẫn đứng ở trụ.
+\subsection{Điểm chờ, điểm lỗi và chuyển giao}
+Bảng~\ref{r1:diagnosis} nối từng chú thích trên Hình~\ref{r1:bpmn} với cơ chế, mức độ ước lượng từ
+mô hình và dữ liệu cần thu. Điểm đáng chú ý là mức độ \emph{phụ thuộc giờ}: cùng một lỗi mất một
+kênh (F2) gần như vô hại lúc 13--14 giờ nhưng làm hệ thống mất ổn định lúc 18--19 giờ.
+\begin{table}[htb]\centering\footnotesize
+\caption{Điểm chờ (W), điểm lỗi (F) và chuyển giao (H) trên BPMN AS-IS}\label{r1:diagnosis}
+\begin{tabularx}{\linewidth}{@{}p{9mm}p{30mm}Y Y p{30mm}@{}}
+\toprule
+Mã & Vị trí; loại lỗi & Cơ chế & Mức độ (mô hình) & Dữ liệu cần thu \\
+\midrule
+W1 & Chờ tới lượt ($a_i\to b_i$); thiết chế & Lịch 6 kênh cố định, $\lambda_t$ gấp đôi giờ đỉnh & $\rho_t=0{,}92$--$0{,}98$ lúc 08--09, 17--19; $W_q$ 2,7--12,2 phút & $\lambda_t$, số xe chờ, lượt bỏ đi theo giờ \\
+F2 & Kiểm tra vòi, loại xăng; công nghệ, hoạt động & Vòi lỗi, hết loại xăng, nhân viên vắng làm mất kênh & Giờ đỉnh: $\rho_t=1{,}11$--$1{,}18$, hàng tăng đến khi khách bỏ đi; giờ thấp: $\rho_t\le0{,}85$ & Phút vòi ngừng, ngày giờ xảy ra \\
+W3 & Nhận tiền mặt, trả tiền thừa; hoạt động & Đếm tiền, thiếu tiền lẻ kéo dài $S$ & Chưa có số đo; nằm trọn trong $S$ & Thời gian thanh toán theo hình thức \\
+W2, F1 & Chờ báo có, quá thời gian; công nghệ & Mạng, ngân hàng chậm; giao dịch treo phải trả lại & Chưa có số đo; tạo đuôi dài của $S$, đẩy $P(W_q{>}5)$ & Tỷ lệ lỗi; thời gian chờ báo có \\
+H1 & Khách báo yêu cầu; thông tin & Nghe nhầm loại xăng, số tiền phải làm lại & Hiếm nhưng làm lặp cả lượt bơm & Số giao dịch phải sửa \\
+F3, H2 & Lập HĐĐT, chuyển cửa hàng trưởng; công nghệ & Lỗi kết nối, xử lý sau & Không tăng $S$ (nhánh song song) & Giao dịch lỗi HĐĐT/ngày \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-Sơ đồ cũng đánh dấu ba vị trí bằng chữ đỏ. Điểm chờ (1) là bước xếp hàng. Điểm lỗi (2) là nhánh QR không báo có vừa nêu. Chuyển giao (3) là những lần công việc đi từ khách sang nhân viên, từ nhân viên sang máy POS, rồi tới ngân hàng và cơ quan thuế.
+\subsection{Điểm nghẽn trong quy trình thanh toán}
+\label{r1:payment}
+Thanh toán là phần của $S$ cửa hàng chỉnh được mà không cần thêm vòi. Vì tải $a_t=\lambda_tE[S]$
+(số kênh bận trung bình), giảm $E[S]$ đi $x$ tương đương nhân số kênh lên $1/(1-x)$. Với
+$E[S]=1{,}57$ phút: bớt 6 giây mỗi xe $\approx$ thêm 0,4 kênh; bớt \textbf{12,5 giây/xe} đưa
+18--19 giờ từ $\rho_t=0{,}98$ về 0,85 với nguyên 6 kênh, còn 08--09 và 17--18 giờ chỉ cần
+\textbf{7,5 giây}. Mức giảm 20\% giả định của A2 tương đương thêm 1,5 kênh mỗi giờ.
 
-Nhìn vào sơ đồ, hàng chờ dài ra ở hai chỗ. Chỗ thứ nhất là bước xếp hàng, khi số nhân viên không đủ so với lượng xe. Chỗ thứ hai là thời gian xe đứng ở trụ, vì $S$ tính từ $b_i$ đến $d_i$ nên gồm cả bơm, trả tiền và lấy hóa đơn. A1 nhắm vào chỗ thứ nhất bằng cách chỉnh lịch ca, còn A2 nhắm vào chỗ thứ hai bằng cách bớt thao tác tại trụ. Ba giả thuyết rút ra từ đây, gồm lịch ca cố định trong khi $\lambda_t$ dao động, khách bỏ đi khi hàng dài và $E[S]$ dài do thanh toán, được kiểm tra ở Mục~\ref{r2:diagnosis}.
+Các mốc này chỉ có ý nghĩa nếu thanh toán thực sự chiếm đủ thời gian để cắt, nên quan sát phải trả
+lời: \textbf{TT1} --- tiền mặt dài hơn QR/thẻ bao nhiêu giây, có vượt mốc 7,5--12,5 giây không;
+\textbf{TT2} --- giao dịch QR/thẻ lỗi thường xuyên đến đâu, vì đuôi dài của $S$ đẩy $P(W_q{>}5)$ lên
+dù $E[S]$ ít đổi; \textbf{TT3} --- tiền mặt có chiếm tỷ trọng cao hơn ở giờ đỉnh không. Biểu mẫu hiện
+có (Bảng~\ref{r2:form}) mới ghi $a_i,b_i,d_i$; cần thêm mốc $e_i$ (lúc ngắt vòi), hình thức và kết quả
+thanh toán để tách $S_{\text{tt}}\approx d_i-e_i$.
 
-Sơ đồ được dựng theo cách bán lẻ phổ biến ở nội thành~\cite{nd70}, nên vẫn cần đối chiếu thêm với thực tế. Thứ tự các bước, ngưỡng bỏ đi và nhánh lỗi QR hiện là giả định của nhóm. Để kiểm tra lại, nhóm dự kiến ghi ba mốc $a_i$, $b_i$, $d_i$ cho 30--50 lượt mỗi loại xe theo biểu mẫu ở Bảng~\ref{r2:form}.
+\todo{1}{Quan sát một cửa hàng thật bằng phiếu trong \texttt{role\_1\_notes.md};
+sửa BPMN, Bảng~\ref{r1:boundary} nếu thực tế khác giả định.}
 
 % Ban nhap bo tro: chua dua vao PDF chinh.
 \newcommand{\RoleOneSupplement}{%
