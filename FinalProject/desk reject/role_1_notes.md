@@ -1,5 +1,16 @@
 # Ghi chú bàn giao của TV1 (Mô hình dịch vụ)
 
+> **Ghi chú của Tuấn Anh gửi Khánh (26/11/2026)**
+>
+> Khánh tự đánh giá lại phần này trước đi. Tôi thấy phần này làm còn sơ sài, gần như toàn bộ là dùng AI và không kiểm chứng lại. Một vài chỗ thấy ngay trong chính file này:
+>
+> 1. Ở mục 1, file tự ghi là ba nguồn `maglio2008`, `alter2013`, `vargo2004` "TV1 cần mở đọc thật", tức là chưa đọc. Thế nhưng Phụ lục C vẫn được để là đã mở bản gốc và kiểm tra nội dung trích.
+> 2. Checklist ở mục 4 gần như đánh dấu [x] hết, nhưng chưa đối chiếu với cửa hàng thật nào. "6 kịch bản kiểm tra" chỉ là chạy thử trên chính sơ đồ AI vẽ ra.
+> 3. Mục 2 đề xuất ghi vào Phụ lục C rằng Claude viết lại Mục 1–4, nghĩa là phần chữ không phải do bạn viết.
+> 4. Nếu ghép phần TO-BE, báo cáo lên 21 trang, vượt giới hạn 20 trang của rubric. Phần này còn hướng dẫn xóa một khối trong `role_3.tex` của người khác.
+>
+> `role_1.tex` và `_content.tex` đã được chuyển lại về bản tôi viết, nên dòng "Cập nhật" ngay bên dưới không còn đúng. Nếu muốn đưa nội dung nào của bạn vào Role 1, nhắn tôi trước để mình rà cùng.
+
 Cập nhật: 26/11/2026. Bản này làm trên main mới nhất (commit `new` của Tuan-Anh, 25/11 22:12): `role_1.tex` dùng bản của TV1 (đã rút gọn, thêm phân tích định lượng theo góp ý của nhóm); `_content.tex` giữ nguyên các nguồn và dòng khai báo AI Tuan-Anh đã thêm. File này không đưa vào PDF; dùng để nhóm phối hợp và rà soát.
 
 ## 1. TV1 đã làm gì, nằm ở đâu
