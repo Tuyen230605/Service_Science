@@ -1,79 +1,112 @@
 % !TeX root = _main.tex
 % ROLE 3: muc 7--9, giai phap, danh gia, thu nghiem va ket luan.
 % Chi sua role cua minh va figures/rX_*. Khong sua tay bang do Python sinh.
+% Hinh va bang r3_* sinh tu analysis/r3_analysis.py (chay: python -m FinalProject.analysis.r3_analysis).
 % Nguoi ghep bai quan ly _main.tex va _content.tex.
 % Macro Role*Supplement cuoi file giu ban nhap mo rong; KHONG duoc goi trong PDF.
 
 \section{Phương án cải tiến và phân bổ nhân lực}
 \label{r3:tobe}
-\subsection{Từ hai nguyên nhân đến ba phương án}
-Hai nguyên nhân đã chỉ ra ở Mục~\ref{r1:asis} và Mục~\ref{r2:diagnosis} dẫn
-thẳng tới hai hướng cải tiến. Nguyên nhân thứ nhất là số kênh $c_t$ giữ cố
-định trong khi lượng xe $\lambda_t$ thay đổi theo giờ. Nguyên nhân thứ hai là
-thời gian phục vụ $E[S]$ dài vì việc trả tiền và lấy hóa đơn diễn ra ngay tại
-trụ. Nhóm đưa mỗi hướng vào một phương án riêng để đo được tác động của từng
-hướng (Bảng~\ref{r3:scenarios-design}).
+\noindent
+Phần này cụ thể hóa ba phương án ở Mục~\ref{r1:scope} theo ba bước: số kênh
+cần ở mỗi giờ, lịch ca của từng người và quy trình TO-BE. Mọi phương án dùng
+chung dòng xe đến mô phỏng. Riêng A2 dùng thời gian phục vụ giảm 20\%, tức
+1,2 phút cho xe máy và 3,2 phút cho ô tô; đây là giả định (G) trong
+Bảng~\ref{r2:assumptions}.
 
-\begin{table}[htbp]\centering\small
-\caption{Ba phương án được so sánh trên cùng dòng xe đến mô phỏng}\label{r3:scenarios-design}
-\begin{tabularx}{\linewidth}{@{}p{25mm}Y Y Y@{}}
-\toprule
- & A0: AS-IS & A1: lịch theo giờ & A2: lịch theo giờ và trả trước \\
-\midrule
-Số kênh $c_t$ & 6 kênh ở mọi giờ & Theo BT1, dùng $E[S]$ hiện tại & Theo BT1, dùng $E[S]$ sau cải tiến \\
-$E[S]$ (phút/xe) & Xe máy 1,5; ô tô 4,0 & Như A0 & Giảm 20\% (giả định): 1,2 và 3,2 \\
-Thanh toán & Tiền mặt hoặc QR tại trụ & Như A0 & Trả trước trên ứng dụng; tiền mặt chỉ dùng khi lỗi \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-Cách đặt phương án như vậy giúp tách tác động theo từng bước. So A1 với A0
-cho biết riêng việc xếp lịch theo giờ giúp được bao nhiêu, vì quy trình và
-$E[S]$ giữ nguyên. So A2 với A1 cho biết rút ngắn thời gian phục vụ còn thêm
-được gì. Tuy vậy, A2 đổi cả $E[S]$ lẫn lịch nên chưa tách được tác động riêng
-của việc trả trước. Mức giảm 20\% cũng là giả định (G) trong
-Bảng~\ref{r2:assumptions}, chưa có số đo.
-
-\subsection{Lập lịch theo giờ (BT1)}
-Lịch của A1 và A2 được lập bằng một bài toán, gọi tắt là BT1. Bài toán chọn
-số kênh cho từng giờ sao cho chi phí nhân lực nhỏ nhất mà vẫn đạt mục tiêu về
-thời gian chờ. Với chi phí $k=58\,000$ đồng cho một giờ nhân viên và 16 khung một
-giờ từ 06:00 đến 22:00, bài toán được viết như sau:
+\subsection{Số kênh cần theo giờ (BT1)}
+\label{r3:bt1}
+\noindent
+Số kênh của A1 và A2 được chọn bằng một bài toán, gọi tắt là BT1. Bài toán
+tìm số kênh cho từng giờ sao cho chi phí nhân lực nhỏ nhất mà vẫn đạt mục tiêu
+chờ. Với chi phí $k=58\,000$ đồng cho một giờ nhân viên và 16 khung một giờ từ
+06:00 đến 22:00, bài toán được viết như sau:
 \begin{align}
 \min_{c_1,\ldots,c_{16}}\quad & k\textstyle\sum_{t=1}^{16}c_t \\
-\text{với}\quad & c_t\in\{1,\ldots,8\},\ \rho_t<1,\ E[W_{q,t}]\le2\text{ phút},\ P(W_{q,t}>5)\le0{,}05. \nonumber
+\text{với}\quad & c_t\in\{1,\ldots,8\},\ \rho_t<1,\ E[W_{q,t}]\le2\text{ phút},\ P(W_{q,t}>5)\le5\%. \nonumber
 \end{align}
-Ràng buộc đầu tiên giới hạn số kênh trong 8 vòi bơm. Ba ràng buộc còn lại
-tính bằng M/M/c ở Mục~\ref{r2:method}: kênh không quá tải, chờ trung bình
-không quá 2 phút và không quá 5\% số xe chờ trên 5 phút. Vì chi phí cộng
-theo từng giờ và mỗi ràng buộc chỉ liên quan tới một giờ, lời giải là chọn
-số kênh nhỏ nhất đạt yêu cầu ở từng giờ. Tỷ lệ bỏ đi không có trong công
-thức M/M/c, nên được kiểm tra sau bằng mô phỏng (Mục~\ref{r3:evaluation}).
+Ràng buộc đầu giới hạn số kênh trong 8 vòi. Ba ràng buộc còn lại tính bằng
+M/M/c ở Mục~\ref{r2:method}: kênh không quá tải, chờ trung bình không quá 2
+phút và không quá 5\% số xe chờ trên 5 phút. Vì mỗi ràng buộc chỉ liên quan
+tới một giờ, lời giải là số kênh nhỏ nhất đạt yêu cầu ở từng giờ. Tỷ lệ bỏ đi
+không có trong M/M/c nên được kiểm tra sau bằng mô phỏng.
 
-\resulttable{tab_shift_plan.tex}{Số kênh theo giờ của ba phương án (lời giải BT1)}{r3:staffing}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/r3_staffing.pdf}
+\caption{Số kênh mỗi giờ của ba phương án (đường bậc) và lượt xe đến (cột xám).}\label{r3:staffing}
+\source{\texttt{analysis/r3\_analysis.py}, Claude hỗ trợ viết mã; dữ liệu mô phỏng}
+\end{figure}
 
-A1 không cần thêm người mà chỉ dời người sang giờ đông. Phương án này dùng
-7 kênh ở ba giờ đông nhất (08--09, 17--18 và 18--19) và chỉ 4--5 kênh ở các
-giờ vắng. Vì thế, lịch A1 cần 88 giờ nhân viên mỗi ngày thay vì 96. A2 chỉ
-cần 72 giờ, vì khi $E[S]$ giảm 20\% thì mỗi kênh phục vụ được 47,8 xe mỗi
-giờ thay vì 38,3 xe.
+Hình~\ref{r3:staffing} cho thấy A1 không cần thêm người mà chỉ dời người theo
+lượt xe. A1 dùng 7 kênh ở ba giờ đông nhất (08--09, 17--18, 18--19), 6 kênh
+ở các giờ sát đỉnh và chỉ 4--5 kênh ở giờ vắng; tổng cộng 88 kênh-giờ, ít hơn
+96 của AS-IS. A2 chỉ cần 72 kênh-giờ vì mỗi kênh phục vụ được 47,8 xe mỗi giờ
+thay vì 38,3 xe. Dữ liệu mô phỏng AS-IS cũng cho thấy vì sao phải dồn người
+vào đỉnh: ba giờ đông chỉ chiếm 26,3\% lượt xe nhưng chiếm 87,7\% số lần chờ
+quá 5 phút và 98,8\% số lượt bỏ đi.
 
-Thêm một kênh vào giờ đông có tác dụng rất lớn, vì hàng chờ tăng rất nhanh
-khi $\rho$ gần 1. Tính bằng công thức M/M/c ở Mục~\ref{r2:method}, giờ 18--19 với 6
-kênh có $\rho=0{,}98$ và thời gian chờ trung bình 12,2 phút. Với 7 kênh,
-$\rho$ giảm còn 0,84 và thời gian chờ chỉ còn 0,8 phút.
+Sự dồn ép này đến từ cách hàng chờ phản ứng khi các kênh gần kín việc. Theo
+M/M/c, giờ 18--19 với 6 kênh có các kênh bận 98\% thời gian và mỗi xe chờ
+trung bình 12,2 phút. Thêm kênh thứ 7 đưa mức bận xuống 84\% và thời gian
+chờ còn 0,8 phút. Ở giờ vắng, các kênh của AS-IS chỉ bận khoảng 54--71\%
+(Bảng~\ref{r2:hourly}), nên bớt một người ở đó gần như không làm hàng dài
+thêm. Vì vậy, một người dời từ giờ vắng sang giờ đông có giá trị lớn hơn
+nhiều một người giữ ở giờ vắng.
 
-BT1 mới chỉ cho biết số kênh cần ở mỗi giờ, chưa phải lịch làm việc. Để có lịch thật, cửa hàng còn phải ghép các giờ này
-thành ca cho từng người, dài 4--8 giờ và có giờ nghỉ. Bước ghép ca
-này chưa được tính trong báo cáo.
+\subsection{Ghép số kênh thành lịch ca}
+\label{r3:shifts}
+\noindent
+BT1 mới cho số kênh mỗi giờ, nên bước tiếp theo là ghép các giờ đó thành ca
+của từng người. Nhóm dùng hai loại ca bắt đầu đúng giờ: ca dài 8 tiếng và ca
+ngắn 4 tiếng. Theo Bộ luật Lao động, người làm ca liên tục từ 6 giờ trở lên
+được nghỉ ít nhất 30 phút và thời gian này vẫn tính vào giờ làm. Giờ nghỉ
+không được xếp vào đầu hay cuối ca\footnote{Bộ luật Lao động 2019, Điều 109; xem LuatVietnam, ``Thời gian nghỉ
+trong giờ làm việc có được tính lương?'',
+\url{https://luatvietnam.vn/lao-dong-tien-luong/nghi-giua-ca-co-duoc-tinh-luong-562-31091-article.html}.}.
+Vì vậy mỗi ca dài có 30 phút nghỉ được trả lương, và trong giờ nghỉ người đó
+chỉ tính nửa kênh. Nhóm giả định (G) cửa hàng dùng tối đa 4 ca ngắn mỗi ngày.
+Gọi $x_j$ là số người làm ca kiểu $j$; mỗi kiểu ca gồm giờ bắt đầu, độ dài
+$L_j$ (8 hoặc 4 giờ) và giờ nghỉ. Bài toán ghép ca là:
+\begin{align}
+\min\quad & \textstyle\sum_j L_j x_j \\
+\text{với}\quad & \textstyle\sum_j a_{tj}x_j\ge c_t\ \ (t=1,\ldots,16),\quad \sum_{j:\,L_j=4}x_j\le4,\quad x_j\in\{0,1,2,\ldots\}, \nonumber
+\end{align}
+trong đó $a_{tj}$ bằng 1 nếu ca $j$ làm ở giờ $t$, bằng 0,5 nếu giờ $t$ là giờ
+nghỉ của ca và bằng 0 trong trường hợp còn lại. Đây là bài toán quy hoạch
+nguyên nhỏ, giải bằng thư viện SciPy. Mã giải bài toán, chạy mô phỏng và vẽ
+các hình ở Mục 7--8 nằm trong \path{analysis/r3_analysis.py}, do Claude
+(Anthropic) hỗ trợ viết. Để đối chứng, nhóm dùng một quy tắc thủ
+công: chỉ có hai ca 8 tiếng cố định 06--14 và 14--22.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/r3_shifts.pdf}
+\caption{(a) Lịch ca tối ưu của A1, mỗi dòng là một người; nền vàng là ba giờ đông nhất. (b) Giờ trả lương mỗi ngày của ba phương án theo ba cách xếp.}\label{r3:shifts-fig}
+\source{\texttt{analysis/r3\_analysis.py}, Claude hỗ trợ viết mã; lịch chi tiết trong \path{analysis/data/r3_shift_plan.csv}}
+\end{figure}
+
+Hình~\ref{r3:shifts-fig} cho thấy cách xếp ca quyết định A1 có lợi về chi phí
+hay không. Lịch tối ưu của A1 gồm 10 ca dài và 4 ca ngắn, tổng 96 giờ trả
+lương, bằng đúng AS-IS hiện nay. A2 cần 80 giờ. Nếu chỉ dùng hai ca cố định,
+A1 cần tới 120 giờ, nhiều hơn mọi phương án khác dùng cùng quy tắc. Bốn ca ngắn
+nằm đúng hai đỉnh (06--10, 07--11, 08--12 và 16--20), còn giờ nghỉ được xếp
+vào những giờ không phải giờ đông nhất.
+
+Lý do là nhu cầu của A1 có hai đỉnh ngắn, mỗi đỉnh chỉ 2--3 giờ. Ca cố định 8
+tiếng phải giữ đủ người cho giờ đông nhất trong cả ca, nên thừa người ở các
+giờ còn lại. Ca ngắn phủ đúng phần đỉnh nên ít dư. Giờ nghỉ bắt buộc cũng tốn
+công: so với số kênh-giờ cần, lịch tối ưu của A1 và A2 đều tốn thêm 8 giờ.
+Ngay cả AS-IS, nếu muốn giữ đủ 6 kênh cả lúc nhân viên nghỉ, cũng cần 104 giờ
+chứ không phải 96 giờ. Mốc 96 giờ của AS-IS vì thế chưa tính giờ nghỉ, nên
+phép so sánh ở Mục~\ref{r3:compare} còn hơi có lợi cho AS-IS.
 
 \subsection{Quy trình TO-BE và quy tắc vận hành}
-Quy trình TO-BE của A2 giữ các bước chính của AS-IS nhưng đổi thứ tự trả
-tiền (Hình~\ref{r3:bpmn}). Khách tạo đơn trên ứng dụng, chọn loại xăng và số
-tiền trước khi vào trụ. Khi tới lượt, khách đưa mã đơn và xác nhận trả tiền.
-Nhân viên chỉ bơm sau khi máy POS báo đã nhận tiền. Hóa đơn điện tử được gửi
-thẳng về ứng dụng, nên xe không phải đứng chờ đếm tiền, thối tiền hay lấy
-hóa đơn giấy. Khách không dùng ứng dụng vẫn đi theo luồng AS-IS ở
+\label{r3:process}
+\noindent
+Quy trình TO-BE của A2 giữ các bước chính của AS-IS nhưng đổi thứ tự trả tiền
+(Hình~\ref{r3:bpmn}). Khách tạo đơn trên ứng dụng, chọn loại xăng và số tiền
+trước khi vào trụ. Khi tới lượt, khách đưa mã đơn và xác nhận trả tiền; nhân
+viên chỉ bơm sau khi máy POS báo đã nhận tiền. Hóa đơn điện tử được gửi thẳng
+về ứng dụng. Khách không dùng ứng dụng vẫn đi theo luồng AS-IS ở
 Hình~\ref{r1:bpmn}.
 
 \begin{figure}[!htbp]\centering
@@ -158,7 +191,7 @@ Hình~\ref{r1:bpmn}.
 \node[tmark] at (9.0,-2.15) {$a_i$: vào hàng};
 \node[tmark] at (10.0,-4.35) {$b_i$: bắt đầu phục vụ};
 \node[tmark] at (20.6,-2.15) {$d_i$: rời trụ};
-\node[tmark,anchor=west,align=left] at (1.4,-3.55) {\textbf{A1:} số người đứng trụ theo\\lịch $c_t$ từng giờ (Bảng~\ref{r3:staffing})};
+\node[tmark,anchor=west,align=left] at (1.4,-3.55) {\textbf{A1:} số người đứng trụ theo\\lịch ca (Hình~\ref{r3:shifts-fig})};
 \node[tmark,anchor=west,align=left] at (1.4,-4.9) {\textbf{$S$ giảm (giả định 20\%):} không\\đếm tiền, thối tiền, giao hóa đơn giấy};
 \node[tmark,anchor=west,align=left] at (1.4,-6.6) {\textbf{Ngoại lệ:} đã thu tiền mà không bơm\\được (vòi hỏng, hết xăng) thì hủy đơn,\\hoàn tiền; cuối ngày đối soát};
 \end{tikzpicture}}
@@ -167,10 +200,22 @@ Hình~\ref{r1:bpmn}.
 \source{nhóm vẽ bằng TikZ theo cùng ký pháp với hình AS-IS; Claude (Anthropic) hỗ trợ dựng mã hình; người viết role 3 kiểm tra ký pháp và luồng}
 \end{figure}
 
-Bảng~\ref{r3:changes} tóm tắt những gì thay đổi về vai trò, công nghệ và
-chính sách phục vụ. Thay đổi lớn nhất về vai trò là khách tự làm phần đặt
-yêu cầu và trả tiền, còn nhân viên chỉ tập trung vào việc bơm. Về chính sách,
-số người đứng trụ không còn cố định mà đi theo lượng xe từng giờ.
+So với Hình~\ref{r1:bpmn}, luồng chính của TO-BE không còn bước đếm tiền,
+thối tiền hay giao hóa đơn giấy. Đây chính là những bước làm xe đứng lâu ở
+trụ trong AS-IS. Công nghệ cho cách làm này đã có trên thị trường. Ứng dụng
+Petrolimex 2.0, ra mắt tháng 8/2026, đã cho trả tiền không dùng tiền mặt khi
+mua xăng ở mọi cửa hàng Petrolimex và quản lý cả giao dịch lẫn hóa đơn điện
+tử\footnote{Tiền Phong, ``Petrolimex ra mắt Ứng dụng Petrolimex 2.0 và
+Thẻ đồng thương hiệu với BIDV-Visa'', 13/08/2026,
+\url{https://tienphong.vn/petrolimex-ra-mat-ung-dung-petrolimex-20-va-the-dong-thuong-hieu-voi-bidv-visa-post1867508.tpo}.}.
+Tuy vậy, nhóm chưa tìm được số liệu công bố về tỷ lệ khách trả tiền không
+dùng tiền mặt, nên mức khách dùng thật vẫn là ẩn số.
+
+Ẩn số đó quyết định A2 lợi đến đâu. Nếu ít khách dùng ứng dụng, thời gian phục
+vụ bình quân sẽ giảm ít hơn 20\%, và lợi ích của A2 nhỏ lại tương ứng. Mục~\ref{r3:limits}
+cho thấy A2 vẫn đạt ngưỡng ngay cả khi thời gian phục vụ chỉ giảm 10\%. Vì
+vậy, việc cần đo trước khi đầu tư là tỷ lệ khách chịu trả trước, chứ không
+phải công nghệ.
 
 \begin{table}[htbp]\centering\small
 \caption{Những gì thay đổi từ AS-IS sang TO-BE}\label{r3:changes}
@@ -178,7 +223,7 @@ số người đứng trụ không còn cố định mà đi theo lượng xe t�
 \toprule
 Thành phần & AS-IS & TO-BE & Người phụ trách \\
 \midrule
-Số người đứng trụ & 6 người ở mọi giờ & Theo lịch $c_t$ của BT1; lập lại khi lượng xe đổi rõ & Cửa hàng trưởng \\
+Số người đứng trụ & 6 người ở mọi giờ, hai ca cố định & Theo lịch ca ở Hình~\ref{r3:shifts-fig}; lập lại khi lượng xe đổi rõ & Cửa hàng trưởng \\
 Đặt yêu cầu & Khách nói loại xăng và số tiền tại trụ & Khách tạo đơn trên ứng dụng trước khi vào trụ & Khách \\
 Thanh toán & Sau khi bơm, bằng tiền mặt hoặc QR & Trước khi bơm, qua ví hoặc ngân hàng; tiền mặt chỉ dùng khi lỗi & POS, nhân viên bơm \\
 Hóa đơn & Nhân viên giao tại trụ & Tự gửi về ứng dụng & POS / HĐĐT \\
@@ -187,153 +232,165 @@ Xử lý lỗi & QR lỗi thì thu lại tiền mặt & Báo có lỗi thì thu 
 \end{tabularx}
 \end{table}
 
-Quy trình mới cần thêm vài quy tắc để không sinh lỗi mới. Đơn chỉ là đơn
-nháp, chưa thu tiền cho tới khi xe vào trụ, nên khách bỏ hàng thì đơn tự hủy.
-Hai tình huống lỗi còn lại được xử lý như ở dòng cuối Bảng~\ref{r3:changes}.
-Cuối ngày, cửa hàng trưởng đối soát, tức là kiểm tra số tiền đã thu có khớp
-với lượng xăng đã bơm hay không.
+Bảng~\ref{r3:changes} cho thấy thay đổi lớn nhất nằm ở vai trò. Khách tự làm
+phần đặt yêu cầu và trả tiền, nhân viên chỉ tập trung bơm, còn cửa hàng
+trưởng nhận thêm việc lập lịch ca và đối soát, tức kiểm tra số tiền đã thu có
+khớp với lượng xăng đã bơm. Về chính sách, số người đứng trụ không còn cố
+định mà đi theo lượng xe từng giờ.
 
-TO-BE cũng có những đánh đổi cần tính trước. Lợi ích của A2 phụ thuộc vào số
-khách chịu dùng ứng dụng; nếu ít người dùng, $E[S]$ sẽ giảm ít hơn 20\%. Cửa
-hàng phải trả chi phí ứng dụng và thanh toán, được giả định là 250 nghìn đồng
-mỗi ngày, chưa kể chi phí đào tạo. Ngoài ra, cả A1 và A2 đều bớt người ở giờ
-vắng, nên phần dự phòng khi có sự cố nhỏ hơn AS-IS (Mục~\ref{r3:scen3}).
+Các quy tắc đi kèm giúp quy trình mới không sinh lỗi mới. Đơn chỉ là đơn
+nháp, chưa thu tiền cho tới khi xe vào trụ, nên khách bỏ hàng thì đơn tự hủy.
+Hai tình huống lỗi còn lại được xử lý như dòng cuối của bảng. Đổi lại, cửa
+hàng phải trả chi phí ứng dụng và thanh toán, giả định 250 nghìn đồng mỗi
+ngày, chưa kể chi phí đào tạo.
 \FloatBarrier
 
 \section{Đánh giá, độ nhạy và giới hạn}
 \label{r3:evaluation}
 \subsection{So sánh trên cùng bộ chỉ số}
-Bảng~\ref{r3:comparison} so sánh ba phương án trên cùng 20 ngày mô phỏng. Cả
-ba phương án dùng chung một dòng xe đến, nên chênh lệch giữa các cột đến từ
-phương án chứ không đến từ dữ liệu.
+\label{r3:compare}
+\noindent
+Bảng~\ref{r3:comparison} so sánh ba phương án trên cùng 20 ngày mô phỏng và
+cùng dòng xe đến. A0 giữ cách làm hiện nay; A1 và A2 dùng lịch ca tối ưu ở
+Mục~\ref{r3:shifts}.
 
-\resulttable{tab_comparison.tex}{Kết quả mô phỏng 20 ngày; ba phương án dùng chung dòng xe đến}{r3:comparison}
+\exttable{r3_comparison.tex}{Kết quả mô phỏng 20 ngày của ba phương án (A1, A2 theo lịch ca)}{r3:comparison}
 
-A1 giải quyết được vấn đề ở giờ cao điểm mà còn dùng ít giờ nhân viên hơn.
-Trong khung 17--19, tỷ lệ xe chờ quá 5 phút giảm từ 6,18\% xuống 0,50\%, còn
-tỷ lệ bỏ đi giảm từ 2,26\% xuống 0,17\%. Cả hai đều dưới ngưỡng 5\% và 1\%
-đặt ra ở Mục~\ref{r1:scope}. Cùng lúc đó, lịch A1 cần ít hơn 8 giờ nhân viên mỗi
-ngày, tương đương 464 nghìn đồng theo mô hình. Lý do là A1 chuyển người từ giờ vắng sang giờ
-đông chứ không thêm người.
+Với cùng 96 giờ trả lương như hiện nay, A1 sửa được đúng chỗ hỏng của AS-IS.
+Trong khung 17--19, tỷ lệ xe chờ quá 5 phút giảm từ 6,2\% xuống 0,5\%, tỷ lệ
+bỏ đi giảm từ 2,3\% xuống 0,2\%; cả hai đều dưới ngưỡng. A2 đạt ngưỡng với 80
+giờ, nên chi phí giảm từ 5,6 xuống 4,9 triệu đồng mỗi ngày, tức khoảng 20
+triệu đồng mỗi tháng. Trong khi đó, tỷ lệ xe phải chờ ở cả ba phương án gần
+như không đổi, quanh 40--42\%.
 
-Cái giá của A1 là nhiều xe phải chờ một chút hơn ở giờ vắng. Tỷ lệ xe phải
-chờ tăng từ 40,9\% lên 43,8\%, và mức sử dụng nhân viên tăng từ 67,9\% lên
-74,5\%. Tuy vậy, các lần chờ này rất ngắn: 90\% số xe chờ không quá 1,51
-phút, so với 2,37 phút ở A0. Như vậy, A1 đổi nhiều lần chờ rất ngắn để lấy
-ít lần chờ dài.
+Kết quả này cho thấy A1 không làm khách chờ nhiều hơn mà chỉ đổi nơi đặt
+người. Phần công suất bớt ở giờ vắng hầu như không làm hàng dài thêm, còn
+phần thêm vào giờ đông cắt bớt các lần chờ dài. Lợi ích của A2 thì đến từ
+việc mỗi kênh phục vụ nhanh hơn, nên cần ít giờ người hơn. Kết quả của A0
+còn dao động theo chuỗi ngày mô phỏng. Ở các lần chạy khác
+trong Mục~\ref{r3:demand}--\ref{r3:limits}, tỷ lệ chờ quá 5 phút giờ 17--19
+của A0 dao động 3,5--6,2\%, nhưng tỷ lệ bỏ đi luôn trên 1\%.
 
-A2 chủ yếu giúp tiết kiệm nhân lực chứ không giảm chờ thêm nhiều. Ở khung
-17--19, thời gian chờ trung bình chỉ giảm từ 0,56 xuống 0,36 phút so với A1,
-nhưng lịch A2 cần ít hơn 16 giờ nhân viên mỗi ngày. Sau khi trừ 250 nghìn đồng chi
-phí công nghệ, A2 rẻ hơn A1 678 nghìn đồng và rẻ hơn A0 khoảng 1,14 triệu
-đồng mỗi ngày. Đây chỉ là mức tiềm năng, vì nó dựa trên giả định $E[S]$ giảm
-20\% và chưa tính chi phí chuyển đổi. Tính cả ngày, A2 còn có tỷ lệ chờ quá
-5 phút (0,48\%) và lần chờ dài nhất (9,10 phút) cao hơn A1. Lý do là A2 ít
-người hơn nên ít dư ra để đỡ những lúc xe dồn.
+\subsection{Khi lượng xe thay đổi}
+\label{r3:demand}
+\noindent
+Nhóm giữ nguyên lịch ca và cho lượng xe đến thay đổi từ 80\% đến 140\% mức
+hiện tại. Mỗi mức chạy 30 ngày với chuỗi ngày khác Bảng~\ref{r3:comparison},
+nên mức cơ sở chênh nhẹ; chỉ nên so các phương án trong cùng một hình.
 
-\subsection{Ba kịch bản: nhu cầu thấp, nhu cầu cao và thiếu người}
-\label{r3:scen3}
-Để xem các phương án có vững không, nhóm giữ nguyên lịch đã lập và thử ba
-kịch bản. Hai kịch bản đầu đổi lượng xe đến: giảm 20\% (nhu cầu thấp) và tăng
-20--40\% (nhu cầu cao). Kịch bản thứ ba là gián đoạn phục vụ do thiếu một
-nhân viên. Mỗi cấu hình chạy 30 ngày với dòng xe đến khác
-Bảng~\ref{r3:comparison}, nên mức cơ sở chênh nhẹ. Vì vậy chỉ nên so các
-phương án trong cùng một bảng.
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/r3_demand.pdf}
+\caption{Tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi giờ 17--19 khi lượng xe thay đổi, giữ nguyên lịch ca (30 ngày mỗi mức).}\label{r3:demand-fig}
+\source{\texttt{analysis/r3\_analysis.py}, Claude hỗ trợ viết mã; dữ liệu mô phỏng}
+\end{figure}
 
-\resulttable{tab_sensitivity.tex}{Kết quả khi lượng xe đến thay đổi, giữ nguyên lịch (30 ngày mỗi cấu hình)}{r3:sensitivity}
+Hình~\ref{r3:demand-fig} cho thấy lịch nào cũng chỉ đúng trong một khoảng nhu
+cầu. Khi lượng xe giảm 20\%, cả ba phương án đều đạt ngưỡng. Khi tăng 20\%,
+A0 vỡ hẳn ở giờ cao điểm với 14,0\% xe chờ quá 5 phút và 9,4\% khách bỏ đi.
+A1 giữ tỷ lệ chờ quá 5 phút ở 1,5\% nhưng tỷ lệ bỏ đi lên 1,9\%, vượt ngưỡng.
+A2 vẫn đạt, với 0,3\% và 0,7\%. Khi tăng 40\%, cả ba đều không đạt.
 
-Khi nhu cầu thấp, cả ba phương án đều đạt mục tiêu. Với lượng xe bằng 80\%
-mức cơ sở, tỷ lệ chờ quá 5 phút của cả ba chỉ từ 0,01\% đến 0,12\%. Như vậy,
-lịch theo giờ không gây hại khi vắng khách mà vẫn giữ được phần giờ công
-tiết kiệm.
+Tỷ lệ bỏ đi vượt ngưỡng trước tỷ lệ chờ lâu vì cách khách phản ứng với hàng
+dài. Khi xe đến nhanh hơn khả năng phục vụ, hàng chạm mốc 20 xe và xe đến sau
+bỏ đi luôn. Quá tải vì thế hiện ra thành mất khách trước khi hiện ra thành
+chờ lâu. A2 chịu tải tốt hơn vì thời gian phục vụ ngắn hơn, nên mỗi kênh còn
+dư sức. Với A1, mức tăng 20\% đã đủ làm lịch cũ trượt ngưỡng, nên lịch cần
+được lập lại khi lượt xe theo giờ tăng rõ.
 
-Khi nhu cầu cao, lịch đã lập nhanh chóng mất tác dụng. Với lượng xe tăng
-20\%, A0 có 2,88\% khách bỏ đi, vượt ngưỡng 1\%. A1 vừa chạm ngưỡng với
-0,95\%, vì giờ cao điểm đã có $\rho=1{,}01$. A2 còn dư hơn một chút với
-0,53\%. Khi lượng xe tăng 40\%, cả ba đều không đạt, với 4,8--7,9\% khách bỏ
-đi. Lúc này A1 thậm chí có tỷ lệ chờ quá 5 phút cao hơn A0 (14,81\% so với
-10,83\%), vì A1 đã bớt người ở giờ vắng. Điều này cho thấy một lịch chỉ đúng
-với mức nhu cầu dùng để lập nó, nên phải lập lại khi lượng xe thay đổi rõ.
+\subsection{Khi có sự cố vận hành}
+\label{r3:incident}
+\noindent
+Sự cố hay gặp nhất là một nhân viên nghỉ đột xuất. Nhóm xét trường hợp thiếu
+một người của ca chiều, tức mất một kênh từ 14:00 đến 22:00, và so với lúc đủ
+người trên cùng 30 ngày mô phỏng.
 
-\resulttable{tab_risk.tex}{Các tình huống rủi ro của A2 (30 ngày mỗi tình huống)}{r3:risks}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/r3_disruption.pdf}
+\caption{Tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi giờ 17--19 khi đủ người và khi thiếu một người ca chiều (30 ngày).}\label{r3:disruption-fig}
+\source{\texttt{analysis/r3\_analysis.py}, Claude hỗ trợ viết mã; dữ liệu mô phỏng}
+\end{figure}
 
-Thiếu người là rủi ro lớn nhất của các lịch đã bớt người. Khi A2 thiếu một nhân
-viên ở mọi giờ, tỷ lệ chờ quá 5 phút tăng từ 0,48\% lên 16,71\% và 1,92\%
-khách bỏ đi (Bảng~\ref{r3:risks}). Với A1, thiếu một người trong khung 17--19
-sẽ đưa số kênh về 6, đúng như AS-IS. Theo Bảng~\ref{r2:hourly}, giờ 18--19
-khi đó lại có $\rho=0{,}98$ và thời gian chờ trung bình khoảng 12 phút. Vì
-vậy, cửa hàng cần một người dự phòng có thể gọi đến trong giờ cao điểm.
+Hình~\ref{r3:disruption-fig} cho thấy AS-IS mới là phương án mong manh nhất.
+Khi thiếu một người ca chiều, tỷ lệ chờ quá 5 phút giờ 17--19 của A0 tăng từ
+4,3\% lên 36,8\% và tỷ lệ bỏ đi từ 1,9\% lên 10,8\%. Với A1, hai tỷ lệ này chỉ
+lên 5,1\% và 1,9\%, vượt ngưỡng nhẹ. A2 lên 2,9\% và 1,2\%, cũng vượt nhẹ
+ngưỡng bỏ đi.
 
-Rủi ro thứ hai của A2 là trả trước rút ngắn thời gian phục vụ ít hơn dự
-kiến. Nếu chỉ giảm được 10\% thay vì 20\%, A2 vẫn đạt mục tiêu tính cả ngày,
-với 1,45\% xe chờ quá 5 phút và 0,10\% khách bỏ đi. Tuy vậy, cần kiểm tra lại
-từng giờ trước khi áp dụng.
+Khác biệt này đến từ số kênh còn lại ở giờ đông nhất. A0 chỉ có 6 kênh lúc
+18--19, mất một người còn 5 kênh, và lượng việc vượt khả năng phục vụ khoảng
+18\%, nên hàng dài ra mãi cho tới khi khách bỏ đi. A1 có 7 kênh nên mất một người vẫn
+còn 6 kênh. A2 còn 5 kênh nhưng phục vụ nhanh hơn, nên các kênh bận 94\%. Vì
+vậy phương án nào cũng cần một người dự phòng có thể gọi đến cho ca chiều,
+nhưng với A1 và A2 đây là biện pháp để giữ ngưỡng, còn với AS-IS là để hàng chờ không vượt khỏi kiểm soát.
 
-\subsection{Độ nhạy theo các giả định chưa đo được}
+\subsection{Độ nhạy theo giả định và giới hạn của mô hình}
+\label{r3:limits}
+\noindent
 Thời gian phục vụ, độ dao động của nó và ngưỡng bỏ đi đều là giả định (G)
-trong Bảng~\ref{r2:assumptions}. Nhóm cho từng giả định lệch khỏi giá trị cơ
-sở để xem kết luận có đổi không. Trong ba giả định này, $E[S]$ ảnh hưởng
-mạnh nhất.
+trong Bảng~\ref{r2:assumptions}. Trong ba giả định này, $E[S]$ ảnh hưởng mạnh
+nhất, nên Hình~\ref{r3:service-fig} xét hai cách phản ứng khi $E[S]$ thực
+khác giả định: giữ nguyên lịch ca, hoặc lập lại lịch theo $E[S]$ thực.
 
-\resulttable{tab_sens_service.tex}{Kết quả khi $E[S]$ thực khác giả định ($\times$0,8--1,4), giữ nguyên lịch đã lập (30 ngày; $E[S]$ của A2 nhân cùng hệ số)}{r3:sens-service}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/r3_service.pdf}
+\caption{(a) Tỷ lệ chờ quá 5 phút giờ 17--19 khi $E[S]$ thực lệch giả định mà giữ nguyên lịch ca. (b) Giờ trả lương cần có nếu lập lại lịch theo $E[S]$ thực.}\label{r3:service-fig}
+\source{\texttt{analysis/r3\_analysis.py}, Claude hỗ trợ viết mã; dữ liệu mô phỏng 30 ngày mỗi mức}
+\end{figure}
 
-Nếu $E[S]$ thực dài hơn giả định mà lịch giữ nguyên, A1 sẽ không còn đạt mục
-tiêu. Khi $E[S]$ dài hơn 20\% (xe máy 1,8 phút), A1 có 6,71\% xe chờ quá 5
-phút và 1,00\% khách bỏ đi, dù vẫn tốt hơn A0 (11,53\% và 3,01\%). Khi dài
-hơn 40\%, A1 còn kém A0 về tỷ lệ chờ quá 5 phút (38,58\% so với 29,34\%).
-Ngược lại, nếu $E[S]$ ngắn hơn 20\%, cả ba phương án đều đạt.
+Hình~\ref{r3:service-fig} cho thấy nếu phục vụ chậm hơn giả định 20\%, trả
+trước là cách duy nhất đạt ngưỡng mà không tốn thêm giờ người so với hiện
+nay. Khi giữ nguyên lịch, A1 có 5,8\% xe chờ quá 5 phút giờ 17--19, vượt
+ngưỡng, còn A2 chỉ 2,0\%. Khi lập lại lịch, A1 cần 120 giờ, nhiều hơn hiện
+nay 25\%, mà vẫn có 1 giờ không đạt dù mở đủ 8 vòi. A2 chỉ cần 96 giờ, bằng
+hiện nay, và đạt ở mọi giờ.
 
-\resulttable{tab_sens_replan.tex}{Giờ nhân viên cần nếu lập lại lịch theo $E[S]$ thực; ``không đạt'' là số giờ trong ngày không đạt mục tiêu dù mở đủ 8 vòi}{r3:sens-replan}
+Nguyên nhân là số vòi, chứ không phải số người, trở thành giới hạn. Khi mỗi
+xe đứng ở trụ lâu hơn, giờ đông cần nhiều hơn 8 kênh, nên thêm người cũng
+không đủ chỗ để bơm. Rút ngắn thời gian ở trụ làm mỗi vòi phục vụ được nhiều
+xe hơn, tức nới đúng giới hạn đó. A2 cũng không đòi hỏi mức giảm đúng 20\%:
+nếu trả trước chỉ rút ngắn được 10\%, tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi giờ
+17--19 là 0,8\% và 0,5\%, vẫn dưới ngưỡng. Ngược lại, nếu $E[S]$ ngắn hơn giả định
+20\%, cả ba phương án đều đạt. Vì vậy, bấm giờ thời gian phục vụ theo Phụ
+lục~\ref{r2:app-plan} phải làm trước khi chốt lịch.
 
-Nếu lập lại lịch theo $E[S]$ đo được, A1 vẫn dùng được nhưng sẽ chạm giới
-hạn 8 vòi. Với $E[S]$ dài hơn 20\%, A1 cần 101 giờ nhân viên mỗi ngày thay vì
-88, và vẫn có 1 giờ không đạt mục tiêu dù mở đủ 8 vòi. Với $E[S]$ dài hơn
-40\%, A1 cần 114 giờ và có 3 giờ không đạt. Khi đó thêm người không còn giúp
-được, vì đã hết vòi. A2 đạt mục tiêu ở mọi giờ trong cả bốn mức, kể cả mức
-dài hơn 40\% (96 giờ nhân viên). Vì vậy, nếu $E[S]$ thực dài hơn giả định,
-rút ngắn thời gian ở trụ trở thành điều kiện cần chứ không chỉ để tiết kiệm.
+\exttable{r3_sens_other.tex}{Tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi giờ 17--19 khi đổi CV của thời gian phục vụ và ngưỡng bỏ đi (30 ngày mỗi trường hợp)}{r3:sens-other}
 
-Hai giả định còn lại không làm đổi thứ tự giữa các phương án. CV là hệ số
-biến thiên, bằng độ lệch chuẩn chia cho trung bình, cho biết thời gian phục
-vụ dao động nhiều hay ít. Khi CV đi từ 0,5 đến 1,2, A1 luôn đạt mục tiêu, với
-tỷ lệ chờ quá 5 phút không quá 0,84\%, và luôn tốt hơn A0. Ngưỡng bỏ đi chỉ
-chuyển rủi ro qua lại giữa chờ lâu và mất khách. Với ngưỡng 10 xe, A0 mất
-1,22\% khách; với ngưỡng 30 xe, A0 có 3,77\% xe chờ quá 5 phút. A1 đạt mục
-tiêu ở cả hai trường hợp. Số liệu chi tiết nằm trong tệp
-\texttt{tables/tab\_sens\_other.tex} của dự án.
+Bảng~\ref{r3:sens-other} cho thấy hai giả định còn lại không làm đổi thứ tự
+giữa các phương án. CV là hệ số biến thiên, bằng độ lệch chuẩn chia cho trung
+bình, cho biết thời gian phục vụ dao động nhiều hay ít. Khi CV đi từ 0,5 đến
+1,2, A1 luôn đạt ngưỡng, còn A0 trượt ngưỡng bỏ đi ngay ở mức cơ sở. Riêng
+ngưỡng bỏ đi chỉ đổi dạng của quá tải. Với ngưỡng 10 xe, A0 mất 4,5\% khách
+giờ 17--19 nhưng hầu như không xe nào chờ quá 5 phút. Với ngưỡng 30 xe thì
+ngược lại: 15,8\% xe chờ quá 5 phút nhưng chỉ 0,6\% bỏ đi.
 
-Các kết quả độ nhạy cho thấy cách lập lịch theo $\lambda_t$ và $E[S]$ vẫn
-đúng khi giả định lệch, nhưng số giờ công cụ thể phải tính lại từ $E[S]$ đo
-thật. Do đó, việc bấm giờ thời gian phục vụ theo Phụ lục~\ref{r2:app-plan}
-cần làm trước khi áp dụng lịch.
+Lý do là ngưỡng bỏ đi chỉ quyết định khách rời hàng ở độ dài nào, chứ không
+làm đổi lượng việc so với số kênh. A0 vẫn thiếu kênh ở giờ đông, nên quá tải
+hiện ra hoặc thành chờ lâu, hoặc thành mất khách. A1 đủ kênh ở giờ đông nên cả
+hai tỷ lệ đều thấp; chỉ ở ngưỡng 10 xe, tỷ lệ bỏ đi của A1 mới chạm sát mức
+1\%.
 
-\subsection{Giới hạn}
-Các kết quả trên đến từ mô hình nên còn bốn giới hạn chính. Lượt xe đến và
-thời gian phục vụ là số mô phỏng; quy mô được hiệu chỉnh từ số liệu công bố
-nhưng chưa đo tại cửa hàng nào. Mô hình coi mọi vòi phục vụ được mọi loại
-xe, trong khi thực tế thường có trụ riêng cho ô tô. Ngưỡng bỏ đi 20 xe và mức
-giảm 20\% thời gian phục vụ là giả định. Cuối cùng, mỗi ngày mô phỏng bắt đầu
-với hàng rỗng, và ở tải rất cao kết quả mô phỏng lệch xa công thức
-(Mục~\ref{r2:diagnosis}). Vì vậy, số liệu của giờ 18--19 chỉ nên xem là ước
-lượng.
+Các kết quả trên đến từ mô hình nên còn một số giới hạn. Lượt xe đến và thời
+gian phục vụ là số mô phỏng, chưa đo tại cửa hàng nào. Mô hình coi mọi vòi
+phục vụ được mọi loại xe, trong khi thực tế thường có trụ riêng cho ô tô.
+Lịch ca chỉ xét một ngày, chưa tính ngày nghỉ trong tuần và việc người làm ca
+ngắn có sẵn hay không. Cuối cùng, ở tải rất cao, mô phỏng lệch xa công thức
+(Mục~\ref{r2:diagnosis}), nên số liệu giờ 18--19 chỉ nên xem là ước lượng.
 
 \section{Đề xuất triển khai và kết luận}
 \label{r3:conclusion}
-\subsection{Áp dụng lịch theo giờ trước, thử trả trước sau}
-Nhóm đề xuất áp dụng A1 trước và chỉ thử A2 khi đã có số đo. Theo quy tắc
-chọn ở Mục~\ref{r1:scope}, phương án được chọn phải đạt các ngưỡng, có chi
-phí hợp lý và xếp được thành ca. A1 đạt các ngưỡng ở cả ngày lẫn giờ cao điểm,
-rẻ hơn AS-IS và không cần thêm công nghệ. Riêng điều kiện xếp được thành ca
-chưa được kiểm tra, nên đây là việc đầu tiên khi thử lịch (Bảng~\ref{r3:pilot}). A2 rẻ hơn nữa trong mô hình, nhưng lợi ích
-dựa trên mức giảm 20\% chưa đo được, cần khách dùng ứng dụng và có ít dự
-phòng khi thiếu người.
+\subsection{Áp dụng A1 với lịch ca trước, thử trả trước sau}
+\noindent
+Nhóm đề xuất áp dụng A1 theo lịch ca ở Hình~\ref{r3:shifts-fig} trước, và chỉ
+thử A2 khi đã có số đo. Theo quy tắc chọn ở Mục~\ref{r1:scope}, phương án được
+chọn phải đạt các ngưỡng, có chi phí hợp lý và xếp được thành ca. A1 đạt cả
+ba điều kiện với đúng 96 giờ trả lương như hiện nay và không cần thêm công
+nghệ. A2 rẻ hơn 0,7 triệu đồng mỗi ngày, nhưng lợi ích dựa trên mức giảm
+20\% chưa đo được và phụ thuộc số khách chịu dùng ứng dụng.
 
-Khi áp dụng A1, cửa hàng cần thêm hai quy tắc vận hành. Thứ nhất, luôn có
-một người dự phòng có thể gọi đến trong khung 17--19, vì thiếu một người ở
-giờ này đưa cửa hàng về đúng tình trạng AS-IS. Thứ hai, lịch phải được lập
-lại khi lượng xe giờ đông tăng gần 20\%, là mức mà lịch A1 vừa chạm ngưỡng
-bỏ đi (Mục~\ref{r3:scen3}). Bảng~\ref{r3:pilot} nêu các bước thử trước khi
-áp dụng rộng.
+Khi áp dụng A1, cửa hàng cần giữ ba quy tắc vận hành. Thứ nhất, luôn có một
+người dự phòng có thể gọi đến cho ca chiều. Thứ hai, giữ các ca ngắn ở hai
+đỉnh, vì bỏ chúng thì A1 cần tới 120 giờ. Thứ ba, lập lại lịch khi lượt xe
+theo giờ tăng rõ, vì mức tăng 20\% đã làm lịch cũ trượt ngưỡng bỏ đi.
 
 \begin{table}[htbp]\centering\small
 \caption{Kế hoạch kiểm tra giải pháp trước khi áp dụng rộng}\label{r3:pilot}
@@ -341,27 +398,33 @@ bỏ đi (Mục~\ref{r3:scen3}). Bảng~\ref{r3:pilot} nêu các bước thử t
 \toprule
 Bước & Việc cần làm và người phụ trách & Tiêu chí quyết định \\
 \midrule
-Đo hiện trạng & Cửa hàng trưởng tổ chức ghi lượt đến, lượt bỏ đi và các mốc $a_i,b_i,d_i$ theo giờ; bấm giờ 30--50 lượt cho mỗi loại xe. Hóa đơn điện tử chỉ cho số lượt bán theo giờ, không cho giờ xe đến hay lượt bỏ đi. & Có số liệu cả giờ vắng và giờ đông; tách được thời gian bơm và thời gian trả tiền. \\
-Thử lịch A1 & Ghép số kênh theo giờ thành ca có giờ nghỉ; thử trên các ngày cùng thứ, có lượng xe tương đương. & Tỷ lệ chờ quá 5 phút và tỷ lệ bỏ đi giờ đông giảm; ghi lại giờ công và chi phí thực. \\
-Thử A2 ở phạm vi nhỏ & Cho một nhóm khách tạo đơn và trả trước; vẫn giữ cách trả tiền tại trụ. & Thời gian từ lúc vào trụ đến lúc rời trụ giảm; lỗi giao dịch không tăng; lợi ích đủ bù chi phí. \\
-Rà soát định kỳ & Cửa hàng trưởng theo dõi số liệu theo giờ, ghi nhận nhu cầu tăng, người vắng và vòi hỏng. & Nếu vượt ngưỡng thì gọi người dự phòng hoặc lập lại lịch; không cố giữ mức tiết kiệm đã định. \\
+Đo hiện trạng & Cửa hàng trưởng tổ chức ghi lượt đến, lượt bỏ đi và các mốc $a_i,b_i,d_i$ theo giờ; bấm giờ 30--50 lượt mỗi loại xe. Hóa đơn điện tử chỉ cho số lượt bán theo giờ, không cho giờ xe đến hay lượt bỏ đi. & Có số liệu cả giờ vắng và giờ đông; tách được thời gian bơm và thời gian trả tiền. \\
+Thử lịch ca A1 & Áp dụng lịch ở Hình~\ref{r3:shifts-fig} trên các ngày cùng thứ, có lượng xe tương đương; giữ một người dự phòng ca chiều. & Tỷ lệ chờ quá 5 phút và bỏ đi giờ đông dưới ngưỡng; giờ trả lương không vượt hiện nay. \\
+Thử A2 ở phạm vi nhỏ & Cho một nhóm khách tạo đơn và trả trước; vẫn giữ cách trả tiền tại trụ. & Đo được tỷ lệ khách dùng và mức giảm thời gian ở trụ; lỗi giao dịch không tăng. \\
+Rà soát định kỳ & Cửa hàng trưởng theo dõi lượt xe theo giờ từ hóa đơn điện tử, ghi nhận người vắng và vòi hỏng. & Lượt xe giờ đông tăng rõ thì lập lại lịch; không cố giữ mức tiết kiệm đã định. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\subsection{Kết luận}
-Câu trả lời cho câu hỏi chính ở Mục~\ref{r1:scope} là có, trong phạm vi mô
-hình. Chỉ cần xếp số nhân viên theo giờ (A1), tỷ lệ xe chờ quá 5 phút trong
-khung 17--19 giảm từ 6,18\% xuống 0,50\% và tỷ lệ bỏ đi từ 2,26\% xuống
-0,17\%, đều dưới ngưỡng. Trong khi đó, lịch tính toán chỉ cần 88 thay vì 96
-giờ nhân viên mỗi ngày, dù con số này còn phải ghép thành ca và thử tại cửa
-hàng. Cải tiến khâu thanh toán (A2) không cần để đạt ngưỡng ở kịch bản
-cơ sở. Nó chủ yếu giúp tiết kiệm thêm nhân lực, và trở thành điều kiện cần
-nếu thời gian phục vụ thực dài hơn giả định.
+Bảng~\ref{r3:pilot} sắp các bước theo thứ tự rủi ro tăng dần. Bước đo đi
+trước vì Mục~\ref{r3:limits} cho thấy $E[S]$ quyết định số giờ cần. Lịch A1
+được thử tiếp theo vì không cần đầu tư. A2 đi sau cùng vì cần tiền cho ứng
+dụng và cần biết bao nhiêu khách chịu trả trước.
 
-Đây là đề xuất dựa trên mô hình, chưa được kiểm chứng tại cửa hàng. Bước
-tiếp theo là bấm giờ thời gian phục vụ, thử A1 trong một số ngày và chỉ mở
-rộng khi các ngưỡng vẫn đạt; trả trước chỉ nên đầu tư khi đo được lợi ích.
+\subsection{Kết luận}
+\noindent
+Câu trả lời cho câu hỏi chính ở Mục~\ref{r1:scope} là có, trong phạm vi mô
+hình. Cửa hàng chỉ cần xếp lại số nhân viên theo giờ và ghép thành ca, có ca ngắn
+ở hai đỉnh. Với 96 giờ trả lương như hiện nay, tỷ lệ xe chờ quá 5 phút giờ
+17--19 khi đó giảm từ 6,2\% xuống 0,5\%, còn tỷ lệ bỏ đi giảm từ 2,3\%
+xuống 0,2\%. Cải tiến
+khâu thanh toán (A2) không cần để đạt ngưỡng ở kịch bản cơ sở. Nó giúp giảm
+giờ trả lương xuống 80 giờ, và trở thành điều kiện cần nếu thời gian phục vụ
+thực dài hơn giả định.
+
+Đây là đề xuất dựa trên mô hình, chưa được kiểm chứng tại cửa hàng. Bước tiếp
+theo là bấm giờ thời gian phục vụ, thử lịch ca A1 trong một số ngày và chỉ
+đầu tư cho trả trước khi đo được lợi ích.
 \todo{3}{Chốt lịch ca khả thi, chi phí thực và kết quả thử nghiệm với cửa hàng;
 không trình bày kết quả mô phỏng như thành tích đã triển khai.}
 
