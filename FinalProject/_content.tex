@@ -46,22 +46,9 @@ Bahan Bakar Umum (Studi Kasus: SPBU Batui II)'', \textit{Jurnal Teknik Industri 
 \bibitem{l4} Học phần INT3501, \textit{Hàng đợi trong dịch vụ} (bài giảng L4). Tài liệu nội bộ:
 \path{Lecture/L4_Hang_Doi-2.pdf}.
 \bibitem{maglio2008} P.~P.~Maglio, J.~Spohrer, ``Fundamentals of service science'',
-\textit{Journal of the Academy of Marketing Science}, 36(1), 18--20, 2008.
-\bibitem{alter2013} S.~Alter, ``Work system theory: Overview of core concepts, extensions, and challenges for the future'',
-\textit{Journal of the Association for Information Systems}, 14(2), 72--121, 2013.
+\textit{Journal of the Academy of Marketing Science}, 36(1), 18--20, 2008. \url{https://doi.org/10.1007/s11747-007-0058-9}
 \bibitem{vargo2004} S.~L.~Vargo, R.~F.~Lusch, ``Evolving to a new dominant logic for marketing'',
-\textit{Journal of Marketing}, 68(1), 1--17, 2004.
-% Role 1 (TV1) bo sung 4 nguon duoi day; alter2013 dung chung voi muc Tuan-Anh da them.
-\bibitem{bpmn202} Object Management Group, \textit{Business Process Model and Notation (BPMN),
-Version 2.0.2}, formal/13-12-09, 2014. \url{https://www.omg.org/spec/BPMN/2.0.2/}
-\bibitem{l2b} Học phần INT3501, \textit{Logic hướng dịch vụ mở rộng: mô hình hệ thống dịch vụ và
-hệ sinh thái dịch vụ} (bài giảng L2B). Tài liệu nội bộ: \path{Lecture/L2B_SDL_Models_Ecosystem.pdf}.
-\bibitem{l3b} Học phần INT3501, \textit{Mô hình hóa và quản lý quy trình dịch vụ với BPMN}
-(bài giảng L3B). Tài liệu nội bộ: \path{Lecture/L3B_BPM_BPMN_Service_Process.pdf}.
-\bibitem{tbtc2024} Thời báo Tài chính Việt Nam, ``Cảnh báo sai phạm về hóa đơn trong kinh doanh
-bán lẻ xăng dầu'', 09/12/2024 (giải pháp kết nối tự động: mỗi lần kết thúc bơm, hệ thống tự xuất
-hóa đơn điện tử và truyền dữ liệu tới cơ quan thuế).
-\url{https://thoibaotaichinhvietnam.vn/canh-bao-sai-pham-ve-hoa-don-trong-kinh-doanh-ban-le-xang-dau-165812-165812.html}
+\textit{Journal of Marketing}, 68(1), 1--17, 2004. \url{https://doi.org/10.1509/jmkg.68.1.1.24036}
 \end{thebibliography}
 % Them nguon hoc thuat SAU KHI da doc/kiem chung; khong tu dien DOI/nam/tac gia.
 
@@ -99,7 +86,7 @@ Thành phần & Phạm vi AI hỗ trợ & Cách kiểm chứng / việc cần l�
 \midrule\endhead
 Văn bản, bố cục & Claude Code tạo bản nháp; Codex chỉnh mạch vấn đề, nguyên nhân, giải pháp và đánh giá. & Mỗi người rà soát phần mình; đối chiếu rubric và số liệu trong log. \\
 Số liệu công bố & Claude Code tìm qua công cụ tìm kiếm web ngày 21/11/2026. & Mở lại từng URL trong tài liệu tham khảo; sửa nếu khác. \\
-Nguồn học thuật & Claude Code gợi ý ba nguồn cho khung hệ thống và đồng tạo giá trị (Maglio \& Spohrer; Alter; Vargo \& Lusch). & Role 1 mở bản gốc, kiểm tra thông tin xuất bản và nội dung trích. \\
+Nguồn học thuật & Claude Code gợi ý hai nguồn cho khung hệ thống và đồng tạo giá trị (Maglio \& Spohrer; Vargo \& Lusch). & Kiểm tra thông tin xuất bản qua DOI; chưa truy cập được toàn văn nên chỉ trích định nghĩa chung, đối chiếu với phần tóm tắt. \\
 Sơ đồ & Claude Code dựng mã TikZ cho Resource Map, BPMN AS-IS, TO-BE. & Role 1/3 kiểm tra ký pháp, đối chiếu quan sát thực tế. \\
 Mã nguồn & Claude Code viết lại \texttt{run\_analysis.py}, \path{extension_analysis.py}, thêm loại xe và hành vi bỏ đi vào \texttt{simulate.py}. & Codex sửa sự kiện đổi giờ và chạy lại phân tích chính; role 2 tiếp tục kiểm tra giả định và tải cao. \\
 Bảng và biểu đồ & Sinh tự động từ mã; không sửa tay. & Đối chiếu với \path{data/run_log.txt}, \path{data/ext_run_log.txt}. \\
