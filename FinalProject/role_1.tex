@@ -10,11 +10,11 @@
 \noindent
 Bán lẻ xăng ở nội thành Hà Nội có đặc điểm là nhiều lượt khách nhưng mỗi lượt mua ít. Thành phố có 453 cửa hàng xăng dầu~\cite{sct2026} và khoảng 5,6 triệu xe máy chạy xăng~\cite{vnex2025}, trong khi bình xăng xe máy phổ biến chỉ chứa dưới 5 lít~\cite{tank}. Mỗi lượt chỉ bơm vài lít, nên nhiều khả năng một phần đáng kể thời gian xe đứng ở trụ dành cho việc mời xe, trả tiền và lấy hóa đơn. Từ năm 2025, mỗi lần bán còn phải xuất thêm một hóa đơn điện tử~\cite{nd70}.
 
-Khó khăn của cửa hàng là lượng xe đến không đều, trong khi lãi trên mỗi lít lại thấp. Nhóm giả định xe dồn vào giờ đi làm và tan tầm, rồi thưa hơn vào giữa ngày. Khoản chiết khấu cửa hàng được hưởng trên mỗi lít có lúc thấp hơn nhiều so với mức cần để bù chi phí~\cite{chietkhau}. Vì thế, tăng người cho mọi giờ khó là cách làm phù hợp.
+Khó khăn của cửa hàng là lượng xe đến không đều, trong khi lãi trên mỗi lít lại thấp. Nhóm giả định xe dồn vào giờ đi làm và tan tầm, rồi thưa hơn vào giữa ngày. Khoản chiết khấu cửa hàng được hưởng trên mỗi lít có lúc thấp hơn nhiều so với mức cần để bù chi phí~\cite{chietkhau}, nên khó tăng người cho mọi giờ.
 
 Từ đó, vấn đề chính là \textbf{cửa hàng dùng một lịch nhân viên cố định cho lượng khách thay đổi theo giờ}. Vào giờ cao điểm, số nhân viên không theo kịp lượng xe, trong khi mỗi xe lại đứng ở trụ khá lâu để trả tiền và lấy hóa đơn. Khách vì thế phải chờ lâu, có người bỏ đi; còn giờ vắng khách thì thừa người. Bài toán đặt ra là bố trí số nhân viên theo từng giờ để giảm thời gian chờ và số khách bỏ đi mà không tăng chi phí nhân lực.
 %
-Nếu giải quyết được, cả ba bên đều có lợi. Khách chờ ít hơn và ít phải bỏ đi. Cửa hàng giữ được lượt bán mà không phải thêm người cho mọi giờ. Nhân viên được chia việc đều hơn giữa giờ đông và giờ vắng.
+Nếu giải quyết được, khách chờ ít hơn và ít phải bỏ đi, cửa hàng giữ được lượt bán mà không phải thêm người cho mọi giờ, còn nhân viên được chia việc đều hơn giữa giờ đông và giờ vắng.
 % 
 Bảng~\ref{r1:problem} tóm tắt vấn đề theo người bị ảnh hưởng, nơi xảy ra, thời điểm, mức độ và hệ quả.
 
@@ -40,7 +40,7 @@ Nguyên nhân giả định & (1) số nhân viên cố định trong khi lượ
 
 \subsection{Câu hỏi phân tích và tiêu chí đánh giá}
 \noindent
-Từ vấn đề trên, câu hỏi chính của báo cáo là: nếu cửa hàng thay đổi số nhân viên theo từng giờ thay vì giữ cố định, tỷ lệ xe chờ quá 5 phút và tỷ lệ khách bỏ đi trong giờ cao điểm, nhất là khung 17:00--19:00, có giảm xuống mức chấp nhận được không? Nếu chưa đủ, có cần cải tiến thêm khâu thanh toán không? Để trả lời, nhóm so sánh ba phương án trên cùng một lượng xe đến được mô phỏng. Đầu tiên, phương án A0 giữ nguyên cách làm hiện tại. Tiếp theo, phương án A1 thay đổi số nhân viên theo từng giờ. Cuối cùng, phương án A2 làm như A1 và cho khách trả tiền trước bằng QR hoặc ứng dụng để xe đứng ở trụ ngắn hơn. Quy trình hiện tại được gọi là AS-IS, còn quy trình sau cải tiến gọi là TO-BE.
+Từ vấn đề trên, câu hỏi chính của báo cáo là: nếu cửa hàng thay đổi số nhân viên theo từng giờ thay vì giữ cố định, tỷ lệ xe chờ quá 5 phút và tỷ lệ khách bỏ đi trong giờ cao điểm, nhất là khung 17:00--19:00, có giảm xuống mức chấp nhận được không? Nếu chưa đủ, có cần cải tiến thêm khâu thanh toán không? Để trả lời, nhóm so sánh ba phương án trên cùng một lượng xe đến được mô phỏng: A0 giữ nguyên cách làm hiện tại; A1 thay đổi số nhân viên theo từng giờ; A2 làm như A1 và cho khách trả tiền trước bằng QR hoặc ứng dụng để xe đứng ở trụ ngắn hơn. Quy trình hiện tại gọi là AS-IS, quy trình sau cải tiến gọi là TO-BE.
 
 Nhóm dùng ba ngưỡng để xác định mức chấp nhận được: thời gian chờ trung bình không quá 2 phút, tỷ lệ chờ quá 5 phút không quá 5\% và tỷ lệ bỏ đi không quá 1\%. Đây là ngưỡng do nhóm đặt, nên cần thống nhất lại với cửa hàng nếu áp dụng thật. Mỗi phương án được đánh giá trên cả ngày và riêng khung 17:00--19:00, nơi vấn đề rõ nhất, kèm theo giờ công và chi phí. Phương án được chọn là phương án đạt các ngưỡng với chi phí hợp lý và xếp được thành lịch ca thực tế.
 
@@ -48,7 +48,7 @@ Nhóm dùng ba ngưỡng để xác định mức chấp nhận được: thời
 \noindent
 Nhóm xét một cửa hàng giả định, vì số liệu thời gian chờ của một cửa hàng cụ thể hiện còn khó tiếp cận. Quy mô cửa hàng được ước tính từ các số liệu công bố ở trên, còn mọi kết quả về thời gian chờ đều là kết quả mô phỏng (Mục~\ref{r2:method}). Phân tích chỉ xoay quanh hàng chờ và cách bố trí nhân viên; các vấn đề như chọn vị trí cửa hàng hay chiến lược dài hạn nằm ngoài phạm vi.
 
-Ranh giới được xác định theo hai lớp (Bảng~\ref{r1:boundary}). Lớp thứ nhất là ranh giới dịch vụ, gồm các bên và hoạt động của cửa hàng từ lúc xe vào đến lúc rời trụ; đầu mối, ngân hàng và cơ quan thuế nằm bên ngoài và chỉ được xét ở phần trao đổi với cửa hàng. Lớp thứ hai là ranh giới phép đo, tức phần mô hình thực sự tính: ba mốc thời gian của mỗi xe (vào hàng, bắt đầu được phục vụ, rời trụ) trong khung 06:00--22:00, với tối đa 8 vòi có nhân viên. Cách chia này giúp phân tích tập trung vào đúng điểm nghẽn. Kẹt xe trên đường không thuộc trách nhiệm của cửa hàng, còn ban đêm ít xe nên hàng chờ nhiều khả năng không đáng kể. Chất lượng xăng và tồn kho ít liên quan đến bố trí nhân viên; riêng tình huống hết hàng có thể làm hàng dài ra mà không do thiếu người, nên được tách riêng khi diễn giải kết quả.
+Ranh giới được xác định theo hai lớp (Bảng~\ref{r1:boundary}). Lớp ngoài là ranh giới dịch vụ, gồm các bên và hoạt động của cửa hàng từ lúc xe vào đến lúc rời trụ; đầu mối, ngân hàng và cơ quan thuế chỉ được xét ở phần trao đổi với cửa hàng. Lớp trong là ranh giới phép đo, tức phần mô hình thực sự tính: ba mốc thời gian của mỗi xe trong khung 06:00--22:00, với tối đa 8 vòi có nhân viên. Những yếu tố như kẹt xe trên đường, giờ đêm vắng khách, chất lượng xăng hay tồn kho ít liên quan đến bố trí nhân viên nên không đưa vào mô hình. Riêng tình huống hết hàng có thể làm hàng dài ra mà không do thiếu người, nên được tách riêng khi diễn giải kết quả.
 
 \begin{table}[htbp]\centering\small
 \caption{Phạm vi dịch vụ và phạm vi mô hình định lượng}\label{r1:boundary}
@@ -89,7 +89,7 @@ Kết quả & Xe được phục vụ, khách quay lại & $W_q$, tỷ lệ ch�
 \end{tabularx}
 \end{table}
 
-Các thành phần này tác động đến hàng chờ theo một chuỗi khá rõ. Lịch ca quyết định mỗi giờ có bao nhiêu kênh $c_t$, còn máy POS, QR và hóa đơn ảnh hưởng nhiều đến thời gian phục vụ $E[S]$. Đặt hai yếu tố này cạnh lượng xe đến $\lambda_t$ sẽ cho ra thời gian chờ $W_q$ và tỷ lệ khách bỏ đi. Vì vậy, A1 giảm hàng chờ bằng cách chỉnh lịch ca, còn A2 bằng cách rút ngắn thao tác tại trụ.
+Các thành phần này tác động đến hàng chờ theo một chuỗi khá rõ. Lịch ca quyết định mỗi giờ có bao nhiêu kênh $c_t$, còn máy POS, QR và hóa đơn ảnh hưởng nhiều đến thời gian phục vụ $E[S]$. Đặt hai yếu tố này cạnh lượng xe đến $\lambda_t$ sẽ cho ra thời gian chờ $W_q$ và tỷ lệ khách bỏ đi.
 
 \section{Bản đồ nguồn lực và cơ chế đồng tạo giá trị}
 \label{r1:resources}
@@ -101,7 +101,7 @@ Nhóm dùng logic hướng dịch vụ (S-D logic)~\cite{vargo2004} để đọc
 \def\rb#1#2{\fcolorbox{#1!70!black}{#1!18}{\tiny\bfseries\strut #2}}%
 \def\rNL{\rb{orange}{NL}}\def\rCN{\rb{green}{CN}}\def\rDL{\rb{blue}{DL}}%
 \def\rQT{\rb{violet}{QT}}\def\rTC{\rb{red}{TC}}%
-\resizebox{\linewidth}{!}{%
+\resizebox{0.95\linewidth}{!}{%
 \begin{tikzpicture}[
   actor/.style={rectangle,rounded corners=2pt,draw,thick,fill=gray!5,align=center,font=\scriptsize,minimum width=31mm,minimum height=11mm},
   hub/.style={actor,fill=blue!6,very thick,minimum width=38mm,minimum height=14mm},
@@ -196,11 +196,11 @@ ranh giới hệ thống, cùng những gì họ trao đổi với điểm phụ
 % % \source{nhóm vẽ bằng TikZ dựa trên các tác nhân trong Bảng~\ref{r1:components}; Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra tác nhân và luồng}
 % \end{figure}
 
+Giá trị chỉ được tạo ra trọn vẹn khi nguồn lực của các bên khớp nhau trong từng giờ; khi chưa khớp, khách thường là người chịu thiệt vì phải chờ. Ở cửa hàng này có hai chỗ dễ lệch. Thứ nhất, lịch ca có thể không theo kịp lượng xe giờ tan tầm, tức $c_t$ thấp so với $\lambda_t$. Thứ hai, việc trả tiền và xuất hóa đơn có thể kéo dài $E[S]$. Đáng chú ý là cửa hàng đã có sẵn dữ liệu để xử lý chỗ lệch thứ nhất: hóa đơn điện tử của mỗi lần bán~\cite{nd70} cho biết số lượt bán theo từng giờ, và A1 dùng chính dữ liệu này để xếp lịch. Bảng~\ref{r1:stakeholders} tóm tắt mỗi bên góp gì, nhận gì và chịu rủi ro gì.
 
-
-Giá trị chỉ được tạo ra trọn vẹn khi nguồn lực của các bên khớp nhau trong từng giờ. Khi chưa khớp, người chịu thiệt trước hết thường là khách, vì họ phải chờ. Ở cửa hàng này có hai chỗ dễ lệch. Thứ nhất, lịch ca có thể không theo kịp lượng xe giờ tan tầm, tức $c_t$ thấp so với $\lambda_t$. Thứ hai, việc trả tiền và xuất hóa đơn có thể kéo dài $E[S]$. Đáng chú ý là cửa hàng đã có sẵn dữ liệu để xử lý chỗ lệch thứ nhất: hóa đơn điện tử của mỗi lần bán~\cite{nd70} cho biết số lượt bán theo từng giờ, và A1 dùng chính dữ liệu này để xếp lịch. Bảng~\ref{r1:stakeholders} tóm tắt mỗi bên góp gì, nhận gì và chịu rủi ro gì.
-
-\begin{table}[!hbpt]\centering\small
+\begin{table}[!hbpt]
+\centering
+\footnotesize
 \caption{Đóng góp, lợi ích và rủi ro của các bên}\label{r1:stakeholders}
 \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{35mm}Y Y Y@{}}
 \toprule
@@ -221,11 +221,11 @@ Cơ quan thuế & Quy định hóa đơn điện tử & Giao dịch minh bạch 
 \end{tabularx}
 \end{table}
 
-\section{Quy trình hiện tại và chẩn đoán điểm nghẽn}
+\section{Quy trình hiện tại}
 \label{r1:asis}
 \noindent
-Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ quy trình theo ký hiệu chuẩn (Hình~\ref{r1:bpmn}). Sơ đồ đi từ lúc xe đến cửa hàng cho tới lúc xe nhận hóa đơn và rời trụ. Mỗi bên tham gia có một khung riêng gọi là pool, và pool có thể chia thành các làn theo người thực hiện. Pool Cửa hàng có hai làn là Nhân viên bơm và POS/HĐĐT. Ngân hàng và cơ quan thuế được vẽ dạng hộp đen, tức chỉ ghi tên mà không vẽ các bước bên trong. Thông tin trao đổi giữa các pool được vẽ bằng mũi tên nét đứt, gọi là luồng thông điệp~\cite{rubric}.
-\begin{figure}[!htbp]\centering
+Hình~\ref{r1:bpmn} mô tả quy trình phục vụ hiện tại, từ lúc xe vào cửa hàng đến lúc xe nhận hóa đơn và rời trụ. Sơ đồ tách riêng phần việc của khách, nhân viên bơm, máy POS, ngân hàng và cơ quan thuế. Cách tách này giúp thấy rõ một xe đứng ở trụ lâu hay nhanh không chỉ do nhân viên, mà còn phụ thuộc vào khâu thanh toán và hóa đơn.
+\begin{figure}[!hbpt]\centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
   mf/.style={{Circle[open,length=1.4mm]}-{Stealth[length=2.2mm,open]},dashed,thick,blue!50!black}, mlab/.style={font=\scriptsize\itshape,fill=white,inner sep=1pt,text=blue!50!black}, blab/.style={font=\scriptsize}, gx/.style={diamond,draw,thick,fill=white,minimum width=9mm,minimum height=9mm,inner sep=0pt,font=\large}, bbox/.style={draw,thick,fill=gray!12}]
@@ -252,7 +252,7 @@ Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ 
 \node[blab,below=0mm of cs] {xe đến};
 \node[task] (c1) at (3.4,-1.5) {Đến cửa hàng,\\nhìn hàng chờ};
 \node[gx] (cg) at (5.4,-1.5) {$\times$};
-\node[blab,below=0.3mm of cg] {$\ge$20 xe chờ?};
+\node[blab,below=0.01mm of cg] {$\ge$20 xe chờ?};
 \node[evend] (cb) at (6.7,-0.55) {};
 \node[blab,anchor=west] at (7.0,-0.55) {bỏ đi -- mất lượt bán};
 \node[task] (c2) at (8.6,-1.5) {Xếp hàng\\chờ tới lượt};
@@ -306,23 +306,21 @@ Quy trình phục vụ hiện tại được vẽ bằng BPMN, một cách vẽ 
 \node[tmark] at (8.6,-2.15) {$a_i$: vào hàng};
 \node[tmark] at (9.6,-4.5) {$b_i$: bắt đầu phục vụ};
 \node[tmark] at (20.3,-2.15) {$d_i$: rời trụ};
-\node[tmark,anchor=west,align=left] at (1.4,-3.5) {\textbf{(1) Điểm chờ:} xe xếp hàng\\từ $a_i$ đến $b_i$ ($W_q$)};
-\node[tmark,anchor=west,align=left] at (1.4,-6.5) {\textbf{(2) Điểm lỗi:} QR không báo có\\$\rightarrow$ xử lý lại bằng tiền mặt};
-\node[tmark,anchor=west,align=left] at (1.4,-7.6) {\textbf{(3) Chuyển giao:} nhân viên $\rightarrow$ POS\\$\rightarrow$ cơ quan thuế (HĐĐT)};
+\node[tmark,anchor=west,align=left] at (1.4,-3.5) {\textbf{(1) Điểm chờ:} xe xếp hàng từ $a_i$ đến $b_i$ ($W_q$)};
+\node[tmark,anchor=west,align=left] at (1.4,-6.5) {\textbf{(2) Điểm lỗi:} QR không báo có $\rightarrow$ xử lý lại bằng tiền mặt};
+\node[tmark,anchor=west,align=left] at (1.4,-7.6) {\textbf{(3) Chuyển giao:} nhân viên $\rightarrow$ POS $\rightarrow$ cơ quan thuế (HĐĐT)};
 \end{tikzpicture}}
 \caption{BPMN AS-IS tại một vòi bơm. Nét liền: luồng trình tự trong pool; nét đứt xanh:
 luồng thông điệp giữa các pool; pool xám là hộp đen. Nhãn đỏ là mốc thời gian dùng để đo $W_q=b_i-a_i$ và $S=d_i-b_i$, cùng điểm chờ, điểm lỗi và điểm chuyển giao.}
 \label{r1:bpmn}
-\source{nhóm vẽ bằng TikZ theo ký pháp BPMN (sự kiện, bước công việc, điểm rẽ nhánh, pool/làn, luồng thông điệp); Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra ký pháp và luồng}
+% \source{nhóm vẽ bằng TikZ theo ký pháp BPMN (sự kiện, bước công việc, điểm rẽ nhánh, pool/làn, luồng thông điệp); Claude Code hỗ trợ dựng mã hình; nhóm kiểm tra ký pháp và luồng}
 \end{figure}
 
-Trên sơ đồ có ba điểm rẽ nhánh, vẽ bằng hình thoi có dấu $\times$. Ở nhánh đầu, khách bỏ đi nếu thấy từ 20 xe đang chờ; con số này do nhóm giả định. Ở nhánh thứ hai, quy trình tách theo cách khách trả tiền, bằng tiền mặt hay QR. Ở nhánh thứ ba, máy POS chờ ngân hàng báo có, tức xác nhận tiền đã vào tài khoản. Nếu QR lỗi hoặc chờ quá lâu, nhân viên phải thu lại bằng tiền mặt trong khi xe vẫn đứng ở trụ.
+Theo sơ đồ, một lượt phục vụ diễn ra như sau. Khi xe vào cửa hàng, nếu đã có từ 20 xe đang chờ, tức khoảng 2,5--3 xe mỗi vòi, khách được giả định là bỏ đi; nếu ở lại, khách xếp hàng chờ đến lượt. Khi có trụ rảnh, nhân viên mời xe vào, nghe khách báo loại xăng và số tiền, rồi bơm xăng. Sau đó khách trả tiền mặt hoặc quét QR. Với QR, máy POS phải chờ ngân hàng báo tiền đã vào tài khoản; nếu lỗi hoặc chờ quá lâu, nhân viên chuyển sang thu tiền mặt trong khi xe vẫn đứng ở trụ. Cuối cùng, máy POS xuất hóa đơn điện tử gửi cơ quan thuế, khách nhận hóa đơn và rời trụ.
 
-Sơ đồ cũng đánh dấu ba vị trí bằng chữ đỏ. Điểm chờ (1) là bước xếp hàng. Điểm lỗi (2) là nhánh QR không báo có vừa nêu. Chuyển giao (3) là những lần công việc đi từ khách sang nhân viên, từ nhân viên sang máy POS, rồi tới ngân hàng và cơ quan thuế.
+Ba mốc $a_i$, $b_i$, $d_i$ (Mục~\ref{r1:system}) được ghi ngay trên sơ đồ, nên thấy rõ $W_q$ nằm ở bước xếp hàng, còn $S$ gồm mọi bước tại trụ. Từ đó, có thể thấy hàng chờ nhiều khả năng dài ra vì hai lý do. Lý do thứ nhất nằm ở bước xếp hàng: vào giờ đông, số nhân viên có thể không đủ so với lượng xe. Lý do thứ hai nằm ở thời gian xe đứng ở trụ, vì khoảng này gồm cả trả tiền và lấy hóa đơn chứ không chỉ có bơm. A1 xử lý lý do thứ nhất bằng cách đổi số nhân viên theo giờ, còn A2 xử lý lý do thứ hai bằng cách cho khách trả tiền trước. Mục~\ref{r2:diagnosis} sẽ kiểm tra ba giả thuyết rút ra từ đây: lịch ca cố định không theo kịp lượng xe thay đổi theo giờ, khách bỏ đi khi hàng dài, và thời gian phục vụ kéo dài do khâu thanh toán.
 
-Nhìn vào sơ đồ, hàng chờ dài ra ở hai chỗ. Chỗ thứ nhất là bước xếp hàng, khi số nhân viên không đủ so với lượng xe. Chỗ thứ hai là thời gian xe đứng ở trụ, vì $S$ tính từ $b_i$ đến $d_i$ nên gồm cả bơm, trả tiền và lấy hóa đơn. A1 nhắm vào chỗ thứ nhất bằng cách chỉnh lịch ca, còn A2 nhắm vào chỗ thứ hai bằng cách bớt thao tác tại trụ. Ba giả thuyết rút ra từ đây, gồm lịch ca cố định trong khi $\lambda_t$ dao động, khách bỏ đi khi hàng dài và $E[S]$ dài do thanh toán, được kiểm tra ở Mục~\ref{r2:diagnosis}.
-
-Sơ đồ được dựng theo cách bán lẻ phổ biến ở nội thành~\cite{nd70}, nên vẫn cần đối chiếu thêm với thực tế. Thứ tự các bước, ngưỡng bỏ đi và nhánh lỗi QR hiện là giả định của nhóm. Để kiểm tra lại, nhóm dự kiến ghi ba mốc $a_i$, $b_i$, $d_i$ cho 30--50 lượt mỗi loại xe theo biểu mẫu ở Bảng~\ref{r2:form}.
+Sơ đồ dựa theo cách bán lẻ phổ biến ở nội thành~\cite{nd70}; thứ tự các bước, nhánh lỗi QR và ngưỡng bỏ đi đều là giả định, cần đối chiếu với một cửa hàng thật. Ngưỡng 20 xe là cách đơn giản hóa vì mỗi người chịu chờ một mức khác nhau; thử với 10 và 30 xe thì thứ tự các phương án không đổi (Bảng~\ref{r3:sens-other}). Nhóm dự kiến ghi $a_i$, $b_i$, $d_i$ cho 30--50 lượt mỗi loại xe theo Bảng~\ref{r2:form} để kiểm tra.
 
 % Ban nhap bo tro: chua dua vao PDF chinh.
 \newcommand{\RoleOneSupplement}{%
