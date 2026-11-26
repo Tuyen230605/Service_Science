@@ -54,4 +54,4 @@
     nguong=20: A0 P>5 1.40% bo di 0.40% (17-19: 6.08%, 1.69%) | A1 P>5 0.23% bo di 0.02% (17-19: 0.23%, 0.05%)
     nguong=30: A0 P>5 3.77% bo di 0.13% (17-19: 15.77%, 0.58%) | A1 P>5 0.33% bo di 0.00% (17-19: 0.60%, 0.00%)
 
-[9] Da xuat 5 hinh r3_*.pdf, bang tables/r3_comparison.tex va r3_sens_other.tex, du lieu data/r3_*.csv
+[9] Da xuat 5 hinh r3_*.pdf, bang tables/r3_comparison.tex, du lieu data/r3_*.csv

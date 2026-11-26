@@ -8,7 +8,7 @@ khong sua file nao cua Role 2. Moi so lieu la ket qua mo phong voi tham so gia d
 
 Dau ra:
     figures/r3_staffing.pdf, r3_shifts.pdf, r3_demand.pdf, r3_disruption.pdf, r3_service.pdf
-    tables/r3_comparison.tex, r3_sens_other.tex
+    tables/r3_comparison.tex
     analysis/data/r3_shift_plan.csv, r3_results.csv, r3_run_log.txt
 """
 from __future__ import annotations
@@ -108,7 +108,7 @@ def _factor_ticks(ax, xs):
 
 
 def chart_staffing(plt, req1, req2, path):
-    fig, ax = plt.subplots(figsize=(6.4, 2.45))
+    fig, ax = plt.subplots(figsize=(6.4, 2.15))
     x = np.arange(H)
     ax2 = ax.twinx()
     ax2.bar(x, ra.HOURLY_LAMBDA, 0.72, color="#d9d8d0", zorder=0, label="Lượt xe đến (trục phải)")
@@ -135,7 +135,7 @@ def chart_staffing(plt, req1, req2, path):
 
 
 def chart_shifts(plt, plan_a1, hours_table, path):
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(6.6, 2.75), gridspec_kw={"width_ratios": [1.45, 1]})
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(6.6, 2.45), gridspec_kw={"width_ratios": [1.45, 1]})
     for i, sh in enumerate(plan_a1["shifts"]):
         y = len(plan_a1["shifts"]) - i
         s0 = ra.OPEN_HOUR + sh["start"]
@@ -174,7 +174,7 @@ def chart_shifts(plt, plan_a1, hours_table, path):
 
 
 def chart_lines(plt, xs, series, ylabels, thresholds, path, xlab):
-    fig, axes = plt.subplots(1, len(series), figsize=(6.4, 2.35))
+    fig, axes = plt.subplots(1, len(series), figsize=(6.4, 2.05))
     for ax, ser, ylab, thr in zip(axes, series, ylabels, thresholds):
         for nm in NAMES:
             ax.plot(xs, ser[nm], color=COLORS[nm], marker=MARKERS[nm], markersize=4.5, label=nm)
@@ -194,7 +194,7 @@ def chart_lines(plt, xs, series, ylabels, thresholds, path, xlab):
 
 
 def chart_disruption(plt, base, cut, path):
-    fig, axes = plt.subplots(1, 2, figsize=(6.4, 2.3))
+    fig, axes = plt.subplots(1, 2, figsize=(6.4, 2.05))
     xs = np.arange(len(NAMES))
     wd = 0.36
     for ax, key, ylab, thr in zip(axes, ("peak_P", "peak_balk"),
@@ -220,7 +220,7 @@ def chart_disruption(plt, base, cut, path):
 
 
 def chart_service(plt, xs, peakP, replan, path):
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(6.4, 2.35))
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(6.4, 2.1))
     for nm in NAMES:
         ax.plot(xs, peakP[nm], color=COLORS[nm], marker=MARKERS[nm], markersize=4.5, label=nm)
     ax.axhline(5, color=ra.C_MUTED, linestyle="--", linewidth=1.1)
@@ -449,7 +449,6 @@ def main():
 
     # --- xuat bang va hinh
     write_comparison(os.path.join(ra.TABLES, "r3_comparison.tex"), comp, paid, tech)
-    write_sens_other(os.path.join(ra.TABLES, "r3_sens_other.tex"), other)
     plt = ra.setup_mpl()
     chart_staffing(plt, req1, req2, os.path.join(ra.FIGS, "r3_staffing.pdf"))
     chart_shifts(plt, plans["A1"], hours_table, os.path.join(ra.FIGS, "r3_shifts.pdf"))
@@ -460,7 +459,7 @@ def main():
                 os.path.join(ra.FIGS, "r3_demand.pdf"), "Lượt xe so với hiện tại")
     chart_disruption(plt, base, cut, os.path.join(ra.FIGS, "r3_disruption.pdf"))
     chart_service(plt, factors, peakP, replan, os.path.join(ra.FIGS, "r3_service.pdf"))
-    say("\n[9] Da xuat 5 hinh r3_*.pdf, bang tables/r3_comparison.tex va r3_sens_other.tex, du lieu data/r3_*.csv")
+    say("\n[9] Da xuat 5 hinh r3_*.pdf, bang tables/r3_comparison.tex, du lieu data/r3_*.csv")
 
     with open(os.path.join(ra.DATA, "r3_run_log.txt"), "w", encoding="utf-8") as f:
         f.write("\n".join(log) + "\n")
