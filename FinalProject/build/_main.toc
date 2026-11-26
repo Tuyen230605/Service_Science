@@ -1,0 +1,36 @@
+\contentsline {section}{\numberline {1}Bài toán, mục tiêu và phạm vi nghiên cứu}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Bối cảnh và vấn đề}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Câu hỏi phân tích và tiêu chí đánh giá}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Phạm vi và ranh giới}{2}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Mô hình hệ thống dịch vụ}{2}{section.2}%
+\contentsline {section}{\numberline {3}Bản đồ nguồn lực và cơ chế đồng tạo giá trị}{3}{section.3}%
+\contentsline {section}{\numberline {4}Quy trình hiện tại và chẩn đoán điểm nghẽn}{4}{section.4}%
+\contentsline {section}{\numberline {5}Dữ liệu, giả định và phương pháp phân tích}{7}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Nguồn dữ liệu và hiệu chỉnh quy mô}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Định nghĩa chỉ số và đơn vị}{7}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Mô hình hàng đợi M/M/c để tham chiếu}{7}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Mô phỏng sự kiện rời rạc}{9}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Kiểm chứng và phân tích hiện trạng}{9}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Kiểm tra dữ liệu đầu vào}{9}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Đối chiếu công thức và mô phỏng}{11}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Điểm nghẽn AS-IS}{11}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Diễn giải nguyên nhân và giới hạn suy luận}{12}{subsection.6.4}%
+\contentsline {section}{\numberline {7}Phương án cải tiến và phân bổ nhân lực}{13}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Ba phương án đối chứng}{13}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Bài toán lập lịch theo giờ (BT1)}{13}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Quy trình TO-BE}{14}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Đánh giá, độ nhạy và giới hạn}{15}{section.8}%
+\contentsline {subsection}{\numberline {8.1}So sánh trên cùng bộ chỉ số}{15}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Độ nhạy theo nhu cầu}{16}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Độ nhạy theo các giả định chưa đo được}{16}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Rủi ro và giới hạn}{19}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Đề xuất triển khai và kết luận}{19}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Ưu tiên điều chỉnh lịch trước, thử thanh toán sau}{19}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Kết luận}{20}{subsection.9.2}%
+\contentsline {section}{Tài liệu tham khảo}{21}{section*.27}%
+\contentsline {section}{\numberline {A}Phân công và cách ghép báo cáo}{22}{appendix.A}%
+\contentsline {section}{\numberline {B}Biểu mẫu và kế hoạch thu thập dữ liệu thực}{22}{appendix.B}%
+\contentsline {subsection}{\numberline {B.1}Hai nguồn dữ liệu}{22}{subsection.B.1}%
+\contentsline {subsection}{\numberline {B.2}Lịch quan sát và cỡ mẫu}{23}{subsection.B.2}%
+\contentsline {subsection}{\numberline {B.3}Kiểm tra và nạp vào mô hình}{23}{subsection.B.3}%
+\contentsline {section}{\numberline {C}Khai báo sử dụng AI}{24}{appendix.C}%

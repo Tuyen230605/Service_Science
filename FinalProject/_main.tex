@@ -24,8 +24,13 @@
 \usepackage{tikz}
 \usetikzlibrary{calc,positioning,arrows.meta,shapes.geometric,fit,backgrounds}
 \usepackage[font=small,labelfont=bf,justification=centering]{caption}
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage[hidelinks,unicode]{hyperref}
 \usepackage{xurl}
+\definecolor{lightgray}{gray}{0.95} % Định nghĩa màu xám nhẹ (0.95 gần trắng)
+% \usepackage[backend=biber,style=numeric-comp,sorting=none]{biblatex}
+% \addbibresource{references.bib}
+
 \setstretch{1.3}
 \setlength{\emergencystretch}{2em}
 \setlist{nosep,leftmargin=*}
@@ -89,8 +94,10 @@
 
 {\large\bfseries BÁO CÁO CUỐI KỲ}\\[6mm]
 {\Large\bfseries KHOA HỌC DỊCH VỤ}\\[8mm]
-{\large\bfseries Phân tích hàng đợi giờ cao điểm và bố trí nhân viên bơm\\
-theo giờ tại cửa hàng xăng dầu nội thành Hà Nội}
+{\large\bfseries PHÂN TÍCH HÀNG ĐỢI GIỜ CAO ĐIỂM\\VÀ BỐ TRÍ NHÂN VIÊN BƠM THEO GIỜ\\TẠI CỬA HÀNG XĂNG DẦU NỘI THÀNH HÀ NỘI}
+% Phân tích hàng đợi và đề xuất cải tiến phục vụ\\
+% tại cửa hàng xăng dầu nội thành Hà Nội
+% }
 \end{center}
 \vspace{10mm}
 \noindent\begin{tabular}{@{}lll@{}}
@@ -109,6 +116,13 @@ Giảng viên môn học: & \multicolumn{2}{l}{TS. Nguyễn Thị Cẩm Vân} \\
 \hypersetup{pageanchor=true}
 \tableofcontents
 \clearpage
+
 \pagenumbering{arabic}
+
 \input{_content}
+
+
+% \bibliographystyle{unsrtnat} % TLTK dang nam trong _content.tex (thebibliography)
+% \bibliography{refs}
+
 \end{document}

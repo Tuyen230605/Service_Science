@@ -2,6 +2,17 @@
   "latex-workshop.latex.outDir": "%DIR%/build",
   "latex-workshop.latex.tools": [
     {
+      "name": "tectonic",
+      "command": "tectonic",
+      "args": [
+        "--synctex",
+        "--keep-logs",
+        "--outdir=%OUTDIR%",
+        "%DOC%.tex"
+      ],
+      "cwd": "%DIR%"
+    },
+    {
       "name": "latexmk",
       "command": "latexmk",
       "args": [
@@ -17,9 +28,13 @@
   ],
   "latex-workshop.latex.recipes": [
     {
+      "name": "tectonic",
+      "tools": ["tectonic"]
+    },
+    {
       "name": "latexmk",
       "tools": ["latexmk"]
     }
   ],
-  "latex-workshop.latex.recipe.default": "latexmk"
+  "latex-workshop.latex.recipe.default": "first"
 }
