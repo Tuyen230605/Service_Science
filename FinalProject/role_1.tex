@@ -10,7 +10,7 @@
 \noindent
 Bán lẻ xăng ở nội thành Hà Nội có đặc điểm là nhiều lượt khách nhưng mỗi lượt mua ít. Thành phố có 453 cửa hàng xăng dầu~\cite{sct2026} và khoảng 5,6 triệu xe máy chạy xăng~\cite{vnex2025}, trong khi bình xăng xe máy phổ biến chỉ chứa dưới 5 lít~\cite{tank}. Mỗi lượt chỉ bơm vài lít, nên nhiều khả năng một phần đáng kể thời gian xe đứng ở trụ dành cho việc mời xe, trả tiền và lấy hóa đơn. Từ năm 2025, mỗi lần bán còn phải xuất thêm một hóa đơn điện tử~\cite{nd70}.
 
-Khó khăn của cửa hàng là lượng xe đến không đều, trong khi lãi trên mỗi lít lại thấp. Nhóm giả định xe dồn vào giờ đi làm và tan tầm, rồi thưa hơn vào giữa ngày. Khoản chiết khấu cửa hàng được hưởng trên mỗi lít có lúc thấp hơn nhiều so với mức cần để bù chi phí~\cite{chietkhau}, nên khó tăng người cho mọi giờ.
+Khó khăn của cửa hàng là lượng xe đến không đều, trong khi lãi trên mỗi lít lại thấp. Theo Google Maps của hai cửa hàng ở Hà Nội, xe dồn mạnh nhất vào chiều tối (Mục~\ref{r2:gmaps}). Khoản chiết khấu cửa hàng được hưởng trên mỗi lít có lúc thấp hơn nhiều so với mức cần để bù chi phí~\cite{chietkhau}, nên khó tăng người cho mọi giờ.
 
 Từ đó, vấn đề chính là \textbf{cửa hàng dùng một lịch nhân viên cố định cho lượng khách thay đổi theo giờ}. Vào giờ cao điểm, số nhân viên không theo kịp lượng xe, trong khi mỗi xe lại đứng ở trụ khá lâu để trả tiền và lấy hóa đơn. Khách vì thế phải chờ lâu, có người bỏ đi; còn giờ vắng khách thì thừa người. Bài toán đặt ra là bố trí số nhân viên theo từng giờ để giảm thời gian chờ và số khách bỏ đi mà không tăng chi phí nhân lực.
 %
@@ -27,7 +27,7 @@ Bảng~\ref{r1:problem} tóm tắt vấn đề theo người bị ảnh hưởng
 Người được phục vụ & Khách đổ xăng tại cửa hàng, chủ yếu đi xe máy, một phần nhỏ đi ô tô \\
 \rowcolor{lightgray}
 Nơi xảy ra & Hàng chờ trước 8 trụ bơm (giả định), từ lúc xe vào hàng đến lúc được mời vào trụ \\
-Thời điểm & Hai đỉnh sáng và chiều (phân bố giả định); rõ nhất ở 17:00--19:00, còn giờ 08--09 sát ngưỡng với 4,6\% xe chờ quá 5 phút và 1\% bỏ đi; khung 09:00--17:00 dư công suất (mô phỏng) \\
+Thời điểm & Dồn vào 17:00--22:00 ở hai trạm trên Google Maps (Mục~\ref{r2:gmaps}); đỉnh sáng 08--09 của mô hình chỉ là giả định; khung 09:00--17:00 dư công suất (mô phỏng) \\
 \rowcolor{lightgray}
 Biểu hiện & Hàng có thể kéo dài; khách khó đoán thời gian chờ; một phần khách có thể bỏ đi \\
 Mức độ (mô phỏng) & Cả ngày mỗi xe chỉ chờ trung bình 0,64 phút, nhưng khung 17--19 giờ có 6,2\% xe chờ quá 5 phút và 2,3\% xe bỏ đi; giờ 18--19 các vòi gần như bận kín (Mục~\ref{r2:diagnosis}) \\
@@ -201,7 +201,7 @@ Nhóm dùng logic hướng dịch vụ (S-D logic)~\cite{vargo2004} để đọc
 \rowcolor{lightgray}
 \multicolumn{4}{@{}l}{\textit{Bên trong cửa hàng}} \\
 Khách hàng & Tiền, thời gian; tự mở nắp bình, báo số tiền, quét QR & Xăng, hóa đơn & Chờ lâu giờ cao điểm; chờ thêm khi QR lỗi \\
-Nhân viên bơm & Giờ công, kỹ năng & Lương 8--15 triệu đồng/tháng~\cite{wage} & Quá tải giờ cao điểm; dễ nhầm khi thu tiền mặt \\
+Nhân viên bơm & Giờ công, kỹ năng & Lương 7--15 triệu đồng/tháng~\cite{wageMB,wageHFC} & Quá tải giờ cao điểm; dễ nhầm khi thu tiền mặt \\
 Cửa hàng & Mặt bằng, 8 vòi bơm, lịch ca & Doanh thu, lượt bán & Chi phí nhân lực; mất khách khi hàng dài \\
 \midrule
 \rowcolor{lightgray}
@@ -218,7 +218,7 @@ Giá trị chỉ được tạo ra trọn vẹn khi nguồn lực của các bê
 \section{Quy trình hiện tại}
 \label{r1:asis}
 \noindent
-Hình~\ref{r1:bpmn} mô tả quy trình phục vụ hiện tại, từ lúc xe vào cửa hàng đến lúc xe nhận hóa đơn và rời trụ. Sơ đồ tách riêng phần việc của khách, nhân viên bơm, máy POS, ngân hàng và cơ quan thuế. Quy trình này dựa theo cách bán lẻ phổ biến ở nội thành~\cite{nd70}; thứ tự các bước, nhánh lỗi QR và ngưỡng bỏ đi đều là giả định. Ngưỡng 20 xe là cách đơn giản hóa vì mỗi người chịu chờ một mức khác nhau; thử với 10 và 30 xe thì thứ tự các phương án không đổi (Mục~\ref{r3:evaluation}). Nhóm dự kiến ghi $a_i$, $b_i$, $d_i$ cho 30--50 lượt mỗi loại xe theo Bảng~\ref{r2:form} để kiểm tra.
+Hình~\ref{r1:bpmn} mô tả quy trình phục vụ hiện tại, từ lúc xe vào cửa hàng đến lúc xe nhận hóa đơn và rời trụ. Sơ đồ tách riêng phần việc của khách, nhân viên bơm, máy POS, ngân hàng và cơ quan thuế. Quy trình này dựa theo cách bán lẻ phổ biến ở nội thành~\cite{nd70}; thứ tự các bước, nhánh lỗi QR và ngưỡng bỏ đi đều là giả định. Ngưỡng 20 xe là cách đơn giản hóa vì mỗi người chịu chờ một mức khác nhau; thử với 10 và 30 xe thì thứ tự các phương án không đổi (Mục~\ref{r3:evaluation}). Các mốc này đo được bằng biểu mẫu ở Bảng~\ref{r2:form} nếu có cửa hàng hợp tác; nhóm chưa đo.
 
 \begin{figure}[!hbpt]\centering
 \resizebox{\linewidth}{!}{%
