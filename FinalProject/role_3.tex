@@ -10,7 +10,9 @@
 \noindent
 Phần này đi từ số kênh cần ở mỗi giờ, tới lịch ca và quy trình TO-BE. A2
 dùng thời gian phục vụ giảm 20\% (1,2 phút cho xe máy, 3,2 phút cho ô tô),
-là giả định (G) trong Bảng~\ref{r2:assumptions}.
+là giả định (G) trong Bảng~\ref{r2:assumptions}. Các con số ở Mục 7--8 là
+của cửa hàng minh họa theo giả định G; Mục~\ref{r3:conclusion} tính lại lịch
+cho hai cửa hàng có dữ liệu Google Maps.
 
 \subsection{Số kênh cần theo giờ (BT1)}
 \label{r3:bt1}
@@ -379,6 +381,15 @@ người dự phòng có thể gọi đến cho ca chiều. Thứ hai, giữ cá
 đỉnh, vì bỏ chúng thì A1 cần tới 120 giờ. Thứ ba, lập lại lịch khi lượt xe
 theo giờ tăng rõ, vì mức tăng 20\% đã làm lịch cũ trượt ngưỡng bỏ đi.
 
+Mỗi cửa hàng cũng phải lập lịch từ dữ liệu của chính mình. Nhóm lặp lại BT1
+và bài toán ghép ca với phân bố giờ của hai trạm ở Mục~\ref{r2:gmaps}. Lịch
+riêng của trạm Mỹ Đình và trạm ATS Mipecorp đều cần 96 giờ trả lương, bằng cửa hàng minh họa, nhưng có thêm ca ngắn buổi chiều tối; trạm Mỹ Đình có hai ca
+18--22. Với lịch riêng, tỷ lệ chờ quá 5 phút cả ngày của hai trạm chưa tới
+0,5\% và tỷ lệ bỏ đi không quá 0,1\%. Nếu dùng nguyên lịch của cửa hàng minh
+họa, 89,4\% xe ở trạm Mỹ Đình phải chờ quá 5 phút trong giờ 21--22. Như vậy,
+lịch tốt cần đúng số người vào đúng giờ của từng nơi, chứ không chỉ đúng tổng
+số giờ (lịch chi tiết trong \path{analysis/data/r3_shift_plan.csv}).
+
 \begin{table}[htbp]\centering\small
 \caption{Kế hoạch kiểm tra giải pháp trước khi áp dụng rộng}\label{r3:pilot}
 \begin{tabularx}{\linewidth}{@{}p{24mm}Y Y@{}}
@@ -393,24 +404,19 @@ Rà soát định kỳ & Theo dõi lượt xe theo giờ từ hóa đơn điện
 \end{tabularx}
 \end{table}
 
-Bảng~\ref{r3:pilot} sắp các bước theo thứ tự rủi ro tăng dần. Bước đo đi
-trước vì Mục~\ref{r3:limits} cho thấy $E[S]$ quyết định số giờ cần. Lịch A1
-được thử tiếp theo vì không cần đầu tư. A2 đi sau cùng vì cần tiền cho ứng
-dụng và cần biết bao nhiêu khách chịu trả trước.
+Bảng~\ref{r3:pilot} sắp các bước theo rủi ro tăng dần. Bước đo đi trước vì
+$E[S]$ quyết định số giờ cần (Mục~\ref{r3:limits}); lịch A1 thử tiếp vì không
+cần đầu tư; A2 đi sau cùng vì cần tiền và cần biết bao nhiêu khách chịu trả
+trước.
 
 \subsection{Kết luận}
 \noindent
 Câu trả lời cho câu hỏi chính ở Mục~\ref{r1:scope} là có, trong phạm vi mô
-hình. Cửa hàng chỉ cần xếp lại số nhân viên theo giờ và ghép thành ca, có ca ngắn
-ở hai đỉnh. Với 96 giờ trả lương như hiện nay, tỷ lệ xe chờ quá 5 phút giờ
-17--19 khi đó giảm từ 6,2\% xuống 0,5\%, còn tỷ lệ bỏ đi giảm từ 2,3\%
-xuống 0,2\%. Cải tiến
-khâu thanh toán (A2) không cần để đạt ngưỡng ở kịch bản cơ sở. Nó giúp giảm
-giờ trả lương xuống 80 giờ, và trở thành điều kiện cần nếu thời gian phục vụ
-thực dài hơn giả định.
-
-Đây là đề xuất dựa trên mô hình, chưa được kiểm chứng tại cửa hàng; các bước
-kiểm chứng nằm ở Bảng~\ref{r3:pilot}.
+hình. Với lịch ca có ca ngắn ở giờ đỉnh và 96 giờ trả lương như hiện nay, tỷ
+lệ xe chờ quá 5 phút giờ 17--19 giảm từ 6,2\% xuống 0,5\%, tỷ lệ bỏ đi từ
+2,3\% xuống 0,2\%. Cải tiến thanh toán (A2) không cần để đạt ngưỡng ở kịch bản cơ sở; nó giảm giờ
+trả lương xuống 80 giờ và là điều kiện cần nếu thời gian phục vụ thực
+dài hơn giả định. Kết quả này cần được kiểm chứng tại cửa hàng theo các bước ở Bảng~\ref{r3:pilot}.
 \todo{3}{Đối chiếu lịch ca và chi phí với một cửa hàng thật.}
 
 \newcommand{\RoleThreeSupplement}{%
