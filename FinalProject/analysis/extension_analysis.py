@@ -45,10 +45,10 @@ def _f2(x, nd=2):
     if isinstance(x, str):
         return x
     if isinstance(x, (int, np.integer)):
-        return f"{int(x):,}".replace(",", "\\,")
+        return f"{int(x):,}"
     if not isfinite(x):
         return "--"
-    return f"{x:,.{nd}f}".replace(",", "\\,")
+    return f"{x:,.{nd}f}"
 
 
 def hh(*lines):
@@ -275,9 +275,9 @@ def location_econ_sens(res):
     say(f"     Lai gop hoa von thap nhat trong 10 to hop: {m_star:,.0f} d/L")
     rows = []
     for label, m, s in [("Lãi gộp 700 đ/L (ngưỡng bù chi phí)", 700, 1.0),
-                        ("Lãi gộp 1\\,000 đ/L", 1000, 1.0),
-                        ("Lãi gộp 1\\,500 đ/L (cơ sở)", ra.MARGIN_PER_LITRE, 1.0),
-                        ("Lãi gộp 2\\,000 đ/L", 2000, 1.0),
+                        ("Lãi gộp 1,000 đ/L", 1000, 1.0),
+                        ("Lãi gộp 1,500 đ/L (cơ sở)", ra.MARGIN_PER_LITRE, 1.0),
+                        ("Lãi gộp 2,000 đ/L", 2000, 1.0),
                         ("Cơ sở; $f_j$ giảm 30\\%", ra.MARGIN_PER_LITRE, 0.7),
                         ("Cơ sở; $f_j$ tăng 30\\%", ra.MARGIN_PER_LITRE, 1.3)]:
         best = max(res, key=lambda r: profit(r, m, s))
@@ -437,7 +437,7 @@ def scenario_block():
                                + k * res[(s[0], st)]["lost_clv_day"])
                           for p, s in zip(SCEN_PROB, SCEN))
         win = min(exp, key=exp.get)
-        clv_rows.append([f"$\\times${k:.1f} ({CLV[2]*k/1e3:,.0f} / {CLV[1]*k/1e6:,.2f})".replace(",", "\\,")]
+        clv_rows.append([f"$\\times${k:.1f} ({CLV[2]*k/1e3:,.0f} / {CLV[1]*k/1e6:,.2f})"]
                         + [exp[st] / 1e3 for st in cand] + [win])
         say(f"     CLVx{k:.1f} " + "  ".join(f"{st}={exp[st]/1e3:.1f}" for st in cand) + f" -> {win}")
     write_table("tab_ext_clv.tex",

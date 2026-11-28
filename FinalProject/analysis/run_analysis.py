@@ -332,9 +332,9 @@ def _fmt(x, nd=2):
     if isinstance(x, (float, np.floating)):
         if not isfinite(x):
             return "--"
-        return f"{x:,.{nd}f}".replace(",", "\\,")
+        return f"{x:,.{nd}f}"
     if isinstance(x, (int, np.integer)):
-        return f"{int(x):,}".replace(",", "\\,")
+        return f"{int(x):,}"
     return str(x)
 
 
@@ -623,7 +623,7 @@ def main():
                     ["Khung giờ", "Số lượt (20 ngày)", "$\\hat{\\lambda}$ (xe/giờ)",
                      "$\\lambda$ giả định (xe/giờ)", "Var/Mean"],
                     [[r["hour"], r["n_total"], r["lambda_hat"], r["lambda_assumed"],
-                      r["var_mean_ratio"]] for r in est_rows])
+                      r["var_mean_ratio"]] for r in est_rows], align="c"*5)
 
     val_rows = validate_formulas()
     say("\n[2] Kiem dinh Erlang C (CV = 1, mot lop xe, 40 ngay/cau hinh)")
@@ -634,7 +634,7 @@ def main():
                     ["$\\lambda$ (xe/giờ)", "$c$", "$\\rho$", "$W_q$ công thức (phút)",
                      "$W_q$ mô phỏng (phút)", "Chênh lệch (\\%)"],
                     [[r["lambda"], r["c"], r["rho"], r["Wq_analytic"], r["Wq_sim"],
-                      r["gap_pct"]] for r in val_rows], nd=3)
+                      r["gap_pct"]] for r in val_rows], nd=3, align="c"*6)
 
     conv = convergence_check()
     say("\n[2b] Kiem tra hoi tu (CV = 1; ngay 16 gio x 200 ngay; mach dai 3000 gio, bo 100 gio dau)")
@@ -653,7 +653,7 @@ def main():
                     ["Khung giờ", "$\\lambda$ (xe/giờ)", "$c$", "$\\rho$", "$L_q$ (xe)",
                      "$W_q$ (phút)", "$W_q^{90}$ (phút)", "$P(W_q{>}5)$", "Mục tiêu"],
                     [[r["hour"], r["lambda"], r["c"], r["rho"], r["Lq"], r["Wq"],
-                      r["Wq_p90"], r["P_gt"], r["feasible"]] for r in rows_a0])
+                      r["Wq_p90"], r["P_gt"], r["feasible"]] for r in rows_a0], align="c"*9)
 
     opt_a1 = optimize_staffing(MEAN_SERVICE_ASIS)
     opt_a2 = optimize_staffing(MEAN_SERVICE_TOBE)
@@ -811,7 +811,7 @@ def main():
     write_tex_table(os.path.join(TABLES, "tab_gmaps_share.tex"),
                     ["Khung giờ", "G (\\%)"] + [f"{n} (\\%)" for n in names]
                     + ["$\\lambda$ G"] + [f"$\\lambda$ {n}" for n in names],
-                    sh_rows, nd=1)
+                    sh_rows, nd=1, align="c"*len(sh_rows[0]))
 
     plt = setup_mpl()
     chart_gmaps(plt, profiles)
