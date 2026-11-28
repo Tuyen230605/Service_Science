@@ -29,9 +29,9 @@
 \toprule
 Người phụ trách & Nội dung chịu trách nhiệm & Đầu ra bàn giao \\
 \midrule
-Phạm Tuấn Anh\newline \texttt{role\_1.tex} & Vấn đề, phạm vi, khung hệ thống, bản đồ nguồn lực, bên liên quan, Blueprint và quy trình AS-IS. & Mục 1--4; vẽ Hình~\ref{r1:resource-map} và Hình~\ref{r1:bpmn}. \\
-Đoàn Văn Tuyền\newline \texttt{role\_2.tex} & Dữ liệu, giả định, M/M/c, mô phỏng, kiểm chứng, phân tích nguyên nhân và mô hình mở rộng. & Mục 5--7 và Phụ lục~\ref{r2:appendix}. \\
-Phạm Nam Khánh\newline \texttt{role\_3.tex} & Giải pháp, TO-BE, đối chứng, độ nhạy, rủi ro, kế hoạch thử nghiệm và kết luận. & Mục 8--10. \\
+Phạm Tuấn Anh & Vấn đề, phạm vi, khung hệ thống, bản đồ nguồn lực, bên liên quan, Blueprint và quy trình AS-IS. & Mục 1--4; vẽ Hình~\ref{r1:resource-map} và Hình~\ref{r1:bpmn}. \\
+Đoàn Văn Tuyền & Dữ liệu, giả định, M/M/c, mô phỏng, kiểm chứng, phân tích nguyên nhân và mô hình mở rộng. & Mục 5--7 và Phụ lục~\ref{r2:appendix}. \\
+Phạm Nam Khánh & Giải pháp, TO-BE, đối chứng, độ nhạy, rủi ro, kế hoạch thử nghiệm và kết luận. & Mục 8--10. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -45,16 +45,17 @@ role khác được thống nhất trước khi ghép.
 \section{Khai báo sử dụng AI}
 \label{app:ai}
 \noindent
-AI chỉ được dùng trong ba việc: hỗ trợ tìm số liệu công bố, hỗ trợ tìm nguồn học thuật, và hỗ trợ viết và sửa mã phân tích; ngoài ba việc này báo cáo không dùng AI.
-Mốc thời gian: ngày 21/11/2026 tìm số liệu công bố và nguồn học thuật; ngày 26/11/2026 mở lại và đối chiếu nguyên văn các nguồn của Mục 5--6, viết thêm kiểm tra hội tụ cho mô phỏng; ngày 27/11/2026 TV2 chụp 14 biểu đồ Giờ đông khách trên Google Maps và AI viết mã đo chiều cao cột để chạy lại mô hình.
+AI chỉ được dùng trong bốn việc: hỗ trợ tìm số liệu công bố, hỗ trợ tìm nguồn học thuật, hỗ trợ viết và sửa mã phân tích, và hỗ trợ chỉnh sửa câu từ theo dàn ý của nhóm; ngoài bốn việc này báo cáo không dùng AI.
+Mốc thời gian: ngày 21/11/2026 tìm số liệu công bố và nguồn học thuật; ngày 26/11/2026 mở lại và đối chiếu nguyên văn các nguồn của Mục 5--6, viết thêm kiểm tra hội tụ cho mô phỏng; ngày 27/11/2026 Đoàn Văn Tuyền chụp 14 biểu đồ Giờ đông khách trên Google Maps và AI viết mã đo chiều cao cột để chạy lại mô hình.
 Mọi số liệu, giả định và kết luận do nhóm kiểm tra trước khi nộp.
-\begin{longtable}{@{}p{30mm}p{48mm}p{72mm}@{}} 
+\begin{longtable}{@{}p{30mm}p{70mm}p{50mm}@{}} 
 \toprule
 Thành phần & Phạm vi AI hỗ trợ & Cách kiểm chứng / việc cần làm \\
 \midrule\endhead
+Câu từ, trình bày & Hỗ trợ chỉnh sửa câu từ, rút gọn và thống nhất cách diễn đạt theo dàn ý và ý của nhóm; không tự thêm nội dung hay kết luận mới. & Mỗi người đọc lại phần mình, đối chiếu rubric và số liệu trong log; giữ nguyên bản của nhóm nếu câu sửa làm lệch nghĩa. \\
 Số liệu công bố & Hỗ trợ tìm số liệu qua công cụ tìm kiếm web ngày 21/11/2026; không nhập liệu, không suy ra số thay nhóm. & Mở lại từng URL trong tài liệu tham khảo; sửa nếu khác. Nguồn của Mục 5--6 đã được đối chiếu ngày 26/11/2026; nguồn lương được thay bằng tin tuyển dụng toàn thời gian còn hạn. \\
 Nguồn học thuật & Hỗ trợ tìm các bài báo cho khung hệ thống và đồng tạo giá trị (Maglio \& Spohrer; Vargo \& Lusch); phần diễn giải do nhóm viết. & Kiểm tra thông tin xuất bản qua DOI; chưa truy cập được toàn văn nên chỉ trích định nghĩa chung, đối chiếu với phần tóm tắt. \\
-Mã nguồn & Hỗ trợ viết và sửa mã: \texttt{run\_analysis.py}, \path{extension_analysis.py}, loại xe, hành vi bỏ đi và sự kiện đổi giờ trong \texttt{simulate.py}; kiểm tra hội tụ và hai hình \texttt{r2\_validation}, \texttt{r2\_asis\_load} (26/11/2026); đọc ảnh Google Maps (27/11/2026). & Chạy lại phân tích chính và đối chiếu với log; role 2 kiểm tra giả định và tải cao; so số đo cột với ảnh gốc trong \path{data/gmaps/}. \\
+Mã nguồn & Hỗ trợ viết và sửa mã: \path{run_analysis.py}, \path{extension_analysis.py}, loại xe, hành vi bỏ đi và sự kiện đổi giờ trong \path{simulate.py}; kiểm tra hội tụ và hai hình \path{r2_validation.png}, \path{r2_asis_load.png} (26/11/2026); \path{gmaps.py} đo chiều cao cột từ ảnh Google Maps (27/11/2026). & Chạy lại phân tích chính và đối chiếu với log; người phụ trách Mục 5--7 kiểm tra giả định và tải cao; so số đo cột với ảnh gốc trong \path{analysis/data/gmaps/}. \\
 \bottomrule
 \end{longtable}
 

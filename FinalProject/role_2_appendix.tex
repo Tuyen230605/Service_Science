@@ -99,7 +99,7 @@ thức không áp dụng được. Kết quả chạy dài cho $\rho=0{,}98$ l�
 \begin{table}[H]\centering\small
 \caption{Đối chiếu M/M/c với mô phỏng, mỗi cấu hình 40 ngày (một loại xe, CV = 1, không bỏ đi)}\label{r2:validation-table}
 \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_validation.tex}}
-\source{\texttt{tables/tab\_validation.tex}; dữ liệu mô phỏng}
+% \source{\texttt{tables/tab\_validation.tex}; dữ liệu mô phỏng}
 \end{table}
 
 Bảng~\ref{r2:hourly} là số liệu của Hình~\ref{r2:asis-load}, gồm thêm số xe
@@ -107,7 +107,7 @@ chờ $L_q$, thời gian chờ và phân vị 90\% $W_q^{90}$ theo từng giờ.
 \begin{table}[H]\centering\small
 \caption{M/M/c theo giờ với 6 kênh và $E[S]=1{,}57$ phút}\label{r2:hourly}
 \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/tab_asis_hourly.tex}}
-\source{\texttt{tables/tab\_asis\_hourly.tex}; dữ liệu mô phỏng}
+% \source{\texttt{tables/tab\_asis\_hourly.tex}; dữ liệu mô phỏng}
 \end{table}
 \FloatBarrier
 
@@ -149,7 +149,7 @@ Bảng~\ref{r2:gmaps-table} chạy lại mô hình của Mục~\ref{r2:diagnosis
 \begin{table}[htbp]\centering\small
 \caption{A0 và A1 khi lượt xe theo giả định G so với theo Google Maps}\label{r2:gmaps-table}
 \resizebox{\linewidth}{!}{\input{tables/tab_gmaps.tex}}
-\source{\texttt{tables/tab\_gmaps.tex}; mô phỏng 20 ngày, $E[S]$ hiện tại; ``giờ không đạt'' tính bằng M/M/c; ``A1 lập lại'' là lịch A1 tính lại theo phân bố của từng trạm}
+% \source{\texttt{tables/tab\_gmaps.tex}; mô phỏng 20 ngày, $E[S]$ hiện tại; ``giờ không đạt'' tính bằng M/M/c; ``A1 lập lại'' là lịch A1 tính lại theo phân bố của từng trạm}
 \end{table}
 
 Nhưng lịch A1 lập theo giả định G thì không dùng được cho hai trạm này. A1 xếp nhiều người lúc 07--09 giờ và bớt người sau 20 giờ, đúng lúc hai trạm còn đông. Ở trạm Mỹ Đình, giờ 21--22 chỉ có 4 người cho 206 xe, tức $\rho=1{,}35$: 89\% xe chờ quá 5 phút và 2,9\% xe bỏ đi trong ngày, tệ hơn cả lịch cố định. Lập lại lịch theo phân bố riêng của từng trạm thì A1 đạt mục tiêu ở mọi giờ, với 87 và 85 giờ công, gần bằng 88 giờ công ban đầu.
@@ -188,7 +188,7 @@ Cột & Đơn vị / mã & Cách ghi \\
 \texttt{payment\_result} & OK / lỗi / đổi & Thanh toán thành công, bị lỗi, hay phải đổi hình thức \\
 \bottomrule
 \end{tabularx}
-\source{Nhóm đề xuất; \texttt{service\_min} và \texttt{wait\_min} được tính từ các mốc thời gian}
+% \source{Nhóm đề xuất; \texttt{service\_min} và \texttt{wait\_min} được tính từ các mốc thời gian}
 \end{table}
 
 Mốc $e_i$ tách thời gian phục vụ thành thời gian bơm ($b_i$ đến $e_i$) và thời
