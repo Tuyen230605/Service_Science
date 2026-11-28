@@ -56,13 +56,13 @@
 \newcommand{\resulttable}[3]{\begin{table}[htbp]\centering
   \caption{#2}\label{#3}
   \resizebox{\linewidth}{!}{\input{tables/#1}}
-  \source{\texttt{tables/\detokenize{#1}}; dữ liệu mô phỏng có sẵn trong dự án}
+  % \source{\texttt{tables/\detokenize{#1}}; dữ liệu mô phỏng có sẵn trong dự án}
   \end{table}}
 % Bang sinh tu Python giu kich thuoc tu nhien, chi thu nho khi rong hon le.
 \newcommand{\exttable}[3]{\begin{table}[htbp]\centering\small
   \caption{#2}\label{#3}
   \resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{\input{tables/#1}}
-  \source{\texttt{tables/\detokenize{#1}}; dữ liệu mô phỏng, quy mô hiệu chỉnh từ số liệu công bố}
+  % \source{\texttt{tables/\detokenize{#1}}; dữ liệu mô phỏng, quy mô hiệu chỉnh từ số liệu công bố}
   \end{table}}
 % Ky phap so do quy trinh (BPMN rut gon) dung chung cho role 1 va role 3.
 \tikzset{
@@ -94,6 +94,7 @@
 
 {\large\bfseries BÁO CÁO CUỐI KỲ}\\[6mm]
 {\Large\bfseries KHOA HỌC DỊCH VỤ}\\[8mm]
+% \fontsize{20}{24}\selectfont
 {\large\bfseries GIẢM HÀNG CHỜ GIỜ CAO ĐIỂM\\TẠI CỬA HÀNG XĂNG DẦU NỘI THÀNH HÀ NỘI}
 % Phân tích hàng đợi và đề xuất cải tiến phục vụ\\
 % tại cửa hàng xăng dầu nội thành Hà Nội
