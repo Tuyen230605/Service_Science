@@ -38,6 +38,8 @@ Nguyên nhân giả định & (1) số nhân viên cố định trong khi lượ
 \end{tabularx}
 \end{table}
 
+
+
 \subsection{Câu hỏi phân tích và tiêu chí đánh giá}
 \noindent
 Từ vấn đề trên, câu hỏi chính của báo cáo là: nếu cửa hàng thay đổi số nhân viên theo từng giờ thay vì giữ cố định, tỷ lệ xe chờ quá 5 phút và tỷ lệ khách bỏ đi trong giờ cao điểm, nhất là khung 17:00--19:00, có giảm xuống mức chấp nhận được không? Nếu chưa đủ, có cần cải tiến thêm khâu thanh toán không? Để trả lời, nhóm so sánh ba phương án trên cùng một lượng xe đến được mô phỏng: A0 giữ nguyên cách làm hiện tại; A1 thay đổi số nhân viên theo từng giờ; A2 làm như A1 và cho khách trả tiền trước bằng QR hoặc ứng dụng để xe đứng ở trụ ngắn hơn. Quy trình hiện tại gọi là AS-IS, quy trình sau cải tiến gọi là TO-BE.
@@ -102,12 +104,12 @@ Pháp lý (L) & NĐ~70/2025 đặt nền cho hóa đơn điện tử theo từng
 \end{tabularx}
 \end{table}
 
-Ngoài ra còn có cú sốc ngắn hạn, như ngày 7/3/2026 có 17 cửa hàng ở Hà Nội tạm dừng bán hoặc hết hàng~\cite{vtc2026}. Vì vậy, lịch nhân viên cần được lập lại khi lượng xe thay đổi; Mục~\ref{r3:scen3} thử lịch đề xuất trong ba kịch bản tương ứng. Về dài hạn, nhóm đặt mục tiêu giữ chân khách bằng thời gian chờ ngắn và ổn định với chi phí nhân lực hợp lý, và xếp lịch theo giờ là một bước của mục tiêu đó.
+Ngoài ra còn có cú sốc ngắn hạn, như ngày 7/3/2026 có 17 cửa hàng ở Hà Nội tạm dừng bán hoặc hết hàng~\cite{vtc2026}. Vì vậy, lịch nhân viên cần được lập lại khi lượng xe thay đổi; Mục~\ref{r3:demand} thử lịch đề xuất khi lượng xe đổi từ 80\% đến 140\%. Về dài hạn, nhóm đặt mục tiêu giữ chân khách bằng thời gian chờ ngắn và ổn định với chi phí nhân lực hợp lý, và xếp lịch theo giờ là một bước của mục tiêu đó.
 
 \section{Mô hình hệ thống dịch vụ}
 \label{r1:system}
 \noindent
-Nhóm chọn mô hình hệ thống dịch vụ làm khung phân tích chính. Theo khung này, một hệ thống dịch vụ gồm con người, công nghệ và thông tin dùng chung như quy định, cách đo, phối hợp với nhau để cùng tạo ra giá trị~\cite{maglio2008}. Hướng dẫn của học phần gợi ý hai khung có thể dùng là Work System Framework và mô hình hệ thống dịch vụ~\cite{rubric}. Nhóm chọn khung thứ hai vì ở cửa hàng xăng, khách trực tiếp tham gia vào dịch vụ: mở nắp bình, báo số tiền, quét QR. Những thao tác đó kéo dài thời gian xe đứng ở trụ, nên cần nhìn khách như một bên cùng tạo ra giá trị. Cách nhìn này cũng nối thẳng sang bản đồ nguồn lực ở Mục~\ref{r1:resources}.
+Nhóm chọn mô hình hệ thống dịch vụ làm khung phân tích chính. Theo khung này, một hệ thống dịch vụ gồm con người, công nghệ và thông tin dùng chung như quy định, cách đo, phối hợp với nhau để cùng tạo ra giá trị~\cite{maglio2008}. Một khung khác có thể dùng là Work System Framework. Nhóm chọn mô hình hệ thống dịch vụ vì ở cửa hàng xăng, khách trực tiếp tham gia vào dịch vụ: mở nắp bình, báo số tiền, quét QR. Những thao tác đó kéo dài thời gian xe đứng ở trụ, nên cần nhìn khách như một bên cùng tạo ra giá trị. Cách nhìn này cũng nối thẳng sang bản đồ nguồn lực ở Mục~\ref{r1:resources}.
 
 \begin{table}[!hbpt]\centering\small
 \caption{Các thành phần của hệ thống và liên hệ với bài toán chờ}\label{r1:components}

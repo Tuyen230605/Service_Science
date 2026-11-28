@@ -71,7 +71,7 @@ Lượt xe trong ngày lên xuống gấp đôi, còn cửa hàng giữ 6 nhân 
 Nhóm quan sát thấy được \textbf{có sự chênh lệch về nhu cầu sử dụng nhiên liệu theo thời gian}. Giờ đông nhất là 18--19 giờ với 225 xe, gấp đôi giờ vắng nhất. Ba giờ cao điểm 08--09, 17--18 và 18--19 chiếm 3/16 thời gian mở cửa nhưng nhận 26\% tổng lượt xe (Hình~\ref{r2:arrivals}).
 Để kiểm giả định G, nhóm dùng biểu đồ ``giờ đông khách'' của Google Maps. Kết quả cho thấy rằng \textbf{hai trạm (Mỹ Đình và ATS Mipecorp) có đỉnh chiều, nhưng không có đỉnh sáng.} 
 
-\begin{figure}[htbp]\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=0.78\linewidth]{figures/r2_gmaps.png}
 \caption{Lượt xe theo giờ: giả định G so với hai trạm đo từ Google Maps, cùng tổng 2,495 lượt/ngày}\label{r2:arrivals}
 % \source{\texttt{analysis/run\_analysis.py}, \texttt{analysis/gmaps.py}; ảnh Google Maps~\cite{gmaps2026}; số liệu ở Bảng~\ref{r2:gmaps-share}, Phụ lục~\ref{r2:app-tables}}
@@ -87,7 +87,7 @@ Công thức M/M/c và mô phỏng cho cùng kết quả khi tải vừa, nhưng
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.86\linewidth]{figures/r2_validation.png}
-\caption{Công thức M/M/c so với mô phỏng: (a) theo mức tải; (b) theo từng giờ kể từ khi mở cửa}\label{r2:validation}
+\caption{Công thức M/M/c so với mô phỏng: (a) theo mức tải; (b) theo từng giờ kể từ khi mở cửa. Trục dọc là thời gian chờ, càng cao càng xấu}\label{r2:validation}
 % \source{\texttt{analysis/run\_analysis.py}; mô phỏng 40 ngày mỗi cấu hình ở (a), 200 ngày ở (b); số liệu ở Bảng~\ref{r2:validation-table}}
 \end{figure}
 
@@ -102,7 +102,7 @@ Kết quả cho thấy rằng, tổng giờ công không phải vấn đề, cá
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=0.7\linewidth]{figures/r2_asis_load.png}
-\caption{Hệ số tải theo giờ của lịch hiện tại 6 nhân viên, tính bằng M/M/c}\label{r2:asis-load}
+\caption{Hệ số tải theo giờ của lịch hiện tại 6 nhân viên, tính bằng M/M/c. Càng gần 1 thì càng ít nhân viên rảnh, nên hàng chờ dài ra rất nhanh}\label{r2:asis-load}
 % \source{\texttt{analysis/run\_analysis.py}; số liệu đầy đủ ở Bảng~\ref{r2:hourly}, Phụ lục~\ref{r2:app-tables}}
 \end{figure}
 
@@ -125,9 +125,9 @@ Dữ liệu Google Maps cũng có ba giới hạn. Biểu đồ chỉ cho độ 
 
 \section{Mô hình mở rộng: định vị rời rạc và dự báo nhu cầu}
 \label{r2:extension}
-\subsection{Chọn 2 trong 5 điểm mở cửa hàng mới}
+\subsection{Chọn 2 trong 5 điểm mở cửa hàng mới (BT3)}
 \label{r2:location}
-\textbf{Bài toán.} Doanh nghiệp có ngân sách mở $k=2$ cửa hàng mới và đã khảo
+\textbf{Bài toán.} Bài toán định vị này gọi tắt là BT3. Doanh nghiệp có ngân sách mở $k=2$ cửa hàng mới và đã khảo
 sát 5 vị trí ứng viên $J$ trên các trục chính; nhu cầu đến từ 8 quận $I$.
 Bài toán định vị phân bố được rời rạc hóa bằng hai tập này. Dân số lấy theo
 Tổng điều tra 2019~\cite{census2019}; nhu cầu mà một cửa hàng mới có thể thu
@@ -160,7 +160,7 @@ Mục tiêu (a) là phục vụ được nhiều người nhất; mục tiêu (b
 vùng nên nghiệm là tối ưu chính xác.
 \exttable{tab_ext_cover_matrix.tex}{Dân số, nhu cầu $h_i$ và thời gian đi lại $t_{ij}$ (phút); $^{\bullet}$ đánh dấu $a_{ij}=1$ ($t_{ij}\le15$ phút)}{r2:cover}
 \exttable{tab_ext_location.tex}{Mười tổ hợp 2/5 điểm, xếp theo mục tiêu (a); lợi nhuận theo mục tiêu (b)}{r2:loc-result}
-\begin{figure}[htbp]\centering
+\begin{figure}[!htbp]\centering
 \includegraphics[width=0.9\linewidth]{figures/r2_location.png}
 \caption{Nhu cầu nằm trong ngưỡng $R$ và nhu cầu phục vụ được của mười tổ hợp.}
 \label{r2:loc-fig}
@@ -184,7 +184,7 @@ giới hạn năng lực. Ngược lại, lợi nhuận của J2 + J4 giảm cò
 nhu cầu giảm 20\% và còn 18,9 triệu nếu chỉ có 6 vòi. Chỉ khi $R=12$ phút (khách
 rất ngại đi xa) thì tối ưu lợi nhuận chuyển sang J4 + J5.
 
-\exttable{tab_ext_location_econ.tex}{Độ nhạy lợi nhuận BT2 theo lãi gộp (G) và chi phí cố định $f_j$ (G); số lượt phục vụ của từng tổ hợp giữ nguyên}{r2:loc-econ}
+\exttable{tab_ext_location_econ.tex}{Độ nhạy lợi nhuận BT3 theo lãi gộp (G) và chi phí cố định $f_j$ (G); số lượt phục vụ của từng tổ hợp giữ nguyên}{r2:loc-econ}
 \textbf{Điều kiện kinh tế.} Hai tham số quyết định mục tiêu (b) đều là giả định:
 lãi gộp 1,500 đồng/lít và chi phí cố định $f_j$. Bảng~\ref{r2:loc-econ} tính
 lại lợi nhuận khi thay đổi hai tham số này. Số lượt phục vụ không phụ thuộc vào
@@ -193,7 +193,7 @@ chúng nên giữ nguyên. Lãi gộp hòa vốn là 1,098 đồng/lít với J3
 nêu, mỗi lượt chỉ đóng góp 106 đồng và không tổ hợp nào có lãi. Ở mức 1,000
 đồng/lít cũng vậy. Ngay cả khi có lãi, lựa chọn giữa J2 và J3 vẫn đảo chiều:
 J2 + J4 lãi hơn khi lãi gộp đạt 2,000 đồng/lít hoặc khi $f_j$ giảm 30\%,
-còn J3 + J4 lãi hơn khi $f_j$ tăng 30\%. Kết luận BT2 vì vậy có ba phần.
+còn J3 + J4 lãi hơn khi $f_j$ tăng 30\%. Kết luận BT3 vì vậy có ba phần.
 (i) \textbf{Chỉ mở thêm cửa hàng khi lãi gộp thực tế đạt trên khoảng 1,100
 đồng/lít.} (ii) \textbf{J4 Hoàng Mai} có mặt trong mọi phương án lãi nhất (Bảng~\ref{r2:loc-sens} và~\ref{r2:loc-econ}).
 (iii) Điểm thứ hai là J3 Hà Đông nếu ưu tiên lợi nhuận ở mức cơ sở, hoặc J2
@@ -204,7 +204,7 @@ bản đồ số; kiểm tra lại số cửa hàng đối thủ trong bán kín
 
 \subsection{Dự báo lượt xe ngày tới bằng học máy}
 \label{r2:forecast}
-Lịch theo giờ (BT1) chỉ tốt khi biết trước $\lambda_t$. Nhu cầu xăng có các
+Lịch theo giờ (BT1, Mục~\ref{r3:bt1}) chỉ tốt khi biết trước $\lambda_t$. Nhu cầu xăng có các
 biến động \emph{biết trước được}: giá điều chỉnh có hiệu lực lúc 15 giờ, phần
 lớn vào thứ Năm (các kỳ 22/10, 29/10, 5/11, 12/11/2026), đôi khi có kỳ bổ sung
 giữa tuần (31/10, 3/11/2026)~\cite{moit2026,moit2026b}. Khi giá tăng, khách đổ
@@ -245,7 +245,10 @@ biến và ước lượng là đúng: mô hình tìm lại được cấu trúc
 Đây \emph{không} phải bằng chứng về hành vi của khách thật. Cũng vì dữ liệu và
 mô hình có cùng cấu trúc, MAPE 7,25\% là giới hạn trên lạc quan. Độ chính xác
 thật chỉ biết được khi huấn luyện trên hóa đơn điện tử.
-Giá trị vận hành của dự báo được đánh giá ở Mục~\ref{r3:ml-staff}.
+% Cau nay tro vao Muc "Lap lich hang ngay theo du bao", nam trong macro
+% \RoleThreeSupplement cua role_3 (chua duoc goi nen khong in ra) -> \ref se ra ??.
+% Mo lai cung luc voi phan phu luc mo rong.
+% Giá trị vận hành của dự báo được đánh giá ở Mục~\ref{r3:ml-staff}.
 \todo{2}{Huấn luyện lại trên dữ liệu hóa đơn điện tử thật; giữ cách chia theo
 thời gian (không trộn ngẫu nhiên) và báo cáo MAPE theo tháng.}
 
